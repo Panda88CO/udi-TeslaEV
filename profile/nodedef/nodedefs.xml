@@ -1,0 +1,106 @@
+<nodeDefs> 
+   <nodeDef id="controller" nls="nlscontroller">
+      <editors />
+      <sts>
+         <st id="ST" editor="CTRL_1" />
+         <st id="GV2" editor="CTRL_2" />
+         <st id="GV3" editor="CTRL_3" />
+      </sts>
+      <cmds>
+         <sends>
+            <cmd id="DON" /> 
+            <cmd id="DOF" /> 
+         </sends>
+         <accepts>
+            <cmd id="UPDATE" /> 
+         </accepts>
+      </cmds>
+   </nodeDef> 
+
+   <nodeDef id="evstatus" nls="nlsevstatus">
+      <editors />
+      <sts>
+         <st id="GV1" editor="PERCENT" />
+         <st id="GV2" editor="OP_MODE" />
+         <st id="GV3" editor="GRID_ST" />
+         <st id="GV4" editor="ON_LINE" />
+         <st id="GV5" editor="TOGGLE" />
+         <st id="GV6" editor="KWH_20" />
+         <st id="GV7" editor="KWH" />
+         <st id="GV8" editor="KWH" />
+         <st id="GV9" editor="KWH" />
+         <st id="GV10" editor="KWH" />
+         <st id="GV11" editor="KWH" />
+         <st id="GV12" editor="KWH" />
+         <st id="GV13" editor="KWH" />
+         <st id="GV14" editor="KWH" />
+         <st id="GV15" editor="KWH" />
+         <st id="GV16" editor="KWH" />
+         <st id="GV17" editor="KWH" />
+         <st id="GV18" editor="KWH" />
+      </sts>
+      <cmds>
+         <sends>
+         </sends>
+         <accepts>
+            <cmd id="UPDATE" /> 
+            <cmd id="WAKEUP" />
+            <cmd id="HONKHORN" />
+            <cmd id="FLASHLIGHT" />   
+            <cmd id="DOORS" /> 
+            <cmd id="TRUNK" /> 
+            <cmd id="FRUNK" /> 
+         </accepts>
+      </cmds>
+   </nodeDef> 
+
+   <nodeDef id="evclimate" nls="nlsevclimate">
+      <editors />
+      <sts>
+         <st id="GV1" editor="KWH_LOW" />
+         <st id="GV2" editor="KWH" />
+         <st id="GV3" editor="KWH" />
+      </sts>
+      <cmds>
+         <sends>
+         </sends>
+         <accepts>
+            <cmd id="UPDATE" /> 
+            <cmd id="SUNROOF" /> 
+            <cmd id="WINDOW" /> 
+            <cmd id="AUTOCON" /> 
+            <cmd id="TEMPDRIVER" />
+            <cmd id="TEMPPASSENGER" />
+            <cmd id="PRECON" /> 
+            <cmd id="SEAT1" /> 
+            <cmd id="SEAT2" /> 
+            <cmd id="SEAT3" /> 
+            <cmd id="SEAT4" /> 
+            <cmd id="SEAT5" /> 
+            <cmd id="WHEEL" /> 
+         </accepts>
+      </cmds>
+   </nodeDef> 
+
+   <nodeDef id="evcharge" nls="nlsevcharge">
+      <editors />
+      <sts>
+         <st id="GV1" editor="KWH" />
+         <st id="GV2" editor="KWH" />
+      </sts>
+      <cmds>
+         <sends>
+         </sends>
+         <accepts>
+            <cmd id="UPDATE" /> 
+            <cmd id="CHARGEDOOR" />
+            <cmd id="CHARGE" />
+            <cmd id="CHARGELIMIT" />
+            <cmd id="CHARGEAMPS" />
+
+         </accepts>
+      </cmds>
+   </nodeDef> 
+
+  
+</nodeDefs> 
