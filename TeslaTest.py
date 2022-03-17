@@ -67,6 +67,11 @@ for key in ISYparams:
 EV1 = TeslaCloudAPI()
 ev2 = EV1.teslaGetVehicleIdList()
 ev3 = EV1.teslaGetVehicleInfo(ev2[0])
+dataTemp = str(json.dumps(ev3))
+
+file = open('./evdata.txt', 'w')
+file.write(dataTemp )
+file.close()
 
 
 
