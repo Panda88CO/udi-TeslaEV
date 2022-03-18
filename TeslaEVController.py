@@ -101,7 +101,7 @@ class TeslaEVController(udi_interface.Node):
                 
                 nodeAdr = 'vehicle'+str(vehicle+1)
                 if not self.poly.getNode(nodeAdr):
-                    node = teslaEV_StatusNode(self.poly, self.address, nodeAdr, nodeName, vehicleId, self.TEV)
+                    node = teslaEV_StatusNode(self.poly, self.address, 'evstatus', nodeName, vehicleId, self.TEV)
                     self.poly.addNode(node)             
                     self.wait_for_node_done()
            
@@ -273,6 +273,10 @@ class TeslaEVController(udi_interface.Node):
             ]
             # ST - node started
             # GV0 Access to TeslaApi
+
+
+
+
 if __name__ == "__main__":
     try:
         #logging.info('Starting Tesla Power Wall Controller')

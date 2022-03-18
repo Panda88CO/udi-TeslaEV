@@ -77,8 +77,7 @@ class teslaCloudEVapi(teslaCloudApi):
         temp['charging_state'] = self.carInfo[id]['charge_state']['charging_state']
         temp['charge_enable_request'] = self.carInfo[id]['charge_state']['charge_enable_request']
         temp['charger_power'] = self.carInfo[id]['charge_state']['charger_power']
-        temp['charge_limit_soc'] = self.carInfo[id]['charge_state']['charge_limit_soc']
-        temp['battery_level'] = self.carInfo[id]['charge_state']['battery_level']                
+        temp['charge_limit_soc'] = self.carInfo[id]['charge_state']['charge_limit_soc']      
         return(temp)
 
     def teslaEV_GetClimateInfo(self, id):
@@ -104,7 +103,6 @@ class teslaCloudEVapi(teslaCloudApi):
         temp = {}
         temp['center_display_state'] = self.carInfo[id]['vehicle_state']['center_display_state']
         temp['homelink_nearby'] = self.carInfo[id]['vehicle_state']['homelink_nearby']
-        temp['homelink_device_count'] = self.carInfo[id]['vehicle_state']['homelink_device_count']
         temp['fd_window'] = self.carInfo[id]['vehicle_state']['fd_window']
         temp['fp_window'] = self.carInfo[id]['vehicle_state']['fp_window']
         temp['rd_window'] = self.carInfo[id]['vehicle_state']['rd_window']
@@ -114,7 +112,7 @@ class teslaCloudEVapi(teslaCloudApi):
         temp['locked'] = self.carInfo[id]['vehicle_state']['locked']
         temp['odometer'] = self.carInfo[id]['vehicle_state']['odometer']
         temp['sun_roof_percent_open'] = self.carInfo[id]['sun_roof_percent_open']
-        temp['center_display_state'] = self.carInfo[id]['vehicle_state']['center_display_state']
+        temp['state'] = self.carInfo[id]['state']
         return(temp)
 
 
@@ -335,6 +333,24 @@ class teslaCloudEVapi(teslaCloudApi):
                 return(False)
 
 
+    def teslaEV_SetCabinTemps(self, id, tempC):
+        logging.debug('teslaEV_AutoCondition for {}'.format(id))
+        
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])    
+                payload = {'driver_temp' : float(tempC), 'passenger_temp':float(tempC) }      
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_temps', json=payload ) 
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_AutoCondition for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(False)
+
+
     def teslaEV_DefrostMax(self, id, ctrl):
         logging.debug('teslaEV_DefrostMax for {}'.format(id))
  
@@ -462,7 +478,7 @@ class teslaCloudEVapi(teslaCloudApi):
 
     def teslaEV_SetChargeLimit (self, id, limit):
         logging.debug('teslaEV_SetChargeLimit for {}'.format(id))
-        seats = {{'frontLeft':0},{'frontRight':1},{'rearLeft':2},{'rearCenter':4},{'rearRight':5} } 
+       
         if limit > 100 or limit < 0:
             logging.error('Invalid seat heat level passed (0-100%) : {}'.format(limit))
             return(False)
@@ -476,6 +492,26 @@ class teslaCloudEVapi(teslaCloudApi):
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_SetChargeLimit for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(False)
+
+    def teslaEV_SetChargeLimitAmps (self, id, limit):
+        logging.debug('teslaEV_SetChargeLimitAmps for {}'.format(id))
+       
+        if limit > 300 or limit < 0:
+            logging.error('Invalid seat heat level passed (0-300A) : {}'.format(limit))
+            return(False)
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                payload = { 'charging_amps': int(limit)}    
+                s.auth = OAuth2BearerToken(S['access_token'])
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charging_amps', json=payload ) 
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_SetChargeLimitAmps for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
                 self.tokeninfo = self.teslaApi.tesla_refresh_token( )
                 return(False)

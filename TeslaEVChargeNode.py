@@ -15,55 +15,77 @@ except ImportError:
     import logging
     logging.basicConfig(level=logging.DEBUG)
 
-class teslaPWSolarNode(udi_interface.Node):
+class teslaEV_ChargeNode(udi_interface.Node):
 
-    def __init__(self, polyglot, primary, address, name, TPW):
-        super(teslaPWSolarNode, self).__init__(polyglot, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, id,  TEV):
+        super(teslaEV_ChargeNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.ISYforced = False
-        self.TPW = TPW
+        self.id = id
+        self.TEV = TEV
         self.address = address 
         self.name = name
-        self.hb = 0
 
         polyglot.subscribe(polyglot.START, self.start, address)
         
     def start(self):                
-        logging.debug('Start Tesla Power Wall Solar Node')  
-        while not self.TPW.systemReady:
+        logging.debug('Start Tesla EV charge Node: {}'.format(self.id))  
+        while not self.TEV.systemReady:
             time.sleep(1)
         self.updateISYdrivers('all')
 
     def stop(self):
         logging.debug('stop - Cleaning up')
     
-    def updateISYdrivers(self, level):
-        if self.TPW.systemReady:
-            logging.debug('SolarNode updateISYdrivers')
-            self.setDriver('GV1', self.TPW.getTPW_solarSupply())
+    def updateISYdrivers(self):
+        if self.TEV.systemReady:
+            logging.debug('ChargeNode updateISYdrivers {}'.format(self.id))
+            #self.chargeInfo = self.TEV.teslaEV_GetChargingInfo(self.id)
+            #self.setDriver('GV1', )
 
-            if level == 'all':
-                self.setDriver('GV2', self.TPW.getTPW_daysSolar())
-                self.setDriver('GV3', self.TPW.getTPW_yesterdaySolar())
         else:
             logging.debug('System not ready yet')
 
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        if self.TPW.pollSystemData('all'):
-            self.updateISYdrivers('all')
-            #self.reportDrivers()
+        self.chargeInfo = self.TEV.teslaEV_GetChargingInfo(self.id)
+        self.updateISYdrivers()
+         #self.reportDrivers()
  
 
-    id = 'pwsolar'
+    def evChargePort (self, command):
+        logging.debug('evChargePort called')
+
+    def evChargeControl (self, command):
+        logging.debug('evChargeControl called')
+
+
+    def evSetChargeLimit (self, command):
+        logging.debug('evSetChargeLimit called')
+
+    id = 'evcharge'
     commands = { 'UPDATE': ISYupdate, 
+                 'CHARGEPORT' : evChargePort,
+                 'CHARGECTRL' : evChargeControl,
+                 'CHARGLIM' : evSetChargeLimit,
+
                 }
 
     drivers = [
-            {'driver': 'GV1', 'value': 0, 'uom': 33},  #Current solar supply
-            {'driver': 'GV2', 'value': 0, 'uom': 33},  #solar power today
-            {'driver': 'GV3', 'value': 0, 'uom': 33},  #solar power yesterday
+            {'driver': 'ST', 'value': 0, 'uom': 2},
+            {'driver': 'GV1', 'value': 0, 'uom': 25},  #fast_charger_present
+            {'driver': 'GV2', 'value': 0, 'uom': 25},  #charge_port_latch
+            {'driver': 'GV3', 'value': 0, 'uom': 25},  #charge_port_door_open
+            {'driver': 'GV4', 'value': 0, 'uom': 51},  #battery_level
+            {'driver': 'GV5', 'value': 0, 'uom': 51},  #charge_current_request_max
+            {'driver': 'GV6', 'value': 0, 'uom': 25},  #charging_state
+            {'driver': 'GV8', 'value': 0, 'uom': 25},  #charge_enable_request
+            {'driver': 'GV7', 'value': 0, 'uom': 30},  #charger_power
+            {'driver': 'GV9', 'value': 0, 'uom': 51},  #bat charge_limit_soc
+
+
             ]
+            
 
 

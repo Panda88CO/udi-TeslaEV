@@ -57,7 +57,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         
         nodeAdr = 'charge'+nbrStr
         if not self.poly.getNode(nodeAdr):
-            climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.id, self.TEV )
+            chargeNode = teslaEV_ChargeNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.id, self.TEV )
         
         
         
@@ -109,32 +109,51 @@ class teslaEV_StatusNode(udi_interface.Node):
         if self.TEV.pollSystemData('all'):
             self.updateISYdrivers('all')
 
- 
+    def evWakeUp (self, command):
+        logging.debug('EVwakeUp called')
 
-    id = 'pwstatus'
+    def evHonkHorn (self, command):
+        logging.debug('EVhonkHorn called')
+
+    def evFlashLights (self, command):
+        logging.debug('EVflashLights called')
+
+    def evControlDoors (self, command):
+        logging.debug('EVctrlDoors called')
+
+    def evOpenTrunkFrunk (self, command):
+        logging.debug('EVopenTrunkFrunk called')                
+
+    def evHomelink (self, command):
+        logging.debug('EVhomelink called')   
+
+    id = 'evstatus'
     commands = { 'UPDATE': ISYupdate, 
+                 'WAKEUP' : evWakeUp,
+                 'HONK' : evHonkHorn,
+                 'LIGHTS' : evFlashLights,
+                 'DOORS' : evControlDoors,
+                 'TRUNK' : evOpenTrunkFrunk,
+                 'FRUNK' : evOpenTrunkFrunk,
+                 'HOMELINK' : evHomelink,
                 }
 
 
     drivers = [
-            {'driver': 'GV1', 'value': 0, 'uom': 51},  #battery level
-            {'driver': 'GV2', 'value': 0, 'uom': 25},  #mode
-            {'driver': 'GV3', 'value': 0, 'uom': 25},  #grid status
-            {'driver': 'GV4', 'value': 0, 'uom': 25},  #on/off line
-            {'driver': 'GV5', 'value': 0, 'uom': 25},  #grid services
-            {'driver': 'GV6', 'value': 0, 'uom': 33},  #battery supply
-            {'driver': 'GV7', 'value': 0, 'uom': 33},  #battery today
-            {'driver': 'GV8', 'value': 0, 'uom': 33},  #battery yesterday
-            {'driver': 'GV9', 'value': 0, 'uom': 33},  #grid supply
-            {'driver': 'GV10', 'value': 0, 'uom': 33}, #grid today
-            {'driver': 'GV11', 'value': 0, 'uom': 33}, #grid yesterday
-            {'driver': 'GV12', 'value': 0, 'uom': 33}, #load
-            {'driver': 'GV13', 'value': 0, 'uom': 33}, #consumption today
-            {'driver': 'GV14', 'value': 0, 'uom': 33}, #consumption yesterday
-            {'driver': 'GV15', 'value': 0, 'uom': 33}, #generation today
-            {'driver': 'GV16', 'value': 0, 'uom': 33}, #generation yesterday
-            {'driver': 'GV17', 'value': 0, 'uom': 33}, #grid service today
-            {'driver': 'GV18', 'value': 0, 'uom': 33}, #grid service yesterday
+            {'driver': 'ST', 'value': 0, 'uom': 2},
+            {'driver': 'GV1', 'value': 0, 'uom': 25},  #center_display_state
+            {'driver': 'GV2', 'value': 0, 'uom': 25},  #homelink_nearby
+            {'driver': 'GV3', 'value': 0, 'uom': 25},  #locked
+            {'driver': 'GV4', 'value': 0, 'uom': 25},  #odometer
+            {'driver': 'GV5', 'value': 0, 'uom': 25},  #state (on line)
+            {'driver': 'GV6', 'value': 0, 'uom': 25},  #fd_window
+            {'driver': 'GV7', 'value': 0, 'uom': 25},  #fp_window
+            {'driver': 'GV8', 'value': 0, 'uom': 25},  #rd_window
+            {'driver': 'GV9', 'value': 0, 'uom': 25},  #rp_window
+            {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
+            {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
+            {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
+            {'driver': 'ST', 'value': 0, 'uom': 2},
             ]
 
 
