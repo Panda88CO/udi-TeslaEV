@@ -26,8 +26,6 @@ class TPWauth:
         self.CLIENT_SECRET = "c7257eb71a564034f9419ee651c7d0e5f7aa6bfbd18bafb5c5c033b093bb2fa3"
         self.TESLA_URL = "https://owner-api.teslamotors.com"
 
-        #self.email = email
-        #self.password = password
         self.state_str = 'ThisIsATest' 
         self.cookies = None
         self.data = {}
@@ -37,12 +35,11 @@ class TPWauth:
                 dataFile = open('./refreshToken.txt', 'r')
                 self.Rtoken = dataFile.read()
                 dataFile.close()
-                #self.tokeninfo = self.tesla_refresh_token()
+
         except Exception as e:
             logging.error('Exception storeDaysData: '+  str(e))         
             logging.error ('Failed to write ./refreshToken.txt')
             self.Rtoken = ''
-
         self.running = False
 
     def tesla_refresh_token(self):
@@ -78,7 +75,6 @@ class TPWauth:
                     logging.error('New Refresh Token must be generated')
                     self.Rtoken = None
                     pass
-            
             time.sleep(1)
         return S
 

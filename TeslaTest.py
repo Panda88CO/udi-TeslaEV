@@ -8,11 +8,12 @@ import sys
 from datetime import datetime
 #from requests_MgcedMoauth2 import OAuth2BearerToken
 #from TeslaToken import Token
-from TeslaCloudEVapi  import TeslaCloudAPI
+#from TeslaCloudApi  import teslaCloudApi
 #from powerwall1 import Powerwall
 
-from TeslaEVInfo import tesla_info
-import  TeslaCloudEVapi
+from TeslaCloudEVapi import teslaCloudEVapi
+
+#import  TeslaCloudEVapi
 #from ISYprofile import isyHandling
 from datetime import date
 try:
@@ -64,14 +65,16 @@ for key in ISYparams:
 '''
 
 #captchaAPIkey =  '850fa21e5b5baafb2b27212069aa6e6b'
-EV1 = TeslaCloudAPI()
-ev2 = EV1.teslaGetVehicleIdList()
-ev3 = EV1.teslaGetVehicleInfo(ev2[0])
+EV = teslaCloudEVapi()
+ev2 = EV.teslaEV_GetIdList()
+ev3 = EV.teslaEV_GetInfo(ev2[0])
 dataTemp = str(json.dumps(ev3))
 
 file = open('./evdata.txt', 'w')
 file.write(dataTemp )
 file.close()
+ev4 = EV.teslaEV_Wake(ev2[0])
+ev5 = EV.teslaEV_FlashLights(ev2[0])
 
 
 

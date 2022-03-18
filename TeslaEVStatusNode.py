@@ -5,8 +5,10 @@
 
 #from os import truncate
 import sys
-import TeslaEVInfo
 import time
+import re
+from TeslaEVChargeNode import teslaEV_ChargeNode
+from TeslaEVClimateNode import teslaEV_ClimateNode 
 
 try:
     import udi_interface
@@ -17,21 +19,49 @@ except ImportError:
     logging.basicConfig(level=logging.DEBUG)
 
                
-class teslaEVStatusNode(udi_interface.Node):
+class teslaEV_StatusNode(udi_interface.Node):
 
-    def __init__(self, polyglot, primary, address, name, TEV):
-        super(teslaPWStatusNode, self).__init__(polyglot, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, id, TEV):
+        super(teslaEV_StatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.ISYforced = False
+        self.id = id
         self.TEV = TEV
-        self.address = address 
+        self.primary = primary
+        self.address = address
         self.name = name
         self.hb = 0
 
-        polyglot.subscribe(polyglot.START, self.start, address)
-        
+        self.poly.subscribe(self.poly.START, self.start, address)
+        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+        self.n_queue = []
+
+
+    def node_queue(self, data):
+        self.n_queue.append(data['address'])
+
+    def wait_for_node_done(self):
+        while len(self.n_queue) == 0:
+            time.sleep(0.1)
+        self.n_queue.pop()
+
+
     def start(self):                
-        logging.debug('Start Tesla Power Wall Status Node')  
+        logging.info('Start Tesla EV Status Node for {}'.format(self.id)) 
+        tmpStr = re.findall('[0-9]+', self.address)
+        nbrStr = tmpStr.pop()
+
+        nodeAdr = 'climate'+nbrStr
+        if not self.poly.getNode(nodeAdr):
+            climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV climate Info', self.id, self.TEV )
+        
+        nodeAdr = 'charge'+nbrStr
+        if not self.poly.getNode(nodeAdr):
+            climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.id, self.TEV )
+        
+        
+        
+        
         while not self.TEV.systemReady:
             time.sleep(1)
         self.updateISYdrivers('all')

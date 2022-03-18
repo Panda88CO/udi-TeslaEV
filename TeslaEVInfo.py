@@ -17,7 +17,7 @@ import time
 #import tesla_powerwall
 from tesla_powerwall import Powerwall, GridStatus, OperationMode, MeterType
 #import tesla_powerwall
-from TeslaCloudEVapi import TeslaCloudAPI
+from TeslaCloudApi import TeslaCloudAPI
 
 
 class tesla_info:
