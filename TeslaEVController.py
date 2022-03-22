@@ -4,20 +4,20 @@
 import sys
 import time 
 import os
-#from TeslaEVInfo import tesla_info
-#from TeslaPWCtrlNodeNode import teslaPWSetupNode
-from TeslaEVStatusNode import teslaEV_StatusNode
-
-
-from TeslaCloudEVapi  import teslaCloudEVapi
 
 try:
     import udi_interface
-    logging = udi_interface.logging
+    logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
 except ImportError:
     import logging
     logging.basicConfig(level=logging.DEBUG)
+
+
+#from TeslaEVInfo import tesla_info
+#from TeslaPWCtrlNodeNode import teslaPWSetupNode
+from TeslaEVStatusNode import teslaEV_StatusNode
+from TeslaCloudEVapi  import teslaCloudEVapi
 
 
 

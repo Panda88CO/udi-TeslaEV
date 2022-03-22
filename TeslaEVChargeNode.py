@@ -5,11 +5,11 @@ PG_CLOUD_ONLY = False
 
 #from os import truncate
 import sys
-import TeslaEVInfo
+import OLD.TeslaEVInfo as TeslaEVInfo
 import time
 try:
     import udi_interface
-    logging = udi_interface.logging
+    logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
 except ImportError:
     import logging

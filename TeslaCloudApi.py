@@ -9,7 +9,7 @@ from requests_oauth2 import OAuth2BearerToken
 #import TeslaCloudEVapi
 try:
     import udi_interface
-    logging = udi_interface.logging
+    logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
 except ImportError:
     import logging

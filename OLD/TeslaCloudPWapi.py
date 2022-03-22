@@ -3,11 +3,12 @@ from datetime import datetime
 import requests
 
 from requests_oauth2 import OAuth2BearerToken
-from TPWauth import TPWauth
+from OLD.TPWauth import TPWauth
 import TeslaCloudEVapi
 try:
     import udi_interface
-    logging = udi_interface.logging
+    logging = udi_interface.LOGGER
+    
     Custom = udi_interface.Custom
 except ImportError:
     import logging
