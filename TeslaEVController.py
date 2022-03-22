@@ -94,6 +94,7 @@ class TeslaEVController(udi_interface.Node):
             #del self.Parameters['REFRESH_TOKEN']
             self.TEV = teslaCloudEVapi()
             vehicleList = self.TEV.teslaEV_GetIdList()
+            self.GV1 =len(vehicleList)
             for vehicle in range(0,len(vehicleList)):
                 vehicleId = vehicleList[vehicle]
                 vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
@@ -245,7 +246,8 @@ class TeslaEVController(udi_interface.Node):
             value = self.TEV.isNodeServerUp()
 
             self.setDriver('GV0', value)
-            logging.debug('CTRL Update ISY drivers : GV2  value: {}'.format(value))
+            self.setDriver('GV1', self.GV1)
+            logging.debug('CTRL Update ISY drivers : GV0, GV1  value: {}, {}'.format(value. self.GV1))
 
         elif level == 'critical':
             value = self.TEV.isNodeServerUp()
@@ -270,10 +272,11 @@ class TeslaEVController(udi_interface.Node):
     drivers = [
             {'driver': 'ST', 'value':0, 'uom':2},
             {'driver': 'GV0', 'value':0, 'uom':25},  
+            {'driver': 'GV1', 'value':0, 'uom':107},  
             ]
             # ST - node started
             # GV0 Access to TeslaApi
-
+            # GV1 Number of EVs
 
 
 

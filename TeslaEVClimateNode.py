@@ -93,19 +93,19 @@ class teslaEV_ClimateNode(udi_interface.Node):
     drivers = [
             {'driver': 'ST', 'value': 0, 'uom': 2},
             {'driver': 'GV1', 'value': 0, 'uom': 4},  #inside_temp
-            {'driver': 'GV2', 'value': 0, 'uom': 4},  #outside_temp
+            {'driver': 'CLITEMP', 'value': 0, 'uom': 4},  #outside_temp
             {'driver': 'GV3', 'value': 0, 'uom': 4},  #driver_temp_setting
             {'driver': 'GV4', 'value': 0, 'uom': 4},  #passenger_temp_setting
             {'driver': 'GV5', 'value': 0, 'uom': 25},  #seat_heater_left
             {'driver': 'GV6', 'value': 0, 'uom': 25},  #seat_heater_right
-            {'driver': 'GV8', 'value': 0, 'uom': 25},  #seat_heater_rear_left
-            {'driver': 'GV7', 'value': 0, 'uom': 25},  #seat_heater_rear_center
+            {'driver': 'GV7', 'value': 0, 'uom': 25},  #seat_heater_rear_left
+            {'driver': 'GV8', 'value': 0, 'uom': 25},  #seat_heater_rear_center
             {'driver': 'GV9', 'value': 0, 'uom': 25},  #seat_heater_rear_right
             {'driver': 'GV10', 'value': 0, 'uom': 25}, #is_auto_conditioning_on
-            {'driver': 'GV11', 'value': 0, 'uom': 25}, #is_preconditioning
+            {'driver': 'GV12', 'value': 0, 'uom': 25}, #is_preconditioning
             {'driver': 'GV12', 'value': 0, 'uom': 4}, #max_avail_temp
             {'driver': 'GV13', 'value': 0, 'uom': 4}, #min_avail_temp   
-            {'driver': 'GV15', 'value': 0, 'uom': 25}, #Steering Wheel Heat
+            {'driver': 'GV14', 'value': 0, 'uom': 25}, #Steering Wheel Heat
          
             ]
 

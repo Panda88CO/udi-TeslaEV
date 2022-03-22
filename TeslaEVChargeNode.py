@@ -61,27 +61,31 @@ class teslaEV_ChargeNode(udi_interface.Node):
         logging.debug('evChargeControl called')
 
 
-    def evSetChargeLimit (self, command):
-        logging.debug('evSetChargeLimit called')
+    def evSetBatteryChargeLimit (self, command):
+        logging.debug('evSetBatteryChargeLimit called')
+
+    def evSetCurrentChargeLimit (self, command):
+        logging.debug('evSetCurrentChargeLimit called')
 
     id = 'evcharge'
     commands = { 'UPDATE': ISYupdate, 
                  'CHARGEPORT' : evChargePort,
                  'CHARGECTRL' : evChargeControl,
-                 'CHARGLIM' : evSetChargeLimit,
+                 'BATERCENT' : evSetBatteryChargeLimit,
+                 'CHARGEAMPS' : evSetCurrentChargeLimit,
 
                 }
 
     drivers = [
             {'driver': 'ST', 'value': 0, 'uom': 2},
             {'driver': 'GV1', 'value': 0, 'uom': 25},  #fast_charger_present
-            {'driver': 'GV2', 'value': 0, 'uom': 25},  #charge_port_latch
-            {'driver': 'GV3', 'value': 0, 'uom': 25},  #charge_port_door_open
-            {'driver': 'GV4', 'value': 0, 'uom': 51},  #battery_level
-            {'driver': 'GV5', 'value': 0, 'uom': 51},  #charge_current_request_max
+            {'driver': 'GV2', 'value': 0, 'uom': 25},  #charge_port_door_open
+            {'driver': 'GV3', 'value': 0, 'uom': 25},  #charge_port_latch
+            {'driver': 'BATLVL', 'value': 0, 'uom': 51},  #battery_level
+            {'driver': 'GV5', 'value': 0, 'uom': 1},  #charge_current_request_max
             {'driver': 'GV6', 'value': 0, 'uom': 25},  #charging_state
             {'driver': 'GV8', 'value': 0, 'uom': 25},  #charge_enable_request
-            {'driver': 'GV7', 'value': 0, 'uom': 30},  #charger_power
+            {'driver': 'GV7', 'value': 0, 'uom': 33},  #charger_power
             {'driver': 'GV9', 'value': 0, 'uom': 51},  #bat charge_limit_soc
 
 

@@ -121,6 +121,10 @@ class teslaEV_StatusNode(udi_interface.Node):
     def evControlDoors (self, command):
         logging.debug('EVctrlDoors called')
 
+    def evControlSunroof (self, command):
+        logging.debug('evControlSunroof called')
+
+
     def evOpenTrunkFrunk (self, command):
         logging.debug('EVopenTrunkFrunk called')                
 
@@ -133,6 +137,7 @@ class teslaEV_StatusNode(udi_interface.Node):
                  'HONK' : evHonkHorn,
                  'LIGHTS' : evFlashLights,
                  'DOORS' : evControlDoors,
+                 'SUNROOFCTRL' : evControlSunroof,
                  'TRUNK' : evOpenTrunkFrunk,
                  'FRUNK' : evOpenTrunkFrunk,
                  'HOMELINK' : evHomelink,
@@ -153,7 +158,6 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
-            {'driver': 'ST', 'value': 0, 'uom': 2},
             ]
 
 
