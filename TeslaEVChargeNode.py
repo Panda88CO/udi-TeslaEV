@@ -5,7 +5,7 @@ PG_CLOUD_ONLY = False
 
 #from os import truncate
 import sys
-import OLD.TeslaEVInfo as TeslaEVInfo
+
 import time
 try:
     import udi_interface

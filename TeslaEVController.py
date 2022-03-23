@@ -11,7 +11,7 @@ try:
     Custom = udi_interface.Custom
 except ImportError:
     import logging
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=30)
 
 
 #from TeslaEVInfo import tesla_info
@@ -29,9 +29,9 @@ class TeslaEVController(udi_interface.Node):
         super(TeslaEVController, self).__init__(polyglot, primary, address, name)
         self.poly = polyglot
 
-        logging.info('_init_ Tesla Car Controller - 1')
+        logging.info('_init_ Tesla EV Controller - 1')
         self.ISYforced = False
-        self.name = 'Tesla Car Info'
+        self.name = 'Tesla EV Info'
         self.primary = primary
         self.address = address
         self.cloudAccess = False
@@ -59,6 +59,7 @@ class TeslaEVController(udi_interface.Node):
         self.node = self.poly.getNode(self.address)
         self.node.setDriver('ST', 1, True, True)
         self.initialized = True
+        self.poly.setLogLevel('debug')
         logging.debug('Controller init DONE')
 
     def node_queue(self, data):
@@ -78,9 +79,9 @@ class TeslaEVController(udi_interface.Node):
             time.sleep(1)
 
         # Poll for current values (and update drivers)
-        self.TEV.pollSystemData('all')          
-        self.updateISYdrivers('all')
-        self.TEV.systemReady = True
+        #self.TEV.pollSystemData('all')          
+        #self.updateISYdrivers('all')
+        #self.TEV.systemReady = True
    
 
     '''
@@ -93,11 +94,15 @@ class TeslaEVController(udi_interface.Node):
         try:
             #del self.Parameters['REFRESH_TOKEN']
             self.TEV = teslaCloudEVapi()
-            vehicleList = self.TEV.teslaEV_GetIdList()
-            self.GV1 =len(vehicleList)
-            for vehicle in range(0,len(vehicleList)):
-                vehicleId = vehicleList[vehicle]
+            logging.info('API:'.format(self.TEV))
+            self.vehicleList = self.TEV.teslaEV_GetIdList()
+            logging.info('AvehicleListPI:'.format(self.vehicleList))
+            self.GV1 =len(self.vehicleList)
+            for vehicle in range(0,len(self.vehicleList)):
+                vehicleId = self.vehicleList[vehicle]
+                logging.info('id: {}'.format(vehicleId))
                 vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
+                logging.info('info: {}'.format(vehicleInfo))
                 nodeName = vehicleInfo['response']['display_name']
                 
                 nodeAdr = 'vehicle'+str(vehicle+1)
@@ -111,7 +116,7 @@ class TeslaEVController(udi_interface.Node):
             
         except Exception as e:
             logging.error('Exception Controller start: '+ str(e))
-            logging.info('Did not connect to power wall')
+            logging.info('Did not connect to EV ')
 
         logging.debug ('Controller - initialization done')
 
@@ -141,6 +146,7 @@ class TeslaEVController(udi_interface.Node):
                     tmpToken = dataFile.read()
                     dataFile.close()
                     if tmpToken != cloud_token:
+                        logging.info('Newer input from config')
                         dataFile = open('./inputToken.txt', 'w')
                         dataFile.write( cloud_token)
                         dataFile.close()
@@ -192,7 +198,7 @@ class TeslaEVController(udi_interface.Node):
             logging.debug('Cloud access is valid, configure....')
             self.cloudAccess = True
             self.tesla_initialize( )
-
+        logging.info('Rtoken: {}'.format(self.Rtoken))
         logging.debug('done with parameter processing')
         
     def stop(self):
@@ -223,22 +229,23 @@ class TeslaEVController(udi_interface.Node):
             logging.info('Waiting for system/nodes to initialize')
 
     def shortPoll(self):
-        logging.info('Tesla Power Wall Controller shortPoll')
+        logging.info('Tesla EV Controller shortPoll')
         self.heartbeat()    
-        if self.TEV.pollSystemData('critical'):
-            for node in self.poly.nodes():
-                node.updateISYdrivers('critical')
-        else:
-            logging.info('Problem polling data from Tesla system') 
+        #if self.TEV.pollSystemData('critical'):
+        #    for node in self.poly.nodes():
+        #        node.updateISYdrivers('critical')
+        #else:
+        #    logging.info('Problem polling data from Tesla system') 
 
         
     def longPoll(self):
-        logging.info('Tesla Power Wall  Controller longPoll')
-        if self.TEV.pollSystemData('all'):
-            for node in self.poly.nodes():
-                node.updateISYdrivers('all')
-        else:
-            logging.error ('Problem polling data from Tesla system')
+        logging.info('Tesla EV  Controller longPoll')
+  
+        #if self.TEV.pollSystemData('all'):
+        #    for node in self.poly.nodes():
+        #        node.updateISYdrivers('all')
+        #else:
+        #    logging.error ('Problem polling data from Tesla system')
 
     def updateISYdrivers(self, level):
         logging.debug('System updateISYdrivers - ' + str(level))       

@@ -18,6 +18,7 @@ from TeslaCloudApi import teslaCloudApi
 
 class teslaCloudEVapi(teslaCloudApi):
     def __init__(self):
+        logging.debug('teslaCloudEVapi')
         self.teslaApi = teslaCloudApi()
         self.TESLA_URL = self.teslaApi.TESLA_URL
         self.API = self.teslaApi.API

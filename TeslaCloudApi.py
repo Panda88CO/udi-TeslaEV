@@ -20,6 +20,7 @@ except ImportError:
 class teslaCloudApi():
 
     def __init__(self):
+        logging.debug('teslaCloudApi')
         self.tokenInfo = None
         self.tokenExpMargin = 600 #10min
         self.TESLA_URL = "https://owner-api.teslamotors.com"
@@ -38,7 +39,7 @@ class teslaCloudApi():
                 dataFile = open('./refreshToken.txt', 'r')
                 self.Rtoken = dataFile.read()
                 dataFile.close()
-
+                logging.info('Rtoken: {}'.format(self.Rtoken) )
         except Exception as e:
             logging.error('Exception storeDaysData: '+  str(e))         
             logging.error ('Failed to write ./refreshToken.txt')
@@ -46,6 +47,8 @@ class teslaCloudApi():
         #self.running = False
         #self.teslaAuth = TPWauth()
         self.tokeninfo = self.tesla_refresh_token()
+        logging.info('tokeninfo: {}'.format(self.tokeninfo))
+
 
     def isNodeServerUp(self):
         return( self.tokenInfo != None)
@@ -60,10 +63,11 @@ class teslaCloudApi():
     def __teslaGetToken(self):
         if self.tokeninfo:
             dateNow = datetime.now()
+            logging.info('tokeninfo: {}'.format(self.tokeninfo))
             tokenExpires = datetime.fromtimestamp(self.tokeninfo['created_at'] + self.tokeninfo['expires_in']-self.tokenExpMargin)
             if dateNow > tokenExpires:
                 logging.info('Renewing token')
-                self.tokeninfo = self.teslaAuth.tesla_refresh_token()
+                self.tokeninfo = self.tesla_refresh_token()
         else:
             logging.error('New Refresh Token required - please generate  New Token')
 
@@ -99,6 +103,7 @@ class teslaCloudApi():
                 data['scope']='openid email offline_access'      
                 resp = requests.post('https://auth.tesla.com/oauth2/v3/token', data=data)
                 S = json.loads(resp.text)
+                logging.info('SSSSSS : {}'.format(S))
                 if 'refresh_token' in S:
                     self.Rtoken = S['refresh_token']
                 else:
@@ -107,11 +112,14 @@ class teslaCloudApi():
                 data['grant_type'] = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
                 data['client_id']=self.CLIENT_ID
                 data['client_secret']=self.CLIENT_SECRET
+                logging.info('tesla_refresh_token Rtoken : {}'.format(self.Rtoken ))
+
                 with requests.Session() as s:
                     try:
                         s.auth = OAuth2BearerToken(S['access_token'])
                         r = s.post(self.TESLA_URL + '/oauth/token',data)
                         S = json.loads(r.text)
+                        
                         dataFile = open('./refreshToken.txt', 'w')
                         dataFile.write( self.Rtoken)
                         dataFile.close()
@@ -123,6 +131,6 @@ class teslaCloudApi():
                         self.Rtoken = None
                         pass
                 time.sleep(1)
+            logging.debug('tesla_refresh_token: {}'.format(S))
             return S
 
-    def isNodeServerUp(self):
