@@ -26,11 +26,11 @@ class teslaCloudApi():
         self.TESLA_URL = "https://owner-api.teslamotors.com"
         self.API = "/api/1"
 
-        self.CLIENT_ID = "81527cff06843c8634fdc09e8ac0abefb46ac849f38fe1e431c2ef2106796384"
-        self.CLIENT_SECRET = "c7257eb71a564034f9419ee651c7d0e5f7aa6bfbd18bafb5c5c033b093bb2fa3"
+        #self.CLIENT_ID = "81527cff06843c8634fdc09e8ac0abefb46ac849f38fe1e431c2ef2106796384"
+        #self.CLIENT_SECRET = "c7257eb71a564034f9419ee651c7d0e5f7aa6bfbd18bafb5c5c033b093bb2fa3"
         #self.TESLA_URL = "https://owner-api.teslamotors.com"
 
-        self.state_str = 'ThisIsATest' 
+        #self.state_str = 'ThisIsATest' 
         self.cookies = None
         self.data = {}
         
@@ -62,9 +62,8 @@ class teslaCloudApi():
 
     def __teslaGetToken(self):
         if self.tokeninfo:
-            dateNow = datetime.now()
-            logging.info('tokeninfo: {}'.format(self.tokeninfo))
-            tokenExpires = datetime.fromtimestamp(self.tokeninfo['created_at'] + self.tokeninfo['expires_in']-self.tokenExpMargin)
+            dateNow = time.time()
+            tokenExpires = self.tokeninfo['created_at'] + self.tokeninfo['expires_in']-self.tokenExpMargin
             if dateNow > tokenExpires:
                 logging.info('Renewing token')
                 self.tokeninfo = self.tesla_refresh_token()
@@ -94,43 +93,48 @@ class teslaCloudApi():
 
 
     def tesla_refresh_token(self):
-            S = {}
-            if self.Rtoken:
-                data = {}
-                data['grant_type'] = 'refresh_token'
-                data['client_id'] = 'ownerapi'
-                data['refresh_token']=self.Rtoken
-                data['scope']='openid email offline_access'      
-                resp = requests.post('https://auth.tesla.com/oauth2/v3/token', data=data)
-                S = json.loads(resp.text)
-                logging.info('SSSSSS : {}'.format(S))
-                if 'refresh_token' in S:
-                    self.Rtoken = S['refresh_token']
-                else:
+        dateNow = int(time.time())
+        S = {}
+        if self.Rtoken:
+            data = {}
+            data['grant_type'] = 'refresh_token'
+            data['client_id'] = 'ownerapi'
+            data['refresh_token']=self.Rtoken
+            data['scope']='openid email offline_access'      
+            resp = requests.post('https://auth.tesla.com/oauth2/v3/token', data=data)
+            S = json.loads(resp.text)
+            #logging.info('SSSSSS : {}'.format(S))
+            if 'refresh_token' in S:
+                self.Rtoken = S['refresh_token']
+                S['created_at'] = dateNow
+
+            else:
+                self.Rtoken = None
+            '''
+            data = {}
+            data['grant_type'] = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+            data['client_id']=self.CLIENT_ID
+            data['client_secret']=self.CLIENT_SECRET
+            logging.info('tesla_refresh_token Rtoken : {}'.format(self.Rtoken ))
+
+            with requests.Session() as s:
+                try:
+                    s.auth = OAuth2BearerToken(S['access_token'])
+                    r = s.post(self.TESLA_URL + '/oauth/token',data)
+                    S = json.loads(r.text)
+                    
+                    dataFile = open('./refreshToken.txt', 'w')
+                    dataFile.write( self.Rtoken)
+                    dataFile.close()
+                    self.tokeninfo = S
+
+                except  Exception as e:
+                    logging.error('Exception __tesla_refersh_token: ' + str(e))
+                    logging.error('New Refresh Token must be generated')
                     self.Rtoken = None
-                data = {}
-                data['grant_type'] = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                data['client_id']=self.CLIENT_ID
-                data['client_secret']=self.CLIENT_SECRET
-                logging.info('tesla_refresh_token Rtoken : {}'.format(self.Rtoken ))
-
-                with requests.Session() as s:
-                    try:
-                        s.auth = OAuth2BearerToken(S['access_token'])
-                        r = s.post(self.TESLA_URL + '/oauth/token',data)
-                        S = json.loads(r.text)
-                        
-                        dataFile = open('./refreshToken.txt', 'w')
-                        dataFile.write( self.Rtoken)
-                        dataFile.close()
-                        self.tokeninfo = S
-
-                    except  Exception as e:
-                        logging.error('Exception __tesla_refersh_token: ' + str(e))
-                        logging.error('New Refresh Token must be generated')
-                        self.Rtoken = None
-                        pass
-                time.sleep(1)
-            logging.debug('tesla_refresh_token: {}'.format(S))
-            return S
+                    pass
+            time.sleep(1)
+            '''
+        logging.debug('tesla_refresh_token: {}'.format(S))
+        return S
 

@@ -19,8 +19,8 @@ except ImportError:
 from TeslaEVStatusNode import teslaEV_StatusNode
 from TeslaCloudEVapi  import teslaCloudEVapi
 
-
-
+#NODES_DEBUG = True
+NODES_DEBUG = False
 
 
 
@@ -94,23 +94,37 @@ class TeslaEVController(udi_interface.Node):
         try:
             #del self.Parameters['REFRESH_TOKEN']
             self.TEV = teslaCloudEVapi()
-            logging.info('API:'.format(self.TEV))
-            self.vehicleList = self.TEV.teslaEV_GetIdList()
-            logging.info('AvehicleListPI:'.format(self.vehicleList))
-            self.GV1 =len(self.vehicleList)
-            for vehicle in range(0,len(self.vehicleList)):
-                vehicleId = self.vehicleList[vehicle]
-                logging.info('id: {}'.format(vehicleId))
-                vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
-                logging.info('info: {}'.format(vehicleInfo))
-                nodeName = vehicleInfo['response']['display_name']
-                
-                nodeAdr = 'vehicle'+str(vehicle+1)
-                if not self.poly.getNode(nodeAdr):
-                    node = teslaEV_StatusNode(self.poly, self.address, 'evstatus', nodeName, vehicleId, self.TEV)
-                    self.poly.addNode(node)             
-                    self.wait_for_node_done()
-           
+
+            if NODES_DEBUG:
+                if (os.path.exists('./EVlist.txt')):
+                    dataFile = open('./EVlist.txt', 'r')
+                    self.vehicleList = dataFile.read()
+                    dataFile.close()
+                if (os.path.exists('./EVinfo.txt')):
+                    dataFile = open('./EVinfo.txt', 'r')
+                    vehicleInfo = dataFile.read()
+                    dataFile.close()
+
+                    nodeName = vehicleInfo['response']['display_name']
+                    nodeAdr = 'vehicle'+str(vehicle+1)
+                    if not self.poly.getNode(nodeAdr):
+                        node = teslaEV_StatusNode(self.poly, self.address, 'evstatus', nodeName, vehicleId, self.TEV)
+                        self.poly.addNode(node)             
+                        self.wait_for_node_done()                    
+            else:
+                self.vehicleList = self.TEV.teslaEV_GetIdList()
+                self.GV1 =len(self.vehicleList)
+                for vehicle in range(0,len(self.vehicleList)):
+                    vehicleId = self.vehicleList[vehicle]
+                    vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
+                    logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
+                    nodeName = vehicleInfo['display_name']
+                    
+                    nodeAdr = 'vehicle'+str(vehicle+1)
+                    if not self.poly.getNode(nodeAdr):
+                        node = teslaEV_StatusNode(self.poly, self.address, 'evstatus', nodeName, vehicleId, self.TEV)
+                        self.poly.addNode(node)             
+                        self.wait_for_node_done()           
             self.nodeDefineDone = True
             self.initialized = True
             

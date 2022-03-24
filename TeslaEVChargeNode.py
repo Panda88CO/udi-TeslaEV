@@ -37,11 +37,48 @@ class teslaEV_ChargeNode(udi_interface.Node):
     def stop(self):
         logging.debug('stop - Cleaning up')
     
-    def updateISYdrivers(self):
+    def bool2ISY(self, bool):
+        if bool == True:
+            return(1)
+        else:
+            return(0)
+
+    def latch2ISY(self, state):
+        if state == 'Engaged':
+            return(1)
+        else:
+            return(0)
+
+    def state2ISY(self,state): # Still TBD - 
+        if state == 'Complete':
+            return(1)
+        else:
+            return(0)  
+
+
+    def updateISYdrivers(self, id):
+        logging.debug('ChargeNode updateISYdrivers')
         if self.TEV.systemReady:
-            logging.debug('ChargeNode updateISYdrivers {}'.format(self.id))
-            #self.chargeInfo = self.TEV.teslaEV_GetChargingInfo(self.id)
-            #self.setDriver('GV1', )
+            logging.debug('GV1: {} '.format(self.TEV.teslaEV_FastChargerPresent(self.id)))
+            self.setDriver('GV1', self.bool2ISY(self.TEV.teslaEV_FastChargerPresent(self.id)))
+            logging.debug('GV2: {} '.format(self.TEV.teslaEV_ChargePortOpen(self.id)))
+            self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_ChargePortOpen(self.id)))
+            logging.debug('GV3: {}'.format(self.TEV.teslaEV_ChargePortLatched(self.id)))
+            self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_ChargePortLatched(self.id)))
+            logging.debug('BATLVL: {}'.format(self.TEV.teslaEV_GetBatteryLevel(self.id)))
+            self.setDriver('BATLVL', self.TEV.teslaEV_GetBatteryLevel(self.id))
+            logging.debug('GV5: {}'.format(self.TEV.teslaEV_MaxChargeCurrent(self.id)))
+            self.setDriver('GV5', self.state2ISY(self.TEV.teslaEV_MaxChargeCurrent(self.id)))
+            logging.debug('GV6: {}'.format(self.TEV.teslaEV_MaxChargeCurrent(self.id)))     
+            self.setDriver('GV6', self.TEV.teslaEV_MaxChargeCurrent(self.id))
+            logging.debug('GV7: {}'.format(self.TEV.teslaEV_GetChargingPower(self.id)))
+            self.setDriver('GV7', self.TEV.teslaEV_GetChargingPower(self.id))
+            logging.debug('GV8: {}'.format(self.TEV.teslaEV_ChargingRequested(self.id)))
+            self.setDriver('GV8', self.bool2ISY(self.TEV.teslaEV_ChargingRequested(self.id)))
+            logging.debug('GV9: {}'.format(self.TEV.teslaEV_GetBatteryMaxCharge(self.id)))
+            self.setDriver('GV9', self.TEV.teslaEV_GetBatteryMaxCharge(self.id))
+
+  
 
         else:
             logging.debug('System not ready yet')
@@ -49,10 +86,9 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        self.chargeInfo = self.TEV.teslaEV_GetChargingInfo(self.id)
+        self.TEV.teslaEV_GetInfo(self.id)
         self.updateISYdrivers()
-         #self.reportDrivers()
- 
+     
 
     def evChargePort (self, command):
         logging.debug('evChargePort called')

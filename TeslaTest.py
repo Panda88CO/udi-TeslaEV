@@ -67,8 +67,16 @@ for key in ISYparams:
 #captchaAPIkey =  '850fa21e5b5baafb2b27212069aa6e6b'
 EV = teslaCloudEVapi()
 ev2 = EV.teslaEV_GetIdList()
+dataTemp = str(json.dumps(ev2))
+dataFile = open('./EVlist.txt', 'w')
+dataFile.write(dataTemp)
+dataFile.close()
 ev3 = EV.teslaEV_GetInfo(ev2[0])
 dataTemp = str(json.dumps(ev3))
+dataFile = open('./EVinfo.txt', 'w')
+dataFile.write(dataTemp)
+dataFile.close()
+dataTemp = str(json.dumps(dataTemp))
 
 file = open('./evdata.txt', 'w')
 file.write(dataTemp )

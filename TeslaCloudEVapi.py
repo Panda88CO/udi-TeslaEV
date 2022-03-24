@@ -51,7 +51,7 @@ class teslaCloudEVapi(teslaCloudApi):
 
     def teslaEV_GetInfo(self, id):
         #if self.connectionEstablished:
-        S = self.__teslaConnect()
+        S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
@@ -65,7 +65,17 @@ class teslaCloudEVapi(teslaCloudApi):
                 self.tokeninfo = self.teslaAuth.tesla_refresh_token( )
                 return(None)
 
+    def teslaEV_GetLocation(self, id):
+        logging.debug('teslaEV_GetLocation: for {}'.format(id))
+        temp = {}
+        temp['longitude'] = self.carInfo[id]['drive_state']['longitude']
+        temp['latitide'] = self.carInfo[id]['drive_state']['latitide']
+        return(temp)
 
+
+####################
+# Charge Data
+####################
     def teslaEV_GetChargingInfo(self, id):
         logging.debug('teslaEV_GetChargingInfo: for {}'.format(id))
         temp = {}
@@ -80,6 +90,143 @@ class teslaCloudEVapi(teslaCloudApi):
         temp['charger_power'] = self.carInfo[id]['charge_state']['charger_power']
         temp['charge_limit_soc'] = self.carInfo[id]['charge_state']['charge_limit_soc']      
         return(temp)
+
+
+    def teslaEV_FastChargerPresent(self, id):
+        logging.debug('teslaEV_FastchargerPresent for {}'.format(id))
+        return(self.carInfo[id]['charge_state']['fast_charger_present'])
+
+  
+    def teslaEV_ChargePortOpen(self, id):
+        logging.debug('teslaEV_ChargePortOpen for {}'.format(id))
+        return(self.carInfo[id]['charge_state']['charge_port_door_open'])  
+
+    def teslaEV_ChargePortLatched(self, id):
+        logging.debug('teslaEV_ChargePortOpen for {}'.format(id))
+        return(self.carInfo[id]['charge_state']['charge_port_latch'])             
+
+    def teslaEV_GetBatteryLevel(self, id):
+        logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        return(round(self.carInfo[id]['charge_state']['battery_level'],1)) 
+
+    def teslaEV_MaxChargeCurrent(self, id):
+        logging.debug('teslaEV_MaxChargeCurrent for {}'.format(id))
+        return( self.carInfo[id]['charge_state']['charge_current_request_max'])                
+
+    def teslaEV_MaxChargeCurrent(self, id):
+        logging.debug('teslaEV_GetChargingState for {}'.format(id))
+        return( self.carInfo[id]['charge_state']['charging_state'])  
+
+    def teslaEV_ChargingRequested(self, id):
+        logging.debug('teslaEV_ChargingRequested for {}'.format(id))
+        return(  self.carInfo[id]['charge_state']['charge_enable_request'])  
+
+    def teslaEV_GetChargingPower(self, id):
+        logging.debug('teslaEV_GetChargingPower for {}'.format(id))
+        return(round(self.carInfo[id]['charge_state']['charger_power'],1)) 
+
+    def teslaEV_GetBatteryMaxCharge(self, id):
+        logging.debug('teslaEV_GetBatteryMaxCharge for {}'.format(id))
+        return(round(self.carInfo[id]['charge_state']['charge_limit_soc'],1)) 
+
+
+    def teslaEV_ChargePort(self, id, ctrl):
+        logging.debug('teslaEV_ChargePort for {}'.format(id))
+ 
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])    
+                payload = {}      
+                if ctrl == 'open':  
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_port_door_open', json=payload ) 
+                elif ctrl == 'close':
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_port_door_close', json=payload ) 
+                else:
+                    logging.debug('Unknown teslaEV_ChargePort command passed for vehicle id (open, close) {}: {}'.format(id, ctrl))
+                    return(False)
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_ChargePort for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(False)
+
+
+    def teslaEV_Charging(self, id, ctrl):
+        logging.debug('teslaEV_Charging for {}'.format(id))
+ 
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])    
+                payload = {}      
+                if ctrl == 'start':  
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_start', json=payload ) 
+                elif ctrl == 'stop':
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_stop', json=payload ) 
+                else:
+                    logging.debug('Unknown teslaEV_Charging command passed for vehicle id (start, stop) {}: {}'.format(id, ctrl))
+                    return(False)
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_AteslaEV_ChargingutoCondition for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(False)
+
+
+    def teslaEV_SetChargeLimit (self, id, limit):
+        logging.debug('teslaEV_SetChargeLimit for {}'.format(id))
+       
+        if limit > 100 or limit < 0:
+            logging.error('Invalid seat heat level passed (0-100%) : {}'.format(limit))
+            return(False)
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                payload = { 'percent':limit}    
+                s.auth = OAuth2BearerToken(S['access_token'])
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', json=payload ) 
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_SetChargeLimit for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(False)
+
+    def teslaEV_SetChargeLimitAmps (self, id, limit):
+        logging.debug('teslaEV_SetChargeLimitAmps for {}'.format(id))
+       
+        if limit > 300 or limit < 0:
+            logging.error('Invalid seat heat level passed (0-300A) : {}'.format(limit))
+            return(False)
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                payload = { 'charging_amps': int(limit)}    
+                s.auth = OAuth2BearerToken(S['access_token'])
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charging_amps', json=payload ) 
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_SetChargeLimitAmps for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(False)
+
+
+
+
+
+
+####################
+# Climate Data
+####################
+
 
     def teslaEV_GetClimateInfo(self, id):
         logging.debug('teslaEV_GetClimateInfo: for {}'.format(id))
@@ -99,174 +246,54 @@ class teslaCloudEVapi(teslaCloudApi):
         temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
         return(temp)
 
-    def teslaEV_GetStatusInfo(self, id):
-        logging.debug('teslaEV_GetStatusInfo: for {}'.format(id))
+    def teslaEV_GetCabinTemp(self, id):
+        logging.debug('teslaEV_GetCabinTemp for {}'.format(id))
+        return(round(self.carInfo[id]['climate_state']['inside_temp'],1)) 
+
+    def teslaEV_GetOutdoorTemp(self, id):
+        logging.debug('teslaEV_GetOutdoorTemp for {}'.format(id))
+        return(round(self.carInfo[id]['climate_state']['outside_temp'],1)) 
+
+    def teslaEV_GetLeftTemp(self, id):
+        logging.debug('teslaEV_GetLeftTemp for {}'.format(id))
+        return(round(self.carInfo[id]['climate_state']['driver_temp_setting'],1))        
+
+    def teslaEV_GetRightTemp(self, id):
+        logging.debug('teslaEV_GetRightTemp for {}'.format(id))
+        return(round(self.carInfo[id]['climate_state']['passenger_temp_setting'],1))   
+
+    def teslaEV_GetSeatHeating(self, id):
+        logging.debug('teslaEV_GetSeatHeating for {}'.format(id))
         temp = {}
-        temp['center_display_state'] = self.carInfo[id]['vehicle_state']['center_display_state']
-        temp['homelink_nearby'] = self.carInfo[id]['vehicle_state']['homelink_nearby']
-        temp['fd_window'] = self.carInfo[id]['vehicle_state']['fd_window']
-        temp['fp_window'] = self.carInfo[id]['vehicle_state']['fp_window']
-        temp['rd_window'] = self.carInfo[id]['vehicle_state']['rd_window']
-        temp['rp_window'] = self.carInfo[id]['vehicle_state']['rp_window']
-        temp['frunk'] = self.carInfo[id]['vehicle_state']['ft']
-        temp['trunk'] = self.carInfo[id]['vehicle_state']['rt']
-        temp['locked'] = self.carInfo[id]['vehicle_state']['locked']
-        temp['odometer'] = self.carInfo[id]['vehicle_state']['odometer']
-        temp['sun_roof_percent_open'] = self.carInfo[id]['sun_roof_percent_open']
-        temp['state'] = self.carInfo[id]['state']
+        temp['FrontLeft'] = self.carInfo[id]['climate_state']['seat_heater_left']
+        temp['FrontRight'] = self.carInfo[id]['climate_state']['seat_heater_right']   
+        temp['RearLeft'] = self.carInfo[id]['climate_state']['seat_heater_rear_left']   
+        temp['RearMiddle'] = self.carInfo[id]['climate_state']['seat_heater_rear_center']           
+        temp['RearRight'] = self.carInfo[id]['climate_state']['seat_heater_rear_right']           
         return(temp)
 
+    def teslaEV_AutoConditioningRunning(self, id):
+        logging.debug('teslaEV_AutoConditioningRunning for {}'.format(id))
+        return( self.carInfo[id]['climate_state']['is_auto_conditioning_on']) 
 
-###############
-# Controls
-################
-    def teslaEV_FlashLights(self, id):
-        logging.debug('teslaEV_GetVehicleInfo: for {}'.format(id))       
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])            
-                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
-                temp = r.json()
-                self.carInfo[id] = temp['response']
-                return(self.carInfo[id])
-            except Exception as e:
-                logging.error('Exception teslaEV_FlashLight for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(None)
+    def teslaEV_PreConditioningEnabled(self, id):
+        logging.debug('teslaEV_PreConditioningEnabled for {}'.format(id))
+        return(self.carInfo[id]['climate_state']['is_preconditioning']) 
+    
+    def teslaEV_MaxCabinTempCtrl(self, id):
+        logging.debug('teslaEV_MaxCabinTempCtrl for {}'.format(id))
+        return(round(self.carInfo[id]['climate_state']['max_avail_temp'],1))   
+
+    def teslaEV_MinCabinTempCtrl(self, id):
+        logging.debug('teslaEV_MinCabinTempCtrl for {}'.format(id))
+        return(round(self.carInfo[id]['climate_state']['min_avail_temp'],1))   
 
 
-    def teslaEV_Wake(self, id):
-        logging.debug('teslaEV_Wake: for {}'.format(id))
-        S = self.teslaApi.teslaConnect()
-        online = False
-        attempts = 0 
-        MAX_ATTEMPTS = 6 # try for 1 minute max
-        with requests.Session() as s:
-            try:
-
-                s.auth = OAuth2BearerToken(S['access_token'])            
-                while not online and attempts < MAX_ATTEMPTS:
-                    attempts = attempts + 1
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/wake_up') 
-                    temp = r.json()
-                    self.online = temp['response']['state']
-                    if self.online == 'online':
-                        online = True
-                    else:
-                        time.sleep(10)
-                return(self.online)
-            except Exception as e:
-                logging.error('Exception teslaEV_Wake for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(None)
+    def teslaEV_SteeringWheelHeatOn(self, id):
+        logging.debug('teslaEV_SteeringWheelHeatOn for {}'.format(id))
+        return(99)  
 
 
-    def teslaEV_HonkHorn(self, id):
-        logging.debug('teslaEV_HonkHorn for {}'.format(id))
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])    
-                payload = {}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/honk_horn', json=payload ) 
-                temp = r.json()
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_HonkHorn for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(False)
-
-
-    def teslaEV_FlashLights(self, id):
-        logging.debug('teslaEV_FlashLights for {}'.format(id))
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])    
-                payload = {}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/flash_lights', json=payload ) 
-                temp = r.json()
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(False)
-
-
-    def teslaEV_Doors(self, id, ctrl):
-        logging.debug('teslaEV_Doors for {}'.format(id))
-        
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])    
-                payload = {}      
-                if ctrl == 'unlock':  
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/door_unlock', json=payload ) 
-                elif ctrl == 'lock':
-                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/door_lock', json=payload ) 
-                else:
-                    logging.debug('Unknown door control passed: {}'.format(ctrl))
-                    return(False)
-                temp = r.json()
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(False)
-
-
-    def teslaEV_TrunkFrunk(self, id, frunkTrunk):
-        logging.debug('teslaEV_Doors for {}'.format(id))
-        
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])
-                if frunkTrunk == 'Frunk':
-                    cmd = 'front' 
-                elif frunkTrunk == 'Trunk':
-                     cmd = 'rear' 
-                else:
-                    logging.debug('Unknown trunk command passed: {}'.format(cmd))
-                    return(False)
-                payload = {'which_trunk':cmd}      
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/actuate_trunk', json=payload ) 
-                temp = r.json()
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(None)
-
-
-    def teslaEV_HomeLink(self, id):
-        logging.debug('teslaEV_HomeLink for {}'.format(id))
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])    
-                payload = {'lat':self.carInfo[id]['drive_state']['latitude'],
-                           'lon':self.carInfo[id]['drive_state']['longitude']}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/trigger_homelink', json=payload ) 
-                temp = r.json()
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_HomeLink for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(False)
-
-    ##########################
-    #   Climate
-    ##########################
 
     def teslaEV_Windows(self, id, cmd):
         logging.debug('teslaEV_Windows for {}'.format(id))
@@ -425,94 +452,215 @@ class teslaCloudEVapi(teslaCloudApi):
                 self.tokeninfo = self.teslaApi.tesla_refresh_token( )
                 return(False)
 
-    ##########################
-    #   Charging
-    ##########################
 
-    def teslaEV_ChargePort(self, id, ctrl):
-        logging.debug('teslaEV_ChargePort for {}'.format(id))
- 
+####################
+# Status Data
+####################
+    def teslaEV_GetStatusInfo(self, id):
+        logging.debug('teslaEV_GetStatusInfo: for {}'.format(id))
+        temp = {}
+        temp['center_display_state'] = self.carInfo[id]['vehicle_state']['center_display_state']
+        temp['homelink_nearby'] = self.carInfo[id]['vehicle_state']['homelink_nearby']
+        temp['fd_window'] = self.carInfo[id]['vehicle_state']['fd_window']
+        temp['fp_window'] = self.carInfo[id]['vehicle_state']['fp_window']
+        temp['rd_window'] = self.carInfo[id]['vehicle_state']['rd_window']
+        temp['rp_window'] = self.carInfo[id]['vehicle_state']['rp_window']
+        temp['frunk'] = self.carInfo[id]['vehicle_state']['ft']
+        temp['trunk'] = self.carInfo[id]['vehicle_state']['rt']
+        temp['locked'] = self.carInfo[id]['vehicle_state']['locked']
+        temp['odometer'] = self.carInfo[id]['vehicle_state']['odometer']
+        temp['sun_roof_percent_open'] = self.carInfo[id]['sun_roof_percent_open']
+        temp['state'] = self.carInfo[id]['state']
+        return(temp)
+
+    def teslaEV_GetCenterDisplay(self,id):
+        logging.debug('teslaEV_GetCenterDisplay: for {}'.format(id))
+        return(self.carInfo[id]['vehicle_state']['center_display_state'])
+
+
+    def teslaEV_HomeLinkNearby(self,id):
+        logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
+        return(self.carInfo[id]['vehicle_state']['homelink_nearby'])
+
+    def teslaEV_GetLockState(self,id):
+        logging.debug('teslaEV_GetLockState: for {}'.format(id))
+        return(self.carInfo[id]['vehicle_state']['locked'])
+
+    def teslaEV_GetWindoStates(self,id):
+        logging.debug('teslaEV_GetWindoStates: for {}'.format(id))
+        temp = {}
+        temp['FrontLeft'] = self.carInfo[id]['vehicle_state']['fd_window']
+        temp['FrontRight'] = self.carInfo[id]['vehicle_state']['fp_window']
+        temp['RearLeft'] = self.carInfo[id]['vehicle_state']['rd_window']
+        temp['RearRight'] = self.carInfo[id]['vehicle_state']['rp_window']
+        return(temp)
+
+    def teslaEV_GetOnlineState(self,id):
+        logging.debug('teslaEV_GetOnlineState: for {}'.format(id))
+        return(self.carInfo[id]['state'])
+
+    def teslaEV_GetOdometer(self,id):
+        logging.debug('teslaEV_GetOdometer: for {}'.format(id))
+        return(round(self.carInfo[id]['vehicle_state']['odometer'], 2))
+
+    def teslaEV_GetSunRoofState(self,id):
+        logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
+        return(round(self.carInfo[id]['sun_roof_percent_open'], 0))
+
+    def teslaEV_GetTrunkState(self,id):
+        logging.debug('teslaEV_GetTrunkState: for {}'.format(id))
+        return(self.carInfo[id]['vehicle_state']['rt'])
+
+    def teslaEV_GetFrunkState(self,id):
+        logging.debug('teslaEV_GetFrunkState: for {}'.format(id))
+        return(self.carInfo[id]['vehicle_state']['ft'])        
+
+###############
+# Controls
+################
+    def teslaEV_FlashLights(self, id):
+        logging.debug('teslaEV_GetVehicleInfo: for {}'.format(id))       
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
+                temp = r.json()
+                self.carInfo[id] = temp['response']
+                return(self.carInfo[id])
+            except Exception as e:
+                logging.error('Exception teslaEV_FlashLight for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(None)
+
+
+    def teslaEV_Wake(self, id):
+        logging.debug('teslaEV_Wake: for {}'.format(id))
+        S = self.teslaApi.teslaConnect()
+        online = False
+        attempts = 0 
+        MAX_ATTEMPTS = 6 # try for 1 minute max
+        with requests.Session() as s:
+            try:
+
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                while not online and attempts < MAX_ATTEMPTS:
+                    attempts = attempts + 1
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/wake_up') 
+                    temp = r.json()
+                    self.online = temp['response']['state']
+                    if self.online == 'online':
+                        online = True
+                    else:
+                        time.sleep(10)
+                return(self.online)
+            except Exception as e:
+                logging.error('Exception teslaEV_Wake for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(None)
+
+
+    def teslaEV_HonkHorn(self, id):
+        logging.debug('teslaEV_HonkHorn for {}'.format(id))
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])    
+                payload = {}        
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/honk_horn', json=payload ) 
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_HonkHorn for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(False)
+
+
+    def teslaEV_FlashLights(self, id):
+        logging.debug('teslaEV_FlashLights for {}'.format(id))
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])    
+                payload = {}        
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/flash_lights', json=payload ) 
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(False)
+
+
+    def teslaEV_Doors(self, id, ctrl):
+        logging.debug('teslaEV_Doors for {}'.format(id))
+        
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {}      
-                if ctrl == 'open':  
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_port_door_open', json=payload ) 
-                elif ctrl == 'close':
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_port_door_close', json=payload ) 
+                if ctrl == 'unlock':  
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/door_unlock', json=payload ) 
+                elif ctrl == 'lock':
+                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/door_lock', json=payload ) 
                 else:
-                    logging.debug('Unknown teslaEV_ChargePort command passed for vehicle id (open, close) {}: {}'.format(id, ctrl))
+                    logging.debug('Unknown door control passed: {}'.format(ctrl))
                     return(False)
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
-                logging.error('Exception teslaEV_ChargePort for vehicle id {}: {}'.format(id, e))
+                logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
                 self.tokeninfo = self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
-    def teslaEV_Charging(self, id, ctrl):
-        logging.debug('teslaEV_Charging for {}'.format(id))
- 
+    def teslaEV_TrunkFrunk(self, id, frunkTrunk):
+        logging.debug('teslaEV_Doors for {}'.format(id))
+        
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])
+                if frunkTrunk == 'Frunk':
+                    cmd = 'front' 
+                elif frunkTrunk == 'Trunk':
+                     cmd = 'rear' 
+                else:
+                    logging.debug('Unknown trunk command passed: {}'.format(cmd))
+                    return(False)
+                payload = {'which_trunk':cmd}      
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/actuate_trunk', json=payload ) 
+                temp = r.json()
+                return(temp['response']['result'])
+            except Exception as e:
+                logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
+                logging.error('Trying to reconnect')
+                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                return(None)
+
+
+    def teslaEV_HomeLink(self, id):
+        logging.debug('teslaEV_HomeLink for {}'.format(id))
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])    
-                payload = {}      
-                if ctrl == 'start':  
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_start', json=payload ) 
-                elif ctrl == 'stop':
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_stop', json=payload ) 
-                else:
-                    logging.debug('Unknown teslaEV_Charging command passed for vehicle id (start, stop) {}: {}'.format(id, ctrl))
-                    return(False)
+                payload = {'lat':self.carInfo[id]['drive_state']['latitude'],
+                           'lon':self.carInfo[id]['drive_state']['longitude']}        
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/trigger_homelink', json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
-                logging.error('Exception teslaEV_AteslaEV_ChargingutoCondition for vehicle id {}: {}'.format(id, e))
+                logging.error('Exception teslaEV_HomeLink for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
                 self.tokeninfo = self.teslaApi.tesla_refresh_token( )
                 return(False)
 
-
-    def teslaEV_SetChargeLimit (self, id, limit):
-        logging.debug('teslaEV_SetChargeLimit for {}'.format(id))
-       
-        if limit > 100 or limit < 0:
-            logging.error('Invalid seat heat level passed (0-100%) : {}'.format(limit))
-            return(False)
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                payload = { 'percent':limit}    
-                s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', json=payload ) 
-                temp = r.json()
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_SetChargeLimit for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(False)
-
-    def teslaEV_SetChargeLimitAmps (self, id, limit):
-        logging.debug('teslaEV_SetChargeLimitAmps for {}'.format(id))
-       
-        if limit > 300 or limit < 0:
-            logging.error('Invalid seat heat level passed (0-300A) : {}'.format(limit))
-            return(False)
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                payload = { 'charging_amps': int(limit)}    
-                s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charging_amps', json=payload ) 
-                temp = r.json()
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_SetChargeLimitAmps for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
-                return(False)
+    
+   
