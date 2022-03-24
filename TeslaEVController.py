@@ -108,7 +108,7 @@ class TeslaEVController(udi_interface.Node):
                     nodeName = vehicleInfo['response']['display_name']
                     nodeAdr = 'vehicle'+str(vehicle+1)
                     if not self.poly.getNode(nodeAdr):
-                        node = teslaEV_StatusNode(self.poly, self.address, 'evstatus', nodeName, vehicleId, self.TEV)
+                        node = teslaEV_StatusNode(self.poly, self.address, nodeAdr, nodeName, vehicleId, self.TEV)
                         self.poly.addNode(node)             
                         self.wait_for_node_done()                    
             else:
@@ -122,7 +122,7 @@ class TeslaEVController(udi_interface.Node):
                     
                     nodeAdr = 'vehicle'+str(vehicle+1)
                     if not self.poly.getNode(nodeAdr):
-                        node = teslaEV_StatusNode(self.poly, self.address, 'evstatus', nodeName, vehicleId, self.TEV)
+                        node = teslaEV_StatusNode(self.poly, self.address, nodeAdr, nodeName, vehicleId, self.TEV)
                         self.poly.addNode(node)             
                         self.wait_for_node_done()           
             self.nodeDefineDone = True
