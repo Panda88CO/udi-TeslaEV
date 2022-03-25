@@ -17,7 +17,7 @@ except ImportError:
 
 
 #import logging
-class teslaCloudApi():
+class teslaCloudApi(object):
 
     def __init__(self):
         logging.debug('teslaCloudApi')
@@ -39,38 +39,41 @@ class teslaCloudApi():
                 dataFile = open('./refreshToken.txt', 'r')
                 self.Rtoken = dataFile.read()
                 dataFile.close()
-                logging.info('Rtoken: {}'.format(self.Rtoken) )
+                #logging.info('Rtoken: {}'.format(self.Rtoken) )
         except Exception as e:
             logging.error('Exception storeDaysData: '+  str(e))         
             logging.error ('Failed to write ./refreshToken.txt')
             self.Rtoken = ''
         #self.running = False
         #self.teslaAuth = TPWauth()
-        self.tokeninfo = self.tesla_refresh_token()
-        logging.info('tokeninfo: {}'.format(self.tokeninfo))
+        self.tokenInfo = self.tesla_refresh_token()
+        #logging.info('tokenInfo: {}'.format(self.tokenInfo))
 
-
+    '''
     def isNodeServerUp(self):
         return( self.tokenInfo != None)
-            
+    '''
+
+    def isConnectedToTesla(self):
+        return( self.tokenInfo != None)     
 
     def teslaCloudConnect(self ):
         logging.debug('teslaCloudConnect')
-        self.tokeninfo = self.tesla_refresh_token( )
-        return(self.tokeninfo)
+        self.tokenInfo = self.tesla_refresh_token( )
+        return(self.tokenInfo)
 
 
     def __teslaGetToken(self):
-        if self.tokeninfo:
+        if self.tokenInfo:
             dateNow = time.time()
-            tokenExpires = self.tokeninfo['created_at'] + self.tokeninfo['expires_in']-self.tokenExpMargin
+            tokenExpires = self.tokenInfo['created_at'] + self.tokenInfo['expires_in']-self.tokenExpMargin
             if dateNow > tokenExpires:
                 logging.info('Renewing token')
-                self.tokeninfo = self.tesla_refresh_token()
+                self.tokenInfo = self.tesla_refresh_token()
         else:
             logging.error('New Refresh Token required - please generate  New Token')
 
-        return(self.tokeninfo)
+        return(self.tokenInfo)
 
 
     def teslaConnect(self):
@@ -126,7 +129,7 @@ class teslaCloudApi():
                     dataFile = open('./refreshToken.txt', 'w')
                     dataFile.write( self.Rtoken)
                     dataFile.close()
-                    self.tokeninfo = S
+                    self.tokenInfo = S
 
                 except  Exception as e:
                     logging.error('Exception __tesla_refersh_token: ' + str(e))
@@ -135,6 +138,6 @@ class teslaCloudApi():
                     pass
             time.sleep(1)
             '''
-        logging.debug('tesla_refresh_token: {}'.format(S))
+        #logging.debug('tesla_refresh_token: {}'.format(S))
         return S
 

@@ -23,7 +23,7 @@ except ImportError:
 class teslaEV_StatusNode(udi_interface.Node):
 
     def __init__(self, polyglot, primary, address, name, id, TEV):
-        super(teslaEV_StatusNode, self).__init__(polyglot, primary, address, name)
+        super().__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.ISYforced = False
         self.id = id
@@ -31,7 +31,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.primary = primary
         self.address = address
         self.name = name
-        self.hb = 0
+        self.nodeReady = False
 
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
@@ -44,25 +44,42 @@ class teslaEV_StatusNode(udi_interface.Node):
     def wait_for_node_done(self):
         while len(self.n_queue) == 0:
             time.sleep(0.1)
+            logging.debug('wait_for_node_done')
         self.n_queue.pop()
 
 
-    def start(self):                
+    def start(self):       
         logging.info('Start Tesla EV Status Node for {}'.format(self.id)) 
         tmpStr = re.findall('[0-9]+', self.address)
-        nbrStr = tmpStr.pop()
+        self.nbrStr = tmpStr.pop()
+        logging.info('StatusNode Start: {}'.format(self.nbrStr))
+        self.setDriver('ST', 1)
 
-        nodeAdr = 'climate'+nbrStr
-        if not self.poly.getNode(nodeAdr):
-            climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV climate Info', self.id, self.TEV )
+        self.nodeReady = True
+        self.createSubNodes()
+
         
-        nodeAdr = 'charge'+nbrStr
+  
+
+    def createSubNodes(self):
+        logging.debug('Creating sub nodes for {}'.format(self.id))
+        nodeAdr = 'climate'+self.nbrStr
         if not self.poly.getNode(nodeAdr):
-            chargeNode = teslaEV_ChargeNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.id, self.TEV )
+            logging.info('Creating ClimateNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV climate Info',  self.id ))
+            self.climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV climate Info', self.id, self.TEV )
+            self.poly.addNode(self.climateNode)             
+            self.wait_for_node_done()   
+          
+        nodeAdr = 'charge'+self.nbrStr
+        if not self.poly.getNode(nodeAdr):
+            logging.info('Creating ChargingNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV Charging Info',  self.id ))
+            self.chargeNode = teslaEV_ChargeNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.id, self.TEV )
+            self.poly.addNode(self.chargeNode)             
+            self.wait_for_node_done()   
         
-        while not self.TEV.systemReady:
-            time.sleep(1)
-        self.updateISYdrivers('all')
+
+    def nodesReady(self):
+        return(self.climateNode.climateNodeReady() and self.chargeNode.chargeNodeReady() and self.nodeReady )
 
     def stop(self):
         logging.debug('stop - Cleaning up')
@@ -79,9 +96,17 @@ class teslaEV_StatusNode(udi_interface.Node):
         else:
             return(0)
     
-    def updateISYdrivers(self):
 
-        if self.TEV.systemReady:
+    def poll (self):    
+        logging.info('Status Node Poll for {}'.format(self.id))        
+        self.TEV.teslaEV_GetInfo(self.id)
+        self.updateISYdrivers()
+
+
+    def updateISYdrivers(self):
+        
+        if self.TEV.isConnectedToEV():
+            self.TEV.teslaEV_GetInfo(self.id)
             temp = {}
             logging.debug('StatusNode updateISYdrivers')
             logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.id)))
@@ -90,10 +115,10 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.id)))
             logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.id)))
             self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.id)))
-            logging.debug('GV4: {}'.format(self.TEV.getTEV_onLine(self.id)))
-            self.setDriver('GV4', self.TEV.getTEV_onLine(self.id))
+            logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.id)))
+            self.setDriver('GV4', self.TEV.teslaEV_GetOnlineState(self.id))
             logging.debug('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.id)))
-            self.setDriver('GV5', self.state2ISY(self.TEV.teslaEV_GetOnlineState(self.id)))
+            self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.id)))
             logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.id)))
             temp = self.TEV.teslaEV_GetWindoStates(self.id)
             self.setDriver('GV6', temp['FrontLeft'])
@@ -152,18 +177,18 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     drivers = [
             {'driver': 'ST', 'value': 0, 'uom': 2},
-            {'driver': 'GV1', 'value': 0, 'uom': 25},  #center_display_state
-            {'driver': 'GV2', 'value': 0, 'uom': 25},  #homelink_nearby
-            {'driver': 'GV3', 'value': 0, 'uom': 25},  #locked
+            {'driver': 'GV1', 'value': 99, 'uom': 25},  #center_display_state
+            {'driver': 'GV2', 'value': 99, 'uom': 25},  #homelink_nearby
+            {'driver': 'GV3', 'value': 99, 'uom': 25},  #locked
             {'driver': 'GV4', 'value': 0, 'uom': 25},  #odometer
-            {'driver': 'GV5', 'value': 0, 'uom': 25},  #state (on line)
-            {'driver': 'GV6', 'value': 0, 'uom': 25},  #fd_window
-            {'driver': 'GV7', 'value': 0, 'uom': 25},  #fp_window
-            {'driver': 'GV8', 'value': 0, 'uom': 25},  #rd_window
-            {'driver': 'GV9', 'value': 0, 'uom': 25},  #rp_window
+            {'driver': 'GV5', 'value': 99, 'uom': 25},  #state (on line)
+            {'driver': 'GV6', 'value': 99, 'uom': 25},  #fd_window
+            {'driver': 'GV7', 'value': 99, 'uom': 25},  #fp_window
+            {'driver': 'GV8', 'value': 99, 'uom': 25},  #rd_window
+            {'driver': 'GV9', 'value': 99, 'uom': 25},  #rp_window
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
-            {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
-            {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
+            {'driver': 'GV11', 'value': 99, 'uom': 25}, #trunk
+            {'driver': 'GV12', 'value':99, 'uom': 25}, #frunk
             ]
 
 

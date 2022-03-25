@@ -15,25 +15,31 @@ import time
 class teslaEV_ClimateNode(udi_interface.Node):
 
     def __init__(self, polyglot, primary, address, name, id,  TEV):
-        super(teslaEV_ClimateNode, self).__init__(polyglot, primary, address, name)
-        logging.info('_init_ Tesla Power Wall Generator Status Node')
+        super().__init__(polyglot, primary, address, name)
+        logging.info('_init_ Tesla ClimateNode Status Node')
         self.ISYforced = False
         self.TEV = TEV
         self.id = id
         self.address = address 
         self.name = name
+        self.nodeReady = False
 
-
-        polyglot.subscribe(polyglot.START, self.start, address)
+        #polyglot.subscribe(polyglot.START, self.start, address)
         
     def start(self):                
-        logging.debug('Start Tesla Power Wall Generator Node')  
-        while not self.TEV.systemReady:
-            time.sleep(1)
-        self.updateISYdrivers('all')
+        logging.debug('Start TeslaEV Climate Node')  
+        self.setDriver('ST', 1)
+        self.nodeReady = True
 
     def stop(self):
         logging.debug('stop - Cleaning up')
+    
+    def climateNodeReady (self):
+        return(self.nodeReady )
+    
+    def poll(self):
+        logging.debug('Climate node {}'.format(self.id) )
+        self.updateISYdrivers()
 
     def bool2ISY(self, bool):
         if bool == True:
@@ -41,9 +47,9 @@ class teslaEV_ClimateNode(udi_interface.Node):
         else:
             return(0)
 
-    def updateISYdrivers(self, level):
+    def updateISYdrivers(self):
         logging.debug('Climate updateISYdrivers')
-        if self.TEV.systemReady:
+        if self.TEV.isConnectedToEV():
             logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCabinTemp(self.id)))
             self.setDriver('GV1', self.TEV.teslaEV_GetCabinTemp(self.id))
             logging.debug('CLITEMP: {} '.format(self.TEV.teslaEV_GetOutdoorTemp(self.id)))
@@ -78,7 +84,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
         self.TEV.teslaEV_GetInfo(self.id)
-        self.updateISYdrivers('all')
+        self.updateISYdrivers()
  
  
     def evWindows (self, command):
@@ -128,16 +134,16 @@ class teslaEV_ClimateNode(udi_interface.Node):
             {'driver': 'CLITEMP', 'value': 0, 'uom': 4},  #outside_temp
             {'driver': 'GV3', 'value': 0, 'uom': 4},  #driver_temp_setting
             {'driver': 'GV4', 'value': 0, 'uom': 4},  #passenger_temp_setting
-            {'driver': 'GV5', 'value': 0, 'uom': 25},  #seat_heater_left
-            {'driver': 'GV6', 'value': 0, 'uom': 25},  #seat_heater_right
-            {'driver': 'GV7', 'value': 0, 'uom': 25},  #seat_heater_rear_left
-            {'driver': 'GV8', 'value': 0, 'uom': 25},  #seat_heater_rear_center
-            {'driver': 'GV9', 'value': 0, 'uom': 25},  #seat_heater_rear_right
-            {'driver': 'GV10', 'value': 0, 'uom': 25}, #is_auto_conditioning_on
-            {'driver': 'GV12', 'value': 0, 'uom': 25}, #is_preconditioning
+            {'driver': 'GV5', 'value': 99, 'uom': 25},  #seat_heater_left
+            {'driver': 'GV6', 'value': 99, 'uom': 25},  #seat_heater_right
+            {'driver': 'GV7', 'value': 99, 'uom': 25},  #seat_heater_rear_left
+            {'driver': 'GV8', 'value': 99, 'uom': 25},  #seat_heater_rear_center
+            {'driver': 'GV9', 'value': 99, 'uom': 25},  #seat_heater_rear_right
+            {'driver': 'GV10', 'value': 99, 'uom': 25}, #is_auto_conditioning_on
+            {'driver': 'GV11', 'value': 99, 'uom': 25}, #is_preconditioning
             {'driver': 'GV12', 'value': 0, 'uom': 4}, #max_avail_temp
             {'driver': 'GV13', 'value': 0, 'uom': 4}, #min_avail_temp   
-            {'driver': 'GV14', 'value': 0, 'uom': 25}, #Steering Wheel Heat
+            {'driver': 'GV14', 'value': 99, 'uom': 25}, #Steering Wheel Heat
          
             ]
 

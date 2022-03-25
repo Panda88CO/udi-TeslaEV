@@ -18,25 +18,32 @@ except ImportError:
 class teslaEV_ChargeNode(udi_interface.Node):
 
     def __init__(self, polyglot, primary, address, name, id,  TEV):
-        super(teslaEV_ChargeNode, self).__init__(polyglot, primary, address, name)
-        logging.info('_init_ Tesla Power Wall Status Node')
+        super().__init__(polyglot, primary, address, name)
+        logging.info('_init_ Tesla Charge Node')
         self.ISYforced = False
         self.id = id
         self.TEV = TEV
         self.address = address 
         self.name = name
-
+        self.nodeReady = False
         polyglot.subscribe(polyglot.START, self.start, address)
         
     def start(self):                
         logging.debug('Start Tesla EV charge Node: {}'.format(self.id))  
-        while not self.TEV.systemReady:
-            time.sleep(1)
-        self.updateISYdrivers('all')
+        self.setDriver('ST', 1)
+
+        self.nodeReady = True
 
     def stop(self):
         logging.debug('stop - Cleaning up')
     
+    def poll(self):
+        logging.debug('Charge node {}'.format(self.id) )
+        self.updateISYdrivers()
+    
+    def chargeNodeReady (self):
+        return(self.nodeReady )
+   
     def bool2ISY(self, bool):
         if bool == True:
             return(1)
@@ -46,19 +53,23 @@ class teslaEV_ChargeNode(udi_interface.Node):
     def latch2ISY(self, state):
         if state == 'Engaged':
             return(1)
+        elif state == '<invalid>':
+            return(99)
         else:
             return(0)
 
     def state2ISY(self,state): # Still TBD - 
         if state == 'Complete':
             return(1)
+        elif state == 'Stopped':
+            return(1)
         else:
             return(0)  
 
 
-    def updateISYdrivers(self, id):
+    def updateISYdrivers(self):
         logging.debug('ChargeNode updateISYdrivers')
-        if self.TEV.systemReady:
+        if self.TEV.isConnectedToEV():
             logging.debug('GV1: {} '.format(self.TEV.teslaEV_FastChargerPresent(self.id)))
             self.setDriver('GV1', self.bool2ISY(self.TEV.teslaEV_FastChargerPresent(self.id)))
             logging.debug('GV2: {} '.format(self.TEV.teslaEV_ChargePortOpen(self.id)))
@@ -87,7 +98,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
         self.TEV.teslaEV_GetInfo(self.id)
-        self.updateISYdrivers()
+        self.updateISYdrivers(self.id )
      
 
     def evChargePort (self, command):
@@ -114,17 +125,15 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     drivers = [
             {'driver': 'ST', 'value': 0, 'uom': 2},
-            {'driver': 'GV1', 'value': 0, 'uom': 25},  #fast_charger_present
-            {'driver': 'GV2', 'value': 0, 'uom': 25},  #charge_port_door_open
-            {'driver': 'GV3', 'value': 0, 'uom': 25},  #charge_port_latch
+            {'driver': 'GV1', 'value': 99, 'uom': 25},  #fast_charger_present
+            {'driver': 'GV2', 'value': 99, 'uom': 25},  #charge_port_door_open
+            {'driver': 'GV3', 'value': 99, 'uom': 25},  #charge_port_latch
             {'driver': 'BATLVL', 'value': 0, 'uom': 51},  #battery_level
             {'driver': 'GV5', 'value': 0, 'uom': 1},  #charge_current_request_max
-            {'driver': 'GV6', 'value': 0, 'uom': 25},  #charging_state
-            {'driver': 'GV8', 'value': 0, 'uom': 25},  #charge_enable_request
+            {'driver': 'GV6', 'value': 99, 'uom': 25},  #charging_state
             {'driver': 'GV7', 'value': 0, 'uom': 33},  #charger_power
+            {'driver': 'GV8', 'value': 99, 'uom': 25},  #charge_enable_request
             {'driver': 'GV9', 'value': 0, 'uom': 51},  #bat charge_limit_soc
-
-
             ]
             
 
