@@ -52,7 +52,7 @@ class TeslaEVController(udi_interface.Node):
 
         self.connected = False
         self.nodeDefineDone = False
-
+        self.statusNodeReady = False
 
         self.poly.ready()
         self.poly.addNode(self)
@@ -130,9 +130,10 @@ class TeslaEVController(udi_interface.Node):
                 nodeAdr = 'vehicle'+str(vehicle+1)
                 if not self.poly.getNode(nodeAdr):
                     logging.info('Creating Status node for {}'.format(nodeAdr))
-                    node = teslaEV_StatusNode(self.poly, self.address, nodeAdr, nodeName, vehicleId, self.TEV)
-                    self.poly.addNode(node)             
+                    self.statusNode = teslaEV_StatusNode(self.poly, self.address, nodeAdr, nodeName, vehicleId, self.TEV)
+                    self.poly.addNode(self.statusNode )             
                     self.wait_for_node_done()     
+                    self.statusNodeReady = True
                     
         self.longPoll()
 
@@ -252,7 +253,7 @@ class TeslaEVController(udi_interface.Node):
             logging.info('Waiting for system/nodes to initialize')
 
     def shortPoll(self):
-        logging.info('Tesla EV Controller shortPoll')
+        logging.info('Tesla EV Controller shortPoll(HeartBeat)')
         self.heartbeat()    
         #if self.TEV.pollSystemData('critical'):
         #    for node in self.poly.nodes():
@@ -263,11 +264,14 @@ class TeslaEVController(udi_interface.Node):
         
     def longPoll(self):
         logging.info('Tesla EV  Controller longPoll - connected = {}'.format(self.TEV.isConnectedToEV()))
-  
-        for node in self.poly.nodes():
-            #if node != 'controller'    
-            logging.debug('Controller poll  node {}'.format(node) )
-            node.poll()
+        if self.statusNode.subnodesReady() and self.statusNodeReady:
+            for node in self.poly.nodes():
+                #if node != 'controller'    
+                logging.debug('Controller poll  node {}'.format(node) )
+                node.poll()
+        else:
+            logging.info('Waiting for all nodes to be created')
+
 
     def poll(self): # dummey poll function 
         pass
@@ -291,13 +295,15 @@ class TeslaEVController(udi_interface.Node):
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        if self.TEV.pollSystemData('all'):
-            self.updateISYdrivers('all')
-            #self.reportDrivers()
-            for node in self.nodes:
-                #logging.debug('Node : ' + node)
-                if node != self.address :
-                    self.nodes[node].longPoll()
+
+        self.longPoll()
+        #if self.TEV.pollSystemData('all'):
+        #    self.updateISYdrivers('all')
+        #    #self.reportDrivers()
+        #    for node in self.nodes:
+        #        #logging.debug('Node : ' + node)
+        #        if node != self.address :
+        #            self.nodes[node].longPoll()
  
     id = 'controller'
     commands = { 'UPDATE': ISYupdate }

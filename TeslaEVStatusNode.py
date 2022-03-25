@@ -31,7 +31,9 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.primary = primary
         self.address = address
         self.name = name
-        self.nodeReady = False
+        self.statusNodeReady = False
+        self.climateNodeReady = False
+        self.chargeNodeReady = False
 
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
@@ -55,7 +57,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.info('StatusNode Start: {}'.format(self.nbrStr))
         self.setDriver('ST', 1)
 
-        self.nodeReady = True
+        self.statusNodeReady = True
         self.createSubNodes()
 
         
@@ -69,17 +71,18 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV climate Info', self.EVid, self.TEV )
             self.poly.addNode(self.climateNode)             
             self.wait_for_node_done()   
-          
+            self.climateNodeReady =True
+
         nodeAdr = 'charge'+self.nbrStr
         if not self.poly.getNode(nodeAdr):
             logging.info('Creating ChargingNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV Charging Info',  self.EVid ))
             self.chargeNode = teslaEV_ChargeNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.EVid, self.TEV )
             self.poly.addNode(self.chargeNode)             
             self.wait_for_node_done()   
-        
+            self.chargeNodeReady = True
 
-    def nodesReady(self):
-        return(self.climateNode.climateNodeReady() and self.chargeNode.chargeNodeReady() and self.nodeReady )
+    def subnodesReady(self):
+        return(self.climateNodeReady and self.chargeNodeReady )
 
     def stop(self):
         logging.debug('stop - Cleaning up')
