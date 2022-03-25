@@ -110,9 +110,13 @@ class teslaCloudApi(object):
             if 'refresh_token' in S:
                 self.Rtoken = S['refresh_token']
                 S['created_at'] = dateNow
+                dataFile = open('./refreshToken.txt', 'w')
+                dataFile.write( self.Rtoken)
+                dataFile.close()
 
             else:
                 self.Rtoken = None
+
             '''
             data = {}
             data['grant_type'] = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
