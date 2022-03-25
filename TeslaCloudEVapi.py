@@ -500,7 +500,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_HomeLinkNearby(self,id):
-        3logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
+        #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
         return(self.carInfo[id]['vehicle_state']['homelink_nearby'])
 
     def teslaEV_GetLockState(self,id):
