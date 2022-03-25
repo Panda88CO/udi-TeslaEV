@@ -20,6 +20,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name, id,  TEV):
         super().__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Charge Node')
+        self.poly = polyglot
         self.ISYforced = False
         self.EVid = id
         self.TEV = TEV
@@ -116,11 +117,12 @@ class teslaEV_ChargeNode(udi_interface.Node):
         logging.debug('evSetCurrentChargeLimit called')
 
     id = 'evcharge'
+
     commands = { 'UPDATE': ISYupdate, 
-                 'CHARGEPORT' : evChargePort,
-                 'CHARGECTRL' : evChargeControl,
-                 'BATERCENT' : evSetBatteryChargeLimit,
-                 'CHARGEAMPS' : evSetCurrentChargeLimit,
+                    'CHARGEPORT' : evChargePort,
+                    'CHARGECTRL' : evChargeControl,
+                    'BATERCENT' : evSetBatteryChargeLimit,
+                    'CHARGEAMPS' : evSetCurrentChargeLimit,
 
                 }
 

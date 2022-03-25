@@ -17,6 +17,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name, id,  TEV):
         super().__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla ClimateNode Status Node')
+        self.poly = polyglot
         self.ISYforced = False
         self.TEV = TEV
         self.EVid = id
@@ -145,7 +146,6 @@ class teslaEV_ClimateNode(udi_interface.Node):
             {'driver': 'GV12', 'value': 0, 'uom': 4}, #max_avail_temp
             {'driver': 'GV13', 'value': 0, 'uom': 4}, #min_avail_temp   
             {'driver': 'GV14', 'value': 99, 'uom': 25}, #Steering Wheel Heat
-         
             ]
 
 
