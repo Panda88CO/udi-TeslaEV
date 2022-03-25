@@ -62,7 +62,7 @@ class teslaCloudEVapi(object):
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
                 carInfo = r.json()
                 self.carInfo[id] =carInfo['response']
-                logging.debug('carinf : {}'.format(self.carInfo))
+                #logging.debug('carinf : {}'.format(self.carInfo))
                 return(self.carInfo[id])
 
             except Exception as e:
