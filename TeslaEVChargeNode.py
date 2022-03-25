@@ -31,7 +31,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
         
     def start(self):                
         logging.debug('Start Tesla EV charge Node: {}'.format(self.EVid))  
-        self.poly.setDriver('ST', 1)
+        self.setDriver('ST', 1)
 
         self.nodeReady = True
 
