@@ -1,6 +1,6 @@
 
-from datetime import datetime
-from tempfile import tempdir
+#from datetime import datetime
+#from tempfile import tempdir
 import requests
 import time
 from requests_oauth2 import OAuth2BearerToken
@@ -16,19 +16,23 @@ except ImportError:
 
 from TeslaCloudApi import teslaCloudApi
 
-class teslaCloudEVapi(teslaCloudApi):
+class teslaCloudEVapi(object):
     def __init__(self):
         logging.debug('teslaCloudEVapi')
         self.teslaApi = teslaCloudApi()
+
         self.TESLA_URL = self.teslaApi.TESLA_URL
         self.API = self.teslaApi.API
 
-        if self.teslaApi:
+        if self.teslaApi.isConnectedToTesla():
             self.connnected = True
         else:
             self.connected = False
+
         self.carInfo = {}
 
+    def isConnectedToEV(self):
+       return(self.teslaApi.isConnectedToTesla())
 
     def teslaEV_GetIdList(self ):
         logging.debug('teslaEV_GetVehicleIdList:')
@@ -46,7 +50,7 @@ class teslaCloudEVapi(teslaCloudApi):
                 logging.error('Exception teslaEV_GetVehicleIdList: ' + str(e))
                 logging.error('Error getting vehicle list')
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(None)
 
     def teslaEV_GetInfo(self, id):
@@ -57,12 +61,15 @@ class teslaCloudEVapi(teslaCloudApi):
                 s.auth = OAuth2BearerToken(S['access_token'])            
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
                 carInfo = r.json()
-                return(carInfo['response'])
+                self.carInfo[id] =carInfo['response']
+                logging.debug('carinf : {}'.format(self.carInfo))
+                return(self.carInfo[id])
+
             except Exception as e:
                 logging.error('Exception teslaGetSiteInfo: {}'.format(e))
                 logging.error('Error getting data from vehicle id: {}'.format(id))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaAuth.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(None)
 
     def teslaEV_GetLocation(self, id):
@@ -113,7 +120,7 @@ class teslaCloudEVapi(teslaCloudApi):
         logging.debug('teslaEV_MaxChargeCurrent for {}'.format(id))
         return( self.carInfo[id]['charge_state']['charge_current_request_max'])                
 
-    def teslaEV_MaxChargeCurrent(self, id):
+    def teslaEV_ChargeState(self, id):
         logging.debug('teslaEV_GetChargingState for {}'.format(id))
         return( self.carInfo[id]['charge_state']['charging_state'])  
 
@@ -123,7 +130,10 @@ class teslaCloudEVapi(teslaCloudApi):
 
     def teslaEV_GetChargingPower(self, id):
         logging.debug('teslaEV_GetChargingPower for {}'.format(id))
-        return(round(self.carInfo[id]['charge_state']['charger_power'],1)) 
+        if self.carInfo[id]['charge_state']['charger_power']:
+            return(round(self.carInfo[id]['charge_state']['charger_power'],1)) 
+        else:
+            return(0)
 
     def teslaEV_GetBatteryMaxCharge(self, id):
         logging.debug('teslaEV_GetBatteryMaxCharge for {}'.format(id))
@@ -150,7 +160,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_ChargePort for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -174,7 +184,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_AteslaEV_ChargingutoCondition for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -195,7 +205,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_SetChargeLimit for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
     def teslaEV_SetChargeLimitAmps (self, id, limit):
@@ -215,7 +225,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_SetChargeLimitAmps for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -247,12 +257,18 @@ class teslaCloudEVapi(teslaCloudApi):
         return(temp)
 
     def teslaEV_GetCabinTemp(self, id):
-        logging.debug('teslaEV_GetCabinTemp for {}'.format(id))
-        return(round(self.carInfo[id]['climate_state']['inside_temp'],1)) 
+        logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(id, self.carInfo[id]['climate_state']['inside_temp'] ))
+        if self.carInfo[id]['climate_state']['inside_temp']:
+            return(round(self.carInfo[id]['climate_state']['inside_temp'],1)) 
+        else:
+            return(-99)
 
     def teslaEV_GetOutdoorTemp(self, id):
-        logging.debug('teslaEV_GetOutdoorTemp for {}'.format(id))
-        return(round(self.carInfo[id]['climate_state']['outside_temp'],1)) 
+        logging.debug('teslaEV_GetOutdoorTemp for {} = {}'.format(id, self.carInfo[id]['climate_state']['outside_temp']))
+        if self.carInfo[id]['climate_state']['outside_temp']:
+            return(round(self.carInfo[id]['climate_state']['outside_temp'],1)) 
+        else:
+            return(-99)
 
     def teslaEV_GetLeftTemp(self, id):
         logging.debug('teslaEV_GetLeftTemp for {}'.format(id))
@@ -274,7 +290,10 @@ class teslaCloudEVapi(teslaCloudApi):
 
     def teslaEV_AutoConditioningRunning(self, id):
         logging.debug('teslaEV_AutoConditioningRunning for {}'.format(id))
-        return( self.carInfo[id]['climate_state']['is_auto_conditioning_on']) 
+        if self.carInfo[id]['climate_state']['is_auto_conditioning_on']:
+            return( self.carInfo[id]['climate_state']['is_auto_conditioning_on']) 
+        else:
+            return(99)
 
     def teslaEV_PreConditioningEnabled(self, id):
         logging.debug('teslaEV_PreConditioningEnabled for {}'.format(id))
@@ -313,7 +332,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_Windows for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -333,7 +352,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_SunRoof for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
     
 
@@ -357,7 +376,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_AutoCondition for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -375,7 +394,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_AutoCondition for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -400,7 +419,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_AutoCondition for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -425,7 +444,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_SetSeatHeating for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -449,7 +468,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_SteeringWheelHeat for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -469,12 +488,14 @@ class teslaCloudEVapi(teslaCloudApi):
         temp['trunk'] = self.carInfo[id]['vehicle_state']['rt']
         temp['locked'] = self.carInfo[id]['vehicle_state']['locked']
         temp['odometer'] = self.carInfo[id]['vehicle_state']['odometer']
-        temp['sun_roof_percent_open'] = self.carInfo[id]['sun_roof_percent_open']
+        temp['sun_roof_percent_open'] = self.carInfo[id]['vehicle_state']['sun_roof_percent_open']
         temp['state'] = self.carInfo[id]['state']
         return(temp)
 
     def teslaEV_GetCenterDisplay(self,id):
+
         logging.debug('teslaEV_GetCenterDisplay: for {}'.format(id))
+        logging.debug('Car info : {}'.format(self.carInfo))
         return(self.carInfo[id]['vehicle_state']['center_display_state'])
 
 
@@ -505,7 +526,8 @@ class teslaCloudEVapi(teslaCloudApi):
 
     def teslaEV_GetSunRoofState(self,id):
         logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
-        return(round(self.carInfo[id]['sun_roof_percent_open'], 0))
+        return(round(self.carInfo[id]['vehicle_state']['sun_roof_percent_open']))
+
 
     def teslaEV_GetTrunkState(self,id):
         logging.debug('teslaEV_GetTrunkState: for {}'.format(id))
@@ -531,7 +553,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_FlashLight for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(None)
 
 
@@ -558,7 +580,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_Wake for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(None)
 
 
@@ -575,7 +597,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_HonkHorn for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -592,7 +614,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -616,7 +638,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
 
@@ -641,7 +663,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(None)
 
 
@@ -659,7 +681,7 @@ class teslaCloudEVapi(teslaCloudApi):
             except Exception as e:
                 logging.error('Exception teslaEV_HomeLink for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
-                self.tokeninfo = self.teslaApi.tesla_refresh_token( )
+                self.teslaApi.tesla_refresh_token( )
                 return(False)
 
     
