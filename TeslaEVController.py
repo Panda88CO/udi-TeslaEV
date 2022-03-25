@@ -26,7 +26,7 @@ NODES_DEBUG = False
 
 class TeslaEVController(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
-        super().__init__(polyglot, primary, address, name)
+        super(TeslaEVController, self).__init__(polyglot, primary, address, name)
         self.poly = polyglot
 
         logging.info('_init_ Tesla EV Controller - 1')
@@ -265,7 +265,7 @@ class TeslaEVController(udi_interface.Node):
     def longPoll(self):
         logging.info('Tesla EV  Controller longPoll - connected = {}'.format(self.TEV.isConnectedToEV()))
         if self.statusNode.subnodesReady() and self.statusNodeReady:
-            for node in self.poly.nodes():
+            for node in self.nodes():
                 #if node != 'controller'    
                 logging.debug('Controller poll  node {}'.format(node) )
                 node.poll()

@@ -15,7 +15,7 @@ import time
 class teslaEV_ClimateNode(udi_interface.Node):
 
     def __init__(self, polyglot, primary, address, name, id,  TEV):
-        super().__init__(polyglot, primary, address, name)
+        super(teslaEV_ClimateNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla ClimateNode Status Node')
         self.poly = polyglot
         self.ISYforced = False
@@ -29,7 +29,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         
     def start(self):                
         logging.debug('Start TeslaEV Climate Node')  
-        self.poly.setDriver('ST', 1)
+        self.setDriver('ST', 1)
         self.nodeReady = True
 
     def stop(self):
@@ -53,30 +53,30 @@ class teslaEV_ClimateNode(udi_interface.Node):
         logging.debug('Climate updateISYdrivers')
         if self.TEV.isConnectedToEV():
             #logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCabinTemp(self.EVid)))
-            self.poly.setDriver('GV1', self.TEV.teslaEV_GetCabinTemp(self.EVid))
+            self.setDriver('GV1', self.TEV.teslaEV_GetCabinTemp(self.EVid))
             #logging.debug('CLITEMP: {} '.format(self.TEV.teslaEV_GetOutdoorTemp(self.EVid)))
-            self.poly.setDriver('CLITEMP', self.TEV.teslaEV_GetOutdoorTemp(self.EVid))
+            self.setDriver('CLITEMP', self.TEV.teslaEV_GetOutdoorTemp(self.EVid))
             #logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
-            self.poly.setDriver('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid))
+            self.setDriver('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid))
             #logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
-            self.poly.setDriver('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid))
+            self.setDriver('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid))
             #logging.debug('GV5-9: {}'.format(self.TEV.teslaEV_GetSeatHeating(self.EVid)))
             temp = self.TEV.teslaEV_GetSeatHeating(self.EVid)
-            self.poly.setDriver('GV5', temp['FrontLeft'])
-            self.poly.setDriver('GV6', temp['FrontRight'])
-            self.poly.setDriver('GV7', temp['RearLeft'])
-            self.poly.setDriver('GV8', temp['RearMiddle'])
-            self.poly.setDriver('GV9', temp['RearRight'])
+            self.setDriver('GV5', temp['FrontLeft'])
+            self.setDriver('GV6', temp['FrontRight'])
+            self.setDriver('GV7', temp['RearLeft'])
+            self.setDriver('GV8', temp['RearMiddle'])
+            self.setDriver('GV9', temp['RearRight'])
             #logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
-            self.poly.setDriver('GV10', self.bool2ISY( self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
+            self.setDriver('GV10', self.bool2ISY( self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
             #logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
-            self.poly.setDriver('GV11',self.bool2ISY(  self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
+            self.setDriver('GV11',self.bool2ISY(  self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
             #logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
-            self.poly.setDriver('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid))
+            self.setDriver('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid))
             #logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
-            self.poly.setDriver('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid))
+            self.setDriver('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid))
             #logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
-            self.poly.setDriver('GV14', self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)) #nned to be implemented                                                
+            self.setDriver('GV14', self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)) #nned to be implemented                                                
 
 
 

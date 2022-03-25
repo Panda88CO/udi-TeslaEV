@@ -23,7 +23,7 @@ except ImportError:
 class teslaEV_StatusNode(udi_interface.Node):
 
     def __init__(self, polyglot, primary, address, name, id, TEV):
-        super().__init__(polyglot, primary, address, name)
+        super(teslaEV_StatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.ISYforced = False
         self.EVid = id
