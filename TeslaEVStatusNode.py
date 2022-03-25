@@ -26,7 +26,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         super().__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla Power Wall Status Node')
         self.ISYforced = False
-        self.id = id
+        self.EVid = id
         self.TEV = TEV
         self.primary = primary
         self.address = address
@@ -49,7 +49,7 @@ class teslaEV_StatusNode(udi_interface.Node):
 
 
     def start(self):       
-        logging.info('Start Tesla EV Status Node for {}'.format(self.id)) 
+        logging.info('Start Tesla EV Status Node for {}'.format(self.EVid)) 
         tmpStr = re.findall('[0-9]+', self.address)
         self.nbrStr = tmpStr.pop()
         logging.info('StatusNode Start: {}'.format(self.nbrStr))
@@ -62,18 +62,18 @@ class teslaEV_StatusNode(udi_interface.Node):
   
 
     def createSubNodes(self):
-        logging.debug('Creating sub nodes for {}'.format(self.id))
+        logging.debug('Creating sub nodes for {}'.format(self.EVid))
         nodeAdr = 'climate'+self.nbrStr
         if not self.poly.getNode(nodeAdr):
-            logging.info('Creating ClimateNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV climate Info',  self.id ))
-            self.climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV climate Info', self.id, self.TEV )
+            logging.info('Creating ClimateNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV climate Info',  self.EVid ))
+            self.climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV climate Info', self.EVid, self.TEV )
             self.poly.addNode(self.climateNode)             
             self.wait_for_node_done()   
           
         nodeAdr = 'charge'+self.nbrStr
         if not self.poly.getNode(nodeAdr):
-            logging.info('Creating ChargingNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV Charging Info',  self.id ))
-            self.chargeNode = teslaEV_ChargeNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.id, self.TEV )
+            logging.info('Creating ChargingNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV Charging Info',  self.EVid ))
+            self.chargeNode = teslaEV_ChargeNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.EVid, self.TEV )
             self.poly.addNode(self.chargeNode)             
             self.wait_for_node_done()   
         
@@ -98,46 +98,48 @@ class teslaEV_StatusNode(udi_interface.Node):
     
 
     def poll (self):    
-        logging.info('Status Node Poll for {}'.format(self.id))        
-        self.TEV.teslaEV_GetInfo(self.id)
+        logging.info('Status Node Poll for {}'.format(self.EVid))        
+        self.TEV.teslaEV_GetInfo(self.EVid)
         self.updateISYdrivers()
+        self.climateNode.updateISYdrivers()
+        self.chargeNode.updateISYdrivers()
 
 
     def updateISYdrivers(self):
         
         if self.TEV.isConnectedToEV():
-            self.TEV.teslaEV_GetInfo(self.id)
+            self.TEV.teslaEV_GetInfo(self.EVid)
             temp = {}
             logging.debug('StatusNode updateISYdrivers')
-            logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.id)))
-            self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.id))
-            logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.id)))
-            self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.id)))
-            logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.id)))
-            self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.id)))
-            logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.id)))
-            self.setDriver('GV4', self.TEV.teslaEV_GetOnlineState(self.id))
-            logging.debug('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.id)))
-            self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.id)))
-            logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.id)))
-            temp = self.TEV.teslaEV_GetWindoStates(self.id)
+            #logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.EVid)))
+            self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid))
+            #logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
+            self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
+            #logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
+            self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)))
+            #logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+            self.setDriver('GV4', self.TEV.teslaEV_GetOnlineState(self.EVid))
+            #logging.debug('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+            self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+            #logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
+            temp = self.TEV.teslaEV_GetWindoStates(self.EVid)
             self.setDriver('GV6', temp['FrontLeft'])
             self.setDriver('GV7', temp['FrontRight'])
             self.setDriver('GV8', temp['RearLeft'])
             self.setDriver('GV9', temp['RearRight'])
-            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.id)))
-            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofState(self.id))
-            logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.id)))
-            self.setDriver('GV11', self.TEV.teslaEV_GetSunRoofState(self.id))
-            logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.id)))
-            self.setDriver('GV12', self.TEV.teslaEV_GetSunRoofState(self.id))
+            #logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofState(self.EVid))
+            #logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+            self.setDriver('GV11', self.TEV.teslaEV_GetSunRoofState(self.EVid))
+            #logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+            self.setDriver('GV12', self.TEV.teslaEV_GetSunRoofState(self.EVid))
         else:
             logging.debug('System not ready yet')
 
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        self.TEV.teslaEV_GetInfo(self.id)
+        self.TEV.teslaEV_GetInfo(self.EVid)
         self.updateISYdrivers()
 
     def evWakeUp (self, command):
