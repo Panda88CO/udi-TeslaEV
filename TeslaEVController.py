@@ -221,7 +221,7 @@ class TeslaEVController(udi_interface.Node):
             logging.debug('Cloud access is valid, configure....')
             self.cloudAccess = True
             self.tesla_initialize( )
-        logging.info('Rtoken: {}'.format(self.Rtoken))
+        #logging.info('Rtoken: {}'.format(self.Rtoken))
         logging.debug('done with parameter processing')
         
     def stop(self):

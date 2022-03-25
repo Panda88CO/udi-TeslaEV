@@ -16,7 +16,7 @@
   </editor>
   
   <editor id = "BOOLSTATE" > 
-     <range  uom="25" subset="0-1,99" nls="BOOLSTAT"/>
+     <range  uom="25" subset="0-1,99" nls="BOOLSTATE"/>
   </editor> 
   
   <editor id = "MILES" > 
