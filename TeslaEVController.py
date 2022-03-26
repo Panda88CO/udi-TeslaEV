@@ -54,11 +54,11 @@ class TeslaEVController(udi_interface.Node):
         self.nodeDefineDone = False
         self.statusNodeReady = False
 
+
         self.poly.ready()
         self.poly.addNode(self)
         self.wait_for_node_done()
-        self.node = self.poly.getNode(self.address)
-        self.node.setDriver('ST', 1, True, True)
+        self.setDriver('ST', 1, True, True)
 
         self.poly.setLogLevel('debug')
         logging.debug('Controller init DONE')
@@ -130,8 +130,8 @@ class TeslaEVController(udi_interface.Node):
                 nodeAdr = 'vehicle'+str(vehicle+1)
                 if not self.poly.getNode(nodeAdr):
                     logging.info('Creating Status node for {}'.format(nodeAdr))
-                    self.statusNode = teslaEV_StatusNode(self.poly, self.primary, nodeAdr, nodeName, vehicleId, self.TEV)
-                    self.poly.addNode(self.statusNode )             
+                    statusNode = teslaEV_StatusNode(self.poly, self.primary, nodeAdr, nodeName, vehicleId, self.TEV)
+                    self.poly.addNode(statusNode )             
                     self.wait_for_node_done()     
                     self.statusNodeReady = True
                     
@@ -265,10 +265,11 @@ class TeslaEVController(udi_interface.Node):
     def longPoll(self):
         logging.info('Tesla EV  Controller longPoll - connected = {}'.format(self.TEV.isConnectedToEV()))
         if self.statusNode.subnodesReady() and self.statusNodeReady:
-            for node in self.nodes():
+            for node in self.poly.nodes():
                 #if node != 'controller'    
                 logging.debug('Controller poll  node {}'.format(node) )
-                node.poll()
+                if node.ready():
+                    node.poll()
         else:
             logging.info('Waiting for all nodes to be created')
 

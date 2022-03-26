@@ -53,6 +53,25 @@ class teslaCloudEVapi(object):
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
 
+    
+    def teslaEV_UpdateInfo(self):
+            #if self.connectionEstablished:
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
+                carInfo = r.json()
+                self.carInfo = carInfo['response']
+                #logging.debug('carinf : {}'.format(self.carInfo))
+                #return()
+            except Exception as e:
+                logging.error('Exception teslaGetSiteInfo: {}'.format(e))
+                logging.error('Error getting data from vehicle id: {}'.format(id))
+                logging.error('Trying to reconnect')
+                self.teslaApi.tesla_refresh_token( )
+                return(None)
+
     def teslaEV_GetInfo(self, id):
         #if self.connectionEstablished:
         S = self.teslaApi.teslaConnect()

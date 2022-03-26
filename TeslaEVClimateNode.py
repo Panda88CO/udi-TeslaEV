@@ -14,8 +14,8 @@ import time
                
 class teslaEV_ClimateNode(udi_interface.Node):
 
-    def __init__(self, polyglot, primary, address, name, id,  TEV):
-        super(teslaEV_ClimateNode, self).__init__(polyglot, primary, address, name)
+    def __init__(self, polyglot, parent, address, name, id,  TEV):
+        super(teslaEV_ClimateNode, self).__init__(polyglot, parent, address, name)
         logging.info('_init_ Tesla ClimateNode Status Node')
         self.poly = polyglot
         self.ISYforced = False
@@ -24,7 +24,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         self.address = address 
         self.name = name
         self.nodeReady = False
-
+        #self.node = self.poly.getNode(address)
         self.poly.subscribe(polyglot.START, self.start, address)
         
     def start(self):                

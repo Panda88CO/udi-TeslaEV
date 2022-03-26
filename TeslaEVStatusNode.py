@@ -67,17 +67,17 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.debug('Creating sub nodes for {}'.format(self.EVid))
         nodeAdr = 'climate'+self.nbrStr
         if not self.poly.getNode(nodeAdr):
-            logging.info('Creating ClimateNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV climate Info',  self.EVid ))
-            self.climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV climate Info', self.EVid, self.TEV )
-            self.poly.addNode(self.climateNode)             
+            logging.info('Creating ClimateNode: {} - {} {} {} {}'.format(nodeAdr, self.address, nodeAdr,'EV climate Info',  self.EVid ))
+            climateNode = teslaEV_ClimateNode(self.poly, self.address, nodeAdr, 'EV climate Info', self.EVid, self.TEV )
+            self.poly.addNode(climateNode)             
             self.wait_for_node_done()   
             self.climateNodeReady =True
 
         nodeAdr = 'charge'+self.nbrStr
         if not self.poly.getNode(nodeAdr):
-            logging.info('Creating ChargingNode: {} - {} {} {} {}'.format(nodeAdr, self.address,nodeAdr,'EV Charging Info',  self.EVid ))
-            self.chargeNode = teslaEV_ChargeNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.EVid, self.TEV )
-            self.poly.addNode(self.chargeNode)             
+            logging.info('Creating ChargingNode: {} - {} {} {} {}'.format(nodeAdr, self.address, nodeAdr,'EV Charging Info',  self.EVid ))
+            chargeNode = teslaEV_ChargeNode(self.poly, self.address, nodeAdr, 'EV Charging Info', self.EVid, self.TEV )
+            self.poly.addNode(chargeNode)             
             self.wait_for_node_done()   
             self.chargeNodeReady = True
 
@@ -104,8 +104,8 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.info('Status Node Poll for {}'.format(self.EVid))        
         self.TEV.teslaEV_GetInfo(self.EVid)
         self.updateISYdrivers()
-        self.climateNode.updateISYdrivers()
-        self.chargeNode.updateISYdrivers()
+        #self.climateNode.updateISYdrivers()
+        #self.chargeNode.updateISYdrivers()
 
 
     def updateISYdrivers(self):
@@ -186,7 +186,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV1', 'value': 99, 'uom': 25},  #center_display_state
             {'driver': 'GV2', 'value': 99, 'uom': 25},  #homelink_nearby
             {'driver': 'GV3', 'value': 99, 'uom': 25},  #locked
-            {'driver': 'GV4', 'value': 0, 'uom': 25},  #odometer
+            {'driver': 'GV4', 'value': 0, 'uom': 110},  #odometer
             {'driver': 'GV5', 'value': 99, 'uom': 25},  #state (on line)
             {'driver': 'GV6', 'value': 99, 'uom': 25},  #fd_window
             {'driver': 'GV7', 'value': 99, 'uom': 25},  #fp_window
