@@ -23,10 +23,10 @@
       <sts>
          <st id="ST" editor="NODE_ST" />
          <st id="GV1" editor="CONSOLE" />
-         <st id="GV2" editor="BOOLSTAT" />
-         <st id="GV3" editor="BOOLSTAT" />
+         <st id="GV2" editor="BOOLSTATE" />
+         <st id="GV3" editor="BOOLSTATE" />
          <st id="GV4" editor="MILES" />
-         <st id="GV5" editor="BOOLSTAT" />
+         <st id="GV5" editor="BOOLSTATE" />
          <st id="GV6" editor="WINDOW" />
          <st id="GV7" editor="WINDOW" />
          <st id="GV8" editor="WINDOW" />

@@ -53,6 +53,25 @@ class teslaCloudEVapi(object):
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
 
+    
+    def teslaEV_UpdateInfo(self):
+            #if self.connectionEstablished:
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
+                carInfo = r.json()
+                self.carInfo = carInfo['response']
+                #logging.debug('carinf : {}'.format(self.carInfo))
+                #return()
+            except Exception as e:
+                logging.error('Exception teslaGetSiteInfo: {}'.format(e))
+                logging.error('Error getting data from vehicle id: {}'.format(id))
+                logging.error('Trying to reconnect')
+                self.teslaApi.tesla_refresh_token( )
+                return(None)
+
     def teslaEV_GetInfo(self, id):
         #if self.connectionEstablished:
         S = self.teslaApi.teslaConnect()
@@ -62,7 +81,7 @@ class teslaCloudEVapi(object):
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
                 carInfo = r.json()
                 self.carInfo[id] =carInfo['response']
-                logging.debug('carinf : {}'.format(self.carInfo))
+                #logging.debug('carinf : {}'.format(self.carInfo))
                 return(self.carInfo[id])
 
             except Exception as e:
@@ -100,43 +119,43 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_FastChargerPresent(self, id):
-        logging.debug('teslaEV_FastchargerPresent for {}'.format(id))
+        #logging.debug('teslaEV_FastchargerPresent for {}'.format(id))
         return(self.carInfo[id]['charge_state']['fast_charger_present'])
 
   
     def teslaEV_ChargePortOpen(self, id):
-        logging.debug('teslaEV_ChargePortOpen for {}'.format(id))
+        #logging.debug('teslaEV_ChargePortOpen for {}'.format(id))
         return(self.carInfo[id]['charge_state']['charge_port_door_open'])  
 
     def teslaEV_ChargePortLatched(self, id):
-        logging.debug('teslaEV_ChargePortOpen for {}'.format(id))
+        #logging.debug('teslaEV_ChargePortOpen for {}'.format(id))
         return(self.carInfo[id]['charge_state']['charge_port_latch'])             
 
     def teslaEV_GetBatteryLevel(self, id):
-        logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
         return(round(self.carInfo[id]['charge_state']['battery_level'],1)) 
 
     def teslaEV_MaxChargeCurrent(self, id):
-        logging.debug('teslaEV_MaxChargeCurrent for {}'.format(id))
+        #logging.debug('teslaEV_MaxChargeCurrent for {}'.format(id))
         return( self.carInfo[id]['charge_state']['charge_current_request_max'])                
 
     def teslaEV_ChargeState(self, id):
-        logging.debug('teslaEV_GetChargingState for {}'.format(id))
+        #logging.debug('teslaEV_GetChargingState for {}'.format(id))
         return( self.carInfo[id]['charge_state']['charging_state'])  
 
     def teslaEV_ChargingRequested(self, id):
-        logging.debug('teslaEV_ChargingRequested for {}'.format(id))
+        #logging.debug('teslaEV_ChargingRequested for {}'.format(id))
         return(  self.carInfo[id]['charge_state']['charge_enable_request'])  
 
     def teslaEV_GetChargingPower(self, id):
-        logging.debug('teslaEV_GetChargingPower for {}'.format(id))
+        #logging.debug('teslaEV_GetChargingPower for {}'.format(id))
         if self.carInfo[id]['charge_state']['charger_power']:
             return(round(self.carInfo[id]['charge_state']['charger_power'],1)) 
         else:
             return(0)
 
     def teslaEV_GetBatteryMaxCharge(self, id):
-        logging.debug('teslaEV_GetBatteryMaxCharge for {}'.format(id))
+        #logging.debug('teslaEV_GetBatteryMaxCharge for {}'.format(id))
         return(round(self.carInfo[id]['charge_state']['charge_limit_soc'],1)) 
 
 
@@ -257,29 +276,29 @@ class teslaCloudEVapi(object):
         return(temp)
 
     def teslaEV_GetCabinTemp(self, id):
-        logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(id, self.carInfo[id]['climate_state']['inside_temp'] ))
+        #logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(id, self.carInfo[id]['climate_state']['inside_temp'] ))
         if self.carInfo[id]['climate_state']['inside_temp']:
             return(round(self.carInfo[id]['climate_state']['inside_temp'],1)) 
         else:
             return(-99)
 
     def teslaEV_GetOutdoorTemp(self, id):
-        logging.debug('teslaEV_GetOutdoorTemp for {} = {}'.format(id, self.carInfo[id]['climate_state']['outside_temp']))
+        #logging.debug('teslaEV_GetOutdoorTemp for {} = {}'.format(id, self.carInfo[id]['climate_state']['outside_temp']))
         if self.carInfo[id]['climate_state']['outside_temp']:
             return(round(self.carInfo[id]['climate_state']['outside_temp'],1)) 
         else:
             return(-99)
 
     def teslaEV_GetLeftTemp(self, id):
-        logging.debug('teslaEV_GetLeftTemp for {}'.format(id))
+        #logging.debug('teslaEV_GetLeftTemp for {}'.format(id))
         return(round(self.carInfo[id]['climate_state']['driver_temp_setting'],1))        
 
     def teslaEV_GetRightTemp(self, id):
-        logging.debug('teslaEV_GetRightTemp for {}'.format(id))
+        #logging.debug('teslaEV_GetRightTemp for {}'.format(id))
         return(round(self.carInfo[id]['climate_state']['passenger_temp_setting'],1))   
 
     def teslaEV_GetSeatHeating(self, id):
-        logging.debug('teslaEV_GetSeatHeating for {}'.format(id))
+        #logging.debug('teslaEV_GetSeatHeating for {}'.format(id))
         temp = {}
         temp['FrontLeft'] = self.carInfo[id]['climate_state']['seat_heater_left']
         temp['FrontRight'] = self.carInfo[id]['climate_state']['seat_heater_right']   
@@ -289,27 +308,27 @@ class teslaCloudEVapi(object):
         return(temp)
 
     def teslaEV_AutoConditioningRunning(self, id):
-        logging.debug('teslaEV_AutoConditioningRunning for {}'.format(id))
+        #logging.debug('teslaEV_AutoConditioningRunning for {}'.format(id))
         if self.carInfo[id]['climate_state']['is_auto_conditioning_on']:
             return( self.carInfo[id]['climate_state']['is_auto_conditioning_on']) 
         else:
             return(99)
 
     def teslaEV_PreConditioningEnabled(self, id):
-        logging.debug('teslaEV_PreConditioningEnabled for {}'.format(id))
+        #logging.debug('teslaEV_PreConditioningEnabled for {}'.format(id))
         return(self.carInfo[id]['climate_state']['is_preconditioning']) 
     
     def teslaEV_MaxCabinTempCtrl(self, id):
-        logging.debug('teslaEV_MaxCabinTempCtrl for {}'.format(id))
+        #logging.debug('teslaEV_MaxCabinTempCtrl for {}'.format(id))
         return(round(self.carInfo[id]['climate_state']['max_avail_temp'],1))   
 
     def teslaEV_MinCabinTempCtrl(self, id):
-        logging.debug('teslaEV_MinCabinTempCtrl for {}'.format(id))
+        #logging.debug('teslaEV_MinCabinTempCtrl for {}'.format(id))
         return(round(self.carInfo[id]['climate_state']['min_avail_temp'],1))   
 
 
     def teslaEV_SteeringWheelHeatOn(self, id):
-        logging.debug('teslaEV_SteeringWheelHeatOn for {}'.format(id))
+        #logging.debug('teslaEV_SteeringWheelHeatOn for {}'.format(id))
         return(99)  
 
 
@@ -494,21 +513,21 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetCenterDisplay(self,id):
 
-        logging.debug('teslaEV_GetCenterDisplay: for {}'.format(id))
-        logging.debug('Car info : {}'.format(self.carInfo))
+        #logging.debug('teslaEV_GetCenterDisplay: for {}'.format(id))
+        #logging.debug('Car info : {}'.format(self.carInfo))
         return(self.carInfo[id]['vehicle_state']['center_display_state'])
 
 
     def teslaEV_HomeLinkNearby(self,id):
-        logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
+        #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
         return(self.carInfo[id]['vehicle_state']['homelink_nearby'])
 
     def teslaEV_GetLockState(self,id):
-        logging.debug('teslaEV_GetLockState: for {}'.format(id))
+        #logging.debug('teslaEV_GetLockState: for {}'.format(id))
         return(self.carInfo[id]['vehicle_state']['locked'])
 
     def teslaEV_GetWindoStates(self,id):
-        logging.debug('teslaEV_GetWindoStates: for {}'.format(id))
+        #logging.debug('teslaEV_GetWindoStates: for {}'.format(id))
         temp = {}
         temp['FrontLeft'] = self.carInfo[id]['vehicle_state']['fd_window']
         temp['FrontRight'] = self.carInfo[id]['vehicle_state']['fp_window']
@@ -517,24 +536,24 @@ class teslaCloudEVapi(object):
         return(temp)
 
     def teslaEV_GetOnlineState(self,id):
-        logging.debug('teslaEV_GetOnlineState: for {}'.format(id))
+        #logging.debug('teslaEV_GetOnlineState: for {}'.format(id))
         return(self.carInfo[id]['state'])
 
     def teslaEV_GetOdometer(self,id):
-        logging.debug('teslaEV_GetOdometer: for {}'.format(id))
+        #logging.debug('teslaEV_GetOdometer: for {}'.format(id))
         return(round(self.carInfo[id]['vehicle_state']['odometer'], 2))
 
     def teslaEV_GetSunRoofState(self,id):
-        logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
+        #logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
         return(round(self.carInfo[id]['vehicle_state']['sun_roof_percent_open']))
 
 
     def teslaEV_GetTrunkState(self,id):
-        logging.debug('teslaEV_GetTrunkState: for {}'.format(id))
+        #logging.debug('teslaEV_GetTrunkState: for {}'.format(id))
         return(self.carInfo[id]['vehicle_state']['rt'])
 
     def teslaEV_GetFrunkState(self,id):
-        logging.debug('teslaEV_GetFrunkState: for {}'.format(id))
+        #logging.debug('teslaEV_GetFrunkState: for {}'.format(id))
         return(self.carInfo[id]['vehicle_state']['ft'])        
 
 ###############
