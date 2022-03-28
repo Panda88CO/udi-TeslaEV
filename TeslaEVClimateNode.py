@@ -29,7 +29,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         
     def start(self):                
         logging.debug('Start TeslaEV Climate Node')  
-        self.setDriver('ST', 1)
+        self.setDriver('ST', 1, True, True)
         self.nodeReady = True
 
     def stop(self):
@@ -39,9 +39,10 @@ class teslaEV_ClimateNode(udi_interface.Node):
         return(self.nodeReady )
     
     def poll(self):
-        pass
-        #logging.debug('Climate node {}'.format(self.EVid) )
-        #self.updateISYdrivers()
+        
+        logging.debug('Climate node {}'.format(self.EVid) )
+        if self.nodeReady:
+            self.updateISYdrivers()
 
     def bool2ISY(self, bool):
         if bool == True:
@@ -50,38 +51,46 @@ class teslaEV_ClimateNode(udi_interface.Node):
             return(0)
 
     def updateISYdrivers(self):
-        logging.debug('Climate updateISYdrivers')
-        if self.TEV.isConnectedToEV():
-            #logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCabinTemp(self.EVid)))
-            self.setDriver('GV1', self.TEV.teslaEV_GetCabinTemp(self.EVid))
-            #logging.debug('CLITEMP: {} '.format(self.TEV.teslaEV_GetOutdoorTemp(self.EVid)))
-            self.setDriver('CLITEMP', self.TEV.teslaEV_GetOutdoorTemp(self.EVid))
-            #logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
-            self.setDriver('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid))
-            #logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
-            self.setDriver('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid))
-            #logging.debug('GV5-9: {}'.format(self.TEV.teslaEV_GetSeatHeating(self.EVid)))
-            temp = self.TEV.teslaEV_GetSeatHeating(self.EVid)
-            self.setDriver('GV5', temp['FrontLeft'])
-            self.setDriver('GV6', temp['FrontRight'])
-            self.setDriver('GV7', temp['RearLeft'])
-            self.setDriver('GV8', temp['RearMiddle'])
-            self.setDriver('GV9', temp['RearRight'])
-            #logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
-            self.setDriver('GV10', self.bool2ISY( self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
-            #logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
-            self.setDriver('GV11',self.bool2ISY(  self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
-            #logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
-            self.setDriver('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid))
-            #logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
-            self.setDriver('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid))
-            #logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
-            self.setDriver('GV14', self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)) #nned to be implemented                                                
+        logging.debug('Climate updateISYdrivers {}'.format(self.TEV.teslaEV_GetClimateInfo(self.EVid)))
 
-
-
+        #logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCabinTemp(self.EVid)))
+        tempC = self.TEV.teslaEV_GetCabinTemp(self.EVid)
+        if tempC == -99:
+            self.setDriver('GV1', 0, True, True, 25)
         else:
-            logging.debug('System not ready yet')
+            self.setDriver('GV1', self.TEV.teslaEV_GetCabinTemp(self.EVid), True, True, 4)
+        #logging.debug('CLITEMP: {} '.format(self.TEV.teslaEV_GetOutdoorTemp(self.EVid)))
+        tempC = self.TEV.teslaEV_GetOutdoorTemp(self.EVid)
+        if tempC == -99:
+            self.setDriver('CLITEMP', 0, True, True, 25)
+        else:
+            self.setDriver('CLITEMP', self.TEV.teslaEV_GetOutdoorTemp(self.EVid), True, True, 4)
+        #logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
+        self.setDriver('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid), True, True, 4)
+        #logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
+        self.setDriver('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid), True, True, 4)
+        #logging.debug('GV5-9: {}'.format(self.TEV.teslaEV_GetSeatHeating(self.EVid)))
+        temp = self.TEV.teslaEV_GetSeatHeating(self.EVid)
+        self.setDriver('GV5', temp['FrontLeft'], True, True)
+        self.setDriver('GV6', temp['FrontRight'], True, True)
+        self.setDriver('GV7', temp['RearLeft'], True, True)
+        self.setDriver('GV8', temp['RearMiddle'], True, True)
+        self.setDriver('GV9', temp['RearRight'], True, True)
+        #logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
+        self.setDriver('GV10', self.bool2ISY( self.TEV.teslaEV_AutoConditioningRunning(self.EVid)), True, True)
+        #logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
+        self.setDriver('GV11',self.bool2ISY(  self.TEV.teslaEV_PreConditioningEnabled(self.EVid)), True, True)
+        #logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
+        self.setDriver('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid), True, True, 4)
+        #logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
+        self.setDriver('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid), True, True, 4)
+        #logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
+        self.setDriver('GV14', self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid), True, True) #nned to be implemented                                                
+
+
+
+        #else:
+        #    logging.debug('System not ready yet')
     
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
@@ -125,7 +134,6 @@ class teslaEV_ClimateNode(udi_interface.Node):
                  'SEAT3' :evSetSeatHeat,
                  'SEAT4' :evSetSeatHeat,
                  'SEAT5' :evSetSeatHeat,
-
                  'STEERINGW' : evSteeringWheelHeat   
 
                 }

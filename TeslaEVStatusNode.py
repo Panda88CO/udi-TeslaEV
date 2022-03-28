@@ -99,51 +99,53 @@ class teslaEV_StatusNode(udi_interface.Node):
         else:
             return(0)
     
+    def ready(self):
+        return(self.chargeNodeReady and self.climateNodeReady)
 
     def poll (self):    
         logging.info('Status Node Poll for {}'.format(self.EVid))        
-        self.TEV.teslaEV_GetInfo(self.EVid)
-        self.updateISYdrivers()
-        #self.climateNode.updateISYdrivers()
-        #self.chargeNode.updateISYdrivers()
+        #self.TEV.teslaEV_GetInfo(self.EVid)
+        if self.statusNodeReady:
+            self.updateISYdrivers()
+
 
 
     def updateISYdrivers(self):
         
-        if self.TEV.isConnectedToEV():
-            self.TEV.teslaEV_GetInfo(self.EVid)
-            temp = {}
-            logging.debug('StatusNode updateISYdrivers')
-            #logging.info('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.EVid)))
-            self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid))
-            #logging.info('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
-            self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
-            #logging.info('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
-            self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)))
-            #logging.info('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
-            self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid))
-            logging.info('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
-            self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)))
-            logging.info('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
-            temp = self.TEV.teslaEV_GetWindoStates(self.EVid)
-            logging.info('Windows: {}'.format(temp))
-            self.setDriver('GV6', temp['FrontLeft'])
-            self.setDriver('GV7', temp['FrontRight'])
-            self.setDriver('GV8', temp['RearLeft'])
-            self.setDriver('GV9', temp['RearRight'])
-            #logging.info('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofState(self.EVid))
-            #logging.info('GV11: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-            self.setDriver('GV11', self.TEV.teslaEV_GetSunRoofState(self.EVid))
-            #logging.info('GV12: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-            self.setDriver('GV12', self.TEV.teslaEV_GetSunRoofState(self.EVid))
-        else:
-            logging.info('System not ready yet')
+        #if self.TEV.isConnectedToEV():
+        #self.TEV.teslaEV_GetInfo(self.EVid)
+        temp = {}
+        logging.debug('StatusNode updateISYdrivers {}'.format(self.TEV.teslaEV_GetStatusInfo(self.EVid)))
+        logging.info('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.EVid)))
+        self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid), True, True)
+        logging.info('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
+        self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid)), True, True)
+        #logging.info('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
+        self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
+        #logging.info('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+        self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True)
+        logging.info('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+        self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)), True, True)
+        logging.info('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
+        temp = self.TEV.teslaEV_GetWindoStates(self.EVid)
+        logging.info('Windows: {} {} {} {}'.format(temp['FrontLeft'], temp['FrontRight'], temp['RearLeft'],temp['RearRight']))
+        self.setDriver('GV6', temp['FrontLeft'], True, True)
+        self.setDriver('GV7', temp['FrontRight'], True, True)
+        self.setDriver('GV8', temp['RearLeft'], True, True)
+        self.setDriver('GV9', temp['RearRight'], True, True)
+        #logging.info('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+        self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofState(self.EVid), True, True)
+        #logging.info('GV11: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+        self.setDriver('GV11', self.TEV.teslaEV_GetSunRoofState(self.EVid), True, True)
+        #logging.info('GV12: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+        self.setDriver('GV12', self.TEV.teslaEV_GetSunRoofState(self.EVid), True, True)
+        #else:
+        #    logging.info('System not ready yet')
 
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
-        self.TEV.teslaEV_GetInfo(self.EVid)
+        self.TEV.teslaEV_UpdateCloudInfo(self.EVid)
         self.updateISYdrivers()
 
     def evWakeUp (self, command):
@@ -163,18 +165,18 @@ class teslaEV_StatusNode(udi_interface.Node):
 
 
     def evOpenTrunkFrunk (self, command):
-        logging.debug('EVopenTrunkFrunk called')                
+        logging.debug('evOpenTrunkFrunk called')                
 
     def evHomelink (self, command):
-        logging.debug('EVhomelink called')   
+        logging.debug('evHomelink called')   
 
     id = 'evstatus'
     commands = { 'UPDATE': ISYupdate, 
                  'WAKEUP' : evWakeUp,
-                 'HONK' : evHonkHorn,
-                 'LIGHTS' : evFlashLights,
+                 'HONKHORN' : evHonkHorn,
+                 'FLASHLIGHT' : evFlashLights,
                  'DOORS' : evControlDoors,
-                 'SUNROOFCTRL' : evControlSunroof,
+                 'SUNROOF' : evControlSunroof,
                  'TRUNK' : evOpenTrunkFrunk,
                  'FRUNK' : evOpenTrunkFrunk,
                  'HOMELINK' : evHomelink,
@@ -186,7 +188,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV1', 'value': 99, 'uom': 25},  #center_display_state
             {'driver': 'GV2', 'value': 99, 'uom': 25},  #homelink_nearby
             {'driver': 'GV3', 'value': 99, 'uom': 25},  #locked
-            {'driver': 'GV4', 'value': 0, 'uom': 110},  #odometer
+            {'driver': 'GV4', 'value': 0, 'uom': 116},  #odometer
             {'driver': 'GV5', 'value': 99, 'uom': 25},  #state (on line)
             {'driver': 'GV6', 'value': 99, 'uom': 25},  #fd_window
             {'driver': 'GV7', 'value': 99, 'uom': 25},  #fp_window

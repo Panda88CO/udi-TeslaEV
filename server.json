@@ -15,9 +15,9 @@
 	},
     "credits": [
         {
-            "title": "A NodeServer to integrate Tesla Power Wall Controll system",
+            "title": "A NodeServer to integrate control of Tesla EVs",
             "author": "Panda88CO",
-            "version": "0.1.5",
+            "version": "0.1.0",
             "date": "Feb12,  2022",
             "source": "https://github.com/Panda88CO/udi-TeslaEV",
             "license": "https://github.com/Panda88CO/udi-TeslaEV/blob/main/license"

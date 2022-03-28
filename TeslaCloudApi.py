@@ -106,15 +106,16 @@ class teslaCloudApi(object):
             data['scope']='openid email offline_access'      
             resp = requests.post('https://auth.tesla.com/oauth2/v3/token', data=data)
             S = json.loads(resp.text)
+            S['created_at'] = dateNow
             if 'refresh_token' in S:
                 self.Rtoken = S['refresh_token']
-                S['created_at'] = dateNow
+                #S['created_at'] = dateNow
                 dataFile = open('./refreshToken.txt', 'w')
                 dataFile.write( self.Rtoken)
                 dataFile.close()
 
-            else:
-                self.Rtoken = None
+            #else:
+            #    self.Rtoken = None
 
             '''
             data = {}

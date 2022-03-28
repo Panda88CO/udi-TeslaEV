@@ -100,6 +100,7 @@ class TeslaEVController(udi_interface.Node):
         if not self.connected:
             logging.info ('Failed to get acces to Tesla Cloud')
             exit()
+        '''
         if NODES_DEBUG:
             if (os.path.exists('./EVlist.txt')):
                 dataFile = open('./EVlist.txt', 'r')
@@ -113,34 +114,39 @@ class TeslaEVController(udi_interface.Node):
                 nodeName = vehicleInfo['response']['display_name']
                 nodeAdr = 'vehicle'+str(vehicle+1)
                 if not self.poly.getNode(nodeAdr):
-                    logging.info('Creating Status node for:  {} {} {} {}'.format( self.address, nodeAdr, nodeName, vehicleId,))
-                    node = teslaEV_StatusNode(self.poly, self.primary, nodeAdr, nodeName, vehicleId, self.TEV)
+                    logging.info('Creating Status node for:  {} {} {} {}'.format( self.address, nodeAdr, nodeName, vehicleId))
+                    node = teslaEV_StatusNode(self.poly, nodeAdr, nodeAdr, nodeName, vehicleId, self.TEV)
                     self.poly.addNode(node)             
                     self.wait_for_node_done()                    
         else:
-            self.vehicleList = self.TEV.teslaEV_GetIdList()
-            self.GV1 =len(self.vehicleList)
-            self.setDriver('GV1', self.GV1)
-            for vehicle in range(0,len(self.vehicleList)):
-                vehicleId = self.vehicleList[vehicle]
-                vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
-                logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
-                nodeName = vehicleInfo['display_name']
+        '''
+        self.vehicleList = self.TEV.teslaEV_GetIdList()
+        logging.debug('vehicleList: {}'.format(self.vehicleList))
+        self.GV1 =len(self.vehicleList)
+        self.setDriver('GV1', self.GV1, True, True)
+        for vehicle in range(0,len(self.vehicleList)):
+            vehicleId = self.vehicleList[vehicle]
+            self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
+            vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
+            logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
+            nodeName = vehicleInfo['display_name']
+            
+            nodeAdr = 'vehicle'+str(vehicle+1)
+            if not self.poly.getNode(nodeAdr):
+                logging.info('Creating Status node for {}'.format(nodeAdr))
+                statusNode = teslaEV_StatusNode(self.poly, nodeAdr, nodeAdr, nodeName, vehicleId, self.TEV)
+                self.poly.addNode(statusNode )             
+                self.wait_for_node_done()     
+                self.statusNodeReady = True
                 
-                nodeAdr = 'vehicle'+str(vehicle+1)
-                if not self.poly.getNode(nodeAdr):
-                    logging.info('Creating Status node for {}'.format(nodeAdr))
-                    statusNode = teslaEV_StatusNode(self.poly, self.primary, nodeAdr, nodeName, vehicleId, self.TEV)
-                    self.poly.addNode(statusNode )             
-                    self.wait_for_node_done()     
-                    self.statusNodeReady = True
-                    
         self.longPoll()
+
+
 
         #except Exception as e:
         #    logging.error('Exception Controller start: '+ str(e))
         #    logging.info('Did not connect to EV ')
-       
+
         logging.debug ('Controller - initialization done')
 
     def handleLevelChange(self, level):
@@ -228,7 +234,7 @@ class TeslaEVController(udi_interface.Node):
         #self.removeNoticesAll()
         if self.TEV:
             self.TEV.disconnectTEV()
-        self.setDriver('ST', 0 )
+        self.setDriver('ST', 0 , True, True)
         logging.debug('stop - Cleaning up')
         self.poly.stop()
 
@@ -264,14 +270,17 @@ class TeslaEVController(udi_interface.Node):
         
     def longPoll(self):
         logging.info('Tesla EV  Controller longPoll - connected = {}'.format(self.TEV.isConnectedToEV()))
-        if self.statusNode.subnodesReady() and self.statusNodeReady:
-            for node in self.poly.nodes():
-                #if node != 'controller'    
-                logging.debug('Controller poll  node {}'.format(node) )
-                if node.ready():
+        
+        if self.TEV.isConnectedToEV():
+            for vehicle in range(0,len(self.vehicleList)):
+                 self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
+            try:
+                for node in self.poly.nodes():
+                    #if node != 'controller'    
+                    logging.debug('Controller poll  node {}'.format(node) )
                     node.poll()
-        else:
-            logging.info('Waiting for all nodes to be created')
+            except Exception as E:
+                logging.info('Not all nodes ready: {}'.format(E))
 
 
     def poll(self): # dummey poll function 
@@ -281,14 +290,13 @@ class TeslaEVController(udi_interface.Node):
         logging.debug('System updateISYdrivers - ' + str(level))       
         if level == 'all':
             value = self.TEV.isNodeServerUp()
-
-            self.setDriver('GV0', value)
-            self.setDriver('GV1', self.GV1)
+            self.setDriver('GV0', value, True, True)
+            self.setDriver('GV1', self.GV1, True, True)
             logging.debug('CTRL Update ISY drivers : GV0, GV1  value: {}, {}'.format(value. self.GV1))
 
         elif level == 'critical':
             value = self.TEV.isNodeServerUp()
-            self.setDriver('GV0', value)   
+            self.setDriver('GV0', value, True, True)  
             logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
         else:
             logging.error('Wrong parameter passed: ' + str(level))
@@ -311,7 +319,8 @@ class TeslaEVController(udi_interface.Node):
     drivers = [
             {'driver': 'ST', 'value':0, 'uom':2},
             {'driver': 'GV0', 'value':0, 'uom':25},  
-            {'driver': 'GV1', 'value':0, 'uom':107},  
+            {'driver': 'GV1', 'value':0, 'uom':107},
+        
             ]
             # ST - node started
             # GV0 Access to TeslaApi

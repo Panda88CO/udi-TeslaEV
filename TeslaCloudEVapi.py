@@ -23,7 +23,7 @@ class teslaCloudEVapi(object):
 
         self.TESLA_URL = self.teslaApi.TESLA_URL
         self.API = self.teslaApi.API
-
+        self.carInfo = None
         if self.teslaApi.isConnectedToTesla():
             self.connnected = True
         else:
@@ -54,48 +54,42 @@ class teslaCloudEVapi(object):
                 return(None)
 
     
-    def teslaEV_UpdateInfo(self):
+    def teslaEV_UpdateCloudInfo(self, EVid):
             #if self.connectionEstablished:
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
-                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data')          
+                logging.debug(r)
                 carInfo = r.json()
-                self.carInfo = carInfo['response']
-                #logging.debug('carinf : {}'.format(self.carInfo))
+                if 'response' in carInfo:
+                    self.carInfo[EVid] = carInfo['response']
+                logging.debug('carinfo : {}'.format(self.carInfo))
                 #return()
             except Exception as e:
                 logging.error('Exception teslaGetSiteInfo: {}'.format(e))
-                logging.error('Error getting data from vehicle id: {}'.format(id))
+                logging.error('Error getting data from vehicle id: {}'.format(EVid))
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
 
-    def teslaEV_GetInfo(self, id):
+    def teslaEV_GetInfo(self, EVid):
         #if self.connectionEstablished:
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])            
-                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
-                carInfo = r.json()
-                self.carInfo[id] =carInfo['response']
-                #logging.debug('carinf : {}'.format(self.carInfo))
-                return(self.carInfo[id])
+        #maxAttempts = 3
+        #attempts = 0
+        #while maxAttempts > attempts and self.carInfo == None:
+        #    attempts = attempts + 1
+        #    time.sleep(1)
+        logging.debug('teslaEV_GetInfo: {}'.format(self.carInfo[EVid]))
+        return(self.carInfo[EVid])
 
-            except Exception as e:
-                logging.error('Exception teslaGetSiteInfo: {}'.format(e))
-                logging.error('Error getting data from vehicle id: {}'.format(id))
-                logging.error('Trying to reconnect')
-                self.teslaApi.tesla_refresh_token( )
-                return(None)
 
-    def teslaEV_GetLocation(self, id):
-        logging.debug('teslaEV_GetLocation: for {}'.format(id))
+    def teslaEV_GetLocation(self, EVid):
+        logging.debug('teslaEV_GetLocation: for {}'.format(EVid))
         temp = {}
-        temp['longitude'] = self.carInfo[id]['drive_state']['longitude']
-        temp['latitide'] = self.carInfo[id]['drive_state']['latitide']
+        temp['longitude'] = self.carInfo[EVid]['drive_state']['longitude']
+        temp['latitide'] = self.carInfo[EVid]['drive_state']['latitide']
         return(temp)
 
 
@@ -276,14 +270,14 @@ class teslaCloudEVapi(object):
         return(temp)
 
     def teslaEV_GetCabinTemp(self, id):
-        #logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(id, self.carInfo[id]['climate_state']['inside_temp'] ))
+        logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(id, self.carInfo[id]['climate_state']['inside_temp'] ))
         if self.carInfo[id]['climate_state']['inside_temp']:
             return(round(self.carInfo[id]['climate_state']['inside_temp'],1)) 
         else:
             return(-99)
 
     def teslaEV_GetOutdoorTemp(self, id):
-        #logging.debug('teslaEV_GetOutdoorTemp for {} = {}'.format(id, self.carInfo[id]['climate_state']['outside_temp']))
+        logging.debug('teslaEV_GetOutdoorTemp for {} = {}'.format(id, self.carInfo[id]['climate_state']['outside_temp']))
         if self.carInfo[id]['climate_state']['outside_temp']:
             return(round(self.carInfo[id]['climate_state']['outside_temp'],1)) 
         else:

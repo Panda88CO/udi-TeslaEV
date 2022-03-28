@@ -19,8 +19,9 @@
      <range  uom="25" subset="0-1,99" nls="BOOLSTATE"/>
   </editor> 
   
-  <editor id = "MILES" > 
-     <range  uom="110" min="0" max="999999" prec="1" />
+  <editor id = "ODOMETER" > 
+      <range  uom="83" min="0" max="999999" prec="1" />
+      <range  uom="116" min="0" max="999999" prec="1" />
   </editor>
   
   <editor id = "WINDOW" > 
@@ -36,7 +37,7 @@
   </editor>
 
   <editor id = "PERCENT" > 
-     <range  uom="51" min="0" max="100" prec="2" />
+     <range  uom="51" min="0" max="100" prec="1" />
   </editor>
   
   <editor id = "OPENCLOSE" > 
@@ -46,7 +47,9 @@
 
 
   <editor id = "TEMP" > 
-     <range  uom="4" min="-50" max="150" prec="1" />
+    <range uom="4" min="-50" max="75" step="0.5" prec="1" />
+    <range uom="17" min="-50" max="150" step="1" prec="1" />
+    <range  uom="25" subset="0-1" nls="UNKNOWN" />
   </editor>
 
   <editor id = "HEAT_LVL" > 
@@ -69,8 +72,9 @@
      <range  uom="25" subset="0-1" nls="AUTOCONCTRL"  />  
   </editor>
   
-  <editor id = "TEMPCABIN" > 
-     <range  uom="4" min="15" max="28" prec="1"  />  
+  <editor id = "CABINTEMP" > 
+      <range  uom="17" min="59" max="83" prec="1"  /> 
+      <range  uom="4" min="15" max="28" prec="1"  />  
   </editor>
   
   <editor id = "DEFROST" > 
@@ -107,7 +111,7 @@
   </editor>
 
   <editor id = "AMPS" > 
-     <range  uom="33" min="0" max="300" prec="1" />
+     <range  uom="2" min="0" max="300" prec="1" />
   </editor>
 
   <editor id = "CHGSTATE" > 
@@ -122,14 +126,21 @@
      <range  uom="33" min="0" max="300" prec="1" />
   </editor>
 
-  <editor id = "CHARGE" > 
-     <range  uom="25" subset="0-1" nls="CHARGE"  />  
+  <editor id = "CHARGEPORT" > 
+     <range  uom="25" subset="0-1" nls="CHARGEPORT"  />  
+  </editor>
+  
+  <editor id = "CHARGECTRL" > 
+     <range  uom="25" subset="0-1" nls="CHARGECTRL"  />  
   </editor>
 
-  <editor id = "CHARGEAMPS" > 
-     <range  uom="33" min="0" max="300" prec="0" />
-  </editor>
- 
 
+  <editor id = "TEMPUNIT" > 
+     <range  uom="25" subset="0-1" nls="TEMPUNIT"  />  
+  </editor>
+
+   <editor id = "DISTUNIT" > 
+     <range  uom="25" subset="0-1" nls="DISTUNIT"  />  
+  </editor>
 
 </editors> 
