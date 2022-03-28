@@ -53,9 +53,7 @@ class teslaEV_StatusNode(udi_interface.Node):
     def start(self):       
         logging.info('Start Tesla EV Status Node for {}'.format(self.EVid)) 
         tmpStr = re.findall('[0-9]+', self.address)
-        self.nbrStr = tmpStr.pop()
-        logging.info('StatusNode Start: {}'.format(self.nbrStr))
-        self.setDriver('ST', 1)
+        nbrStr = tmpStr.pop()
 
         self.statusNodeReady = True
         self.createSubNodes()
@@ -195,8 +193,8 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV8', 'value': 99, 'uom': 25},  #rd_window
             {'driver': 'GV9', 'value': 99, 'uom': 25},  #rp_window
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
-            {'driver': 'GV11', 'value': 99, 'uom': 25}, #trunk
-            {'driver': 'GV12', 'value':99, 'uom': 25}, #frunk
+            {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
+            {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
             ]
 
 
