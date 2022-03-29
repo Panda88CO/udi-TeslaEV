@@ -93,59 +93,39 @@ class TeslaEVController(udi_interface.Node):
     '''
     def tesla_initialize(self):
         logging.debug('starting Login process')
-        #try:
-            #del self.Parameters['REFRESH_TOKEN']
-        self.TEV = teslaCloudEVapi()
-        self.connected = self.TEV.isConnectedToEV()
-        if not self.connected:
-            logging.info ('Failed to get acces to Tesla Cloud')
-            exit()
-        '''
-        if NODES_DEBUG:
-            if (os.path.exists('./EVlist.txt')):
-                dataFile = open('./EVlist.txt', 'r')
-                self.vehicleList = dataFile.read()
-                dataFile.close()
-            if (os.path.exists('./EVinfo.txt')):
-                dataFile = open('./EVinfo.txt', 'r')
-                vehicleInfo = dataFile.read()
-                dataFile.close()
+        try:
+            self.TEV = teslaCloudEVapi()
+            self.connected = self.TEV.isConnectedToEV()
+            if not self.connected:
+                logging.info ('Failed to get acces to Tesla Cloud')
+                exit()
 
-                nodeName = vehicleInfo['response']['display_name']
+            self.vehicleList = self.TEV.teslaEV_GetIdList()
+            logging.debug('vehicleList: {}'.format(self.vehicleList))
+            self.GV1 =len(self.vehicleList)
+            self.setDriver('GV1', self.GV1, True, True)
+            for vehicle in range(0,len(self.vehicleList)):
+                vehicleId = self.vehicleList[vehicle]
+                self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
+                vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
+                logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
+                nodeName = vehicleInfo['display_name']
+                
                 nodeAdr = 'vehicle'+str(vehicle+1)
                 if not self.poly.getNode(nodeAdr):
-                    logging.info('Creating Status node for:  {} {} {} {}'.format( self.address, nodeAdr, nodeName, vehicleId))
-                    node = teslaEV_StatusNode(self.poly, nodeAdr, nodeAdr, nodeName, vehicleId, self.TEV)
-                    self.poly.addNode(node)             
-                    self.wait_for_node_done()                    
-        else:
-        '''
-        self.vehicleList = self.TEV.teslaEV_GetIdList()
-        logging.debug('vehicleList: {}'.format(self.vehicleList))
-        self.GV1 =len(self.vehicleList)
-        self.setDriver('GV1', self.GV1, True, True)
-        for vehicle in range(0,len(self.vehicleList)):
-            vehicleId = self.vehicleList[vehicle]
-            self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
-            vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
-            logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
-            nodeName = vehicleInfo['display_name']
-            
-            nodeAdr = 'vehicle'+str(vehicle+1)
-            if not self.poly.getNode(nodeAdr):
-                logging.info('Creating Status node for {}'.format(nodeAdr))
-                statusNode = teslaEV_StatusNode(self.poly, nodeAdr, nodeAdr, nodeName, vehicleId, self.TEV)
-                self.poly.addNode(statusNode )             
-                self.wait_for_node_done()     
-                self.statusNodeReady = True
-                
-        self.longPoll()
+                    logging.info('Creating Status node for {}'.format(nodeAdr))
+                    statusNode = teslaEV_StatusNode(self.poly, nodeAdr, nodeAdr, nodeName, vehicleId, self.TEV)
+                    self.poly.addNode(statusNode )             
+                    self.wait_for_node_done()     
+                    self.statusNodeReady = True
+                    
+            self.longPoll()
 
 
 
-        #except Exception as e:
-        #    logging.error('Exception Controller start: '+ str(e))
-        #    logging.info('Did not connect to EV ')
+        except Exception as e:
+            logging.error('Exception Controller start: '+ str(e))
+            logging.info('Did not connect to EV ')
 
         logging.debug ('Controller - initialization done')
 
@@ -227,11 +207,10 @@ class TeslaEVController(udi_interface.Node):
             logging.debug('Cloud access is valid, configure....')
             self.cloudAccess = True
             self.tesla_initialize( )
-        #logging.info('Rtoken: {}'.format(self.Rtoken))
         logging.debug('done with parameter processing')
         
     def stop(self):
-        #self.removeNoticesAll()
+        self.removeNoticesAll()
         if self.TEV:
             self.TEV.disconnectTEV()
         self.setDriver('ST', 0 , True, True)
@@ -261,11 +240,6 @@ class TeslaEVController(udi_interface.Node):
     def shortPoll(self):
         logging.info('Tesla EV Controller shortPoll(HeartBeat)')
         self.heartbeat()    
-        #if self.TEV.pollSystemData('critical'):
-        #    for node in self.poly.nodes():
-        #        node.updateISYdrivers('critical')
-        #else:
-        #    logging.info('Problem polling data from Tesla system') 
 
         
     def longPoll(self):
@@ -284,35 +258,22 @@ class TeslaEVController(udi_interface.Node):
 
 
     def poll(self): # dummey poll function 
+
         pass
 
-    def updateISYdrivers(self, level):
-        logging.debug('System updateISYdrivers - ' + str(level))       
-        if level == 'all':
-            value = self.TEV.isNodeServerUp()
-            self.setDriver('GV0', value, True, True)
-            self.setDriver('GV1', self.GV1, True, True)
-            logging.debug('CTRL Update ISY drivers : GV0, GV1  value: {}, {}'.format(value. self.GV1))
+    def updateISYdrivers(self):
+        logging.debug('System updateISYdrivers - Controller')       
+        value = self.TEV.isConnectedToEV()
+        self.setDriver('GV0', value, True, True)
+        self.setDriver('GV1', self.GV1, True, True)
 
-        elif level == 'critical':
-            value = self.TEV.isNodeServerUp()
-            self.setDriver('GV0', value, True, True)  
-            logging.debug('CTRL Update ISY drivers : GV2  value:' + str(value) )
-        else:
-            logging.error('Wrong parameter passed: ' + str(level))
- 
+
 
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
 
         self.longPoll()
-        #if self.TEV.pollSystemData('all'):
-        #    self.updateISYdrivers('all')
-        #    #self.reportDrivers()
-        #    for node in self.nodes:
-        #        #logging.debug('Node : ' + node)
-        #        if node != self.address :
-        #            self.nodes[node].longPoll()
+
  
     id = 'controller'
     commands = { 'UPDATE': ISYupdate }

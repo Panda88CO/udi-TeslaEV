@@ -116,16 +116,35 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def evChargePort (self, command):
         logging.debug('evChargePort called')
+        chargePort = int(command.get('value'))
+        if chargePort == 1:
+            self.TEV.teslaEV_ChargePort(self.EVid, 'open')
+        elif chargePort == 0:
+            self.TEV.teslaEV_ChargePort(self.EVid, 'close')
+        else:
+            logging.debug('Wrong parameter passed to evChargePort : {}'.format(chargePort))
+        
 
     def evChargeControl (self, command):
         logging.debug('evChargeControl called')
-
+        chargeCtrl = int(command.get('value'))
+        if chargeCtrl == 1:
+            self.TEV.teslaEV_ChargePort(self.EVid, 'start')
+        elif chargeCtrl == 0:
+            self.TEV.teslaEV_ChargePort(self.EVid, 'stop')
+        else:
+            logging.debug('Wrong parameter passed to evChargeControl : {}'.format(chargeCtrl))
 
     def evSetBatteryChargeLimit (self, command):
         logging.debug('evSetBatteryChargeLimit called')
+        batLimitPercent = int(command.get('value'))
+        self.TEV.teslaEV_SetChargeLimit(self.EVid, batLimitPercent)
+
 
     def evSetCurrentChargeLimit (self, command):
         logging.debug('evSetCurrentChargeLimit called')
+        ampLimit = int(command.get('value'))
+        self.TEV.teslaEV_SetChargeLimitAmps(self.EVid, ampLimit)
 
     id = 'evcharge'
 
