@@ -31,6 +31,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         logging.debug('Start TeslaEV Climate Node')  
         self.setDriver('ST', 1, True, True)
         self.nodeReady = True
+        self.updateISYdrivers()
 
     def stop(self):
         logging.debug('stop - Cleaning up')
@@ -49,6 +50,15 @@ class teslaEV_ClimateNode(udi_interface.Node):
             return(1)
         else:
             return(0)
+
+    def cond2ISY(self, condition):
+        if condition == None:
+            return(99)
+        elif condition:
+            return(1)
+        else:
+            return(0)
+
 
     def updateISYdrivers(self):
         logging.debug('Climate updateISYdrivers {}'.format(self.TEV.teslaEV_GetClimateInfo(self.EVid)))
@@ -77,9 +87,9 @@ class teslaEV_ClimateNode(udi_interface.Node):
         self.setDriver('GV8', temp['RearMiddle'], True, True)
         self.setDriver('GV9', temp['RearRight'], True, True)
         #logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
-        self.setDriver('GV10', self.bool2ISY( self.TEV.teslaEV_AutoConditioningRunning(self.EVid)), True, True)
+        self.setDriver('GV10', self.cond2ISY(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)), True, True)
         #logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
-        self.setDriver('GV11',self.bool2ISY(  self.TEV.teslaEV_PreConditioningEnabled(self.EVid)), True, True)
+        self.setDriver('GV11',self.cond2ISY(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)), True, True)
         #logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
         self.setDriver('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid), True, True, 4)
         #logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))

@@ -111,7 +111,7 @@
   </editor>
 
   <editor id = "AMPS" > 
-     <range  uom="2" min="0" max="300" prec="1" />
+     <range  uom="1" min="0" max="300" prec="1" />
   </editor>
 
   <editor id = "CHGSTATE" > 
