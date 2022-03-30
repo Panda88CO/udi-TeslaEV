@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-PG_CLOUD_ONLY = False
 
-
-
-#from os import truncate
-import sys
-
-import time
 try:
     import udi_interface
     logging = udi_interface.LOGGER
@@ -101,11 +94,6 @@ class teslaEV_ChargeNode(udi_interface.Node):
         self.setDriver('GV8', self.TEV.teslaEV_GetChargingPower(self.EVid))
         #logging.debug('GV9: {}'.format(self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid)))
         self.setDriver('GV9', self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid), True, True)
-
-  
-
-        #else:
-        #    logging.debug('System not ready yet')
 
 
     def ISYupdate (self, command):

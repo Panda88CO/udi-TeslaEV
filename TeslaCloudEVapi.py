@@ -1,10 +1,8 @@
 
-#from datetime import datetime
-#from tempfile import tempdir
 import requests
 import time
 from requests_oauth2 import OAuth2BearerToken
-#from TPWauth import TPWauth
+
 
 try:
     import udi_interface

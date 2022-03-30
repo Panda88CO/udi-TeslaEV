@@ -8,9 +8,6 @@ except ImportError:
     import logging
     logging.basicConfig(level=logging.DEBUG)
 
-import time
-#import udi_interface
-#logging = udi_interface.logging
                
 class teslaEV_ClimateNode(udi_interface.Node):
 
@@ -97,11 +94,6 @@ class teslaEV_ClimateNode(udi_interface.Node):
         #logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
         self.setDriver('GV14', self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid), True, True) #nned to be implemented                                                
 
-
-
-        #else:
-        #    logging.debug('System not ready yet')
-    
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
         self.TEV.teslaEV_GetInfo(self.EVid)
@@ -110,27 +102,87 @@ class teslaEV_ClimateNode(udi_interface.Node):
  
     def evWindows (self, command):
         logging.debug('evWindows- called')
+        windowCtrl = int(command.get('value'))
+        if windowCtrl == 1:
+            self.TEV.teslaEV_Windows(self.EVid, 'vent')
+        elif windowCtrl == 0:
+            self.TEV.teslaEV_Windows(self.EVid, 'close')            
+        else:
+            logging.debug('Wrong command for evWndows: {}'.format(windowCtrl))
 
 
     def evSunroof (self, command):
-        logging.debug('evSunroof called')    
+        logging.debug('evSunroof called')   
+        sunroofCtrl = int(command.get('value'))
+        if sunroofCtrl == 1:
+            self.TEV.teslaEV_SunRoof(self.EVid, 'vent')
+        elif sunroofCtrl == 0:
+            self.TEV.teslaEV_SunRoof(self.EVid, 'close')            
+        else:
+            logging.debug('Wrong command for evSunroof: {}'.format(sunroofCtrl)) 
 
     def evAutoCondition (self, command):
-        logging.debug('evAutoCondition called')    
+        logging.debug('evAutoCondition called')  
+        autoCond = int(command.get('value'))  
+        if autoCond == 1:
+            self.TEV.teslaEV_AutoCondition(self.EVid, 'start')
+        elif autoCond == 0:
+            self.TEV.teslaEV_AutoCondition(self.EVid, 'stop')            
+        else:
+            logging.debug('Wrong command for evAutoCondition: {}'.format(autoCond)) 
 
     def evDefrostMax (self, command):
         logging.debug('evDefrostMax called')    
+        defrost = int(command.get('value'))  
+        if defrost == 1:
+            self.TEV.teslaEV_DefrostMax(self.EVid, 'on')
+        elif defrost == 0:
+            self.TEV.teslaEV_DefrostMax(self.EVid, 'off')            
+        else:
+            logging.debug('Wrong command for evDefrostMax: {}'.format(defrost)) 
 
 
     def evSetCabinTemp (self, command):
-        logging.debug('evSetCabinTemp called')    
+        logging.debug('evSetCabinTemp called')      
+        cabinTemp = float(command.get('value'))  
+        self.TEV.teslaEV_SetCabinTemps(self.EVid, cabinTemp)
+        
 
-    def evSetSeatHeat (self, command):
+    def evSetSeat0Heat (self, command):
         logging.debug('evSetSeatHeat called')    
+        seatTemp = int(command.get('value'))  
+        self.TEV.teslaEV_SetSeatHeating(self.EVid, 0, seatTemp)
+
+    def evSetSeat1Heat (self, command):
+        logging.debug('evSetSeatHeat called')    
+        seatTemp = int(command.get('value'))  
+        self.TEV.teslaEV_SetSeatHeating(self.EVid, 1, seatTemp)
+
+    def evSetSeat2Heat (self, command):
+        logging.debug('evSetSeatHeat called')    
+        seatTemp = int(command.get('value'))  
+        self.TEV.teslaEV_SetSeatHeating(self.EVid, 2, seatTemp)
+
+    def evSetSeat4Heat (self, command):
+        logging.debug('evSetSeatHeat called')    
+        seatTemp = int(command.get('value'))  
+        self.TEV.teslaEV_SetSeatHeating(self.EVid, 4, seatTemp)
+
+    def evSetSeat5Heat (self, command):
+        logging.debug('evSetSeatHeat called')    
+        seatTemp = int(command.get('value'))  
+        self.TEV.teslaEV_SetSeatHeating(self.EVid, 5, seatTemp)
+
 
     def evSteeringWheelHeat (self, command):
         logging.debug('evSteeringWheelHeat called')    
-
+        wheel = int(command.get('value'))  
+        if wheel == 1:
+            self.TEV.teslaEV_SteeringWheelHeat(self.EVid, 'on')
+        elif wheel == 0:
+            self.TEV.teslaEV_SteeringWheelHeat(self.EVid, 'off')            
+        else:
+            logging.debug('Wrong command for evDefrostMax: {}'.format(wheel)) 
 
     id = 'evclimate'
     commands = { 'UPDATE': ISYupdate, 
@@ -139,11 +191,11 @@ class teslaEV_ClimateNode(udi_interface.Node):
                  'AUTOCON' : evAutoCondition,
                  'CABINTEMP' : evSetCabinTemp,
                  'DEFROST' : evDefrostMax,            
-                 'SEAT1' :evSetSeatHeat,
-                 'SEAT2' :evSetSeatHeat,
-                 'SEAT3' :evSetSeatHeat,
-                 'SEAT4' :evSetSeatHeat,
-                 'SEAT5' :evSetSeatHeat,
+                 'SEAT1' :evSetSeat0Heat,
+                 'SEAT2' :evSetSeat1Heat,
+                 'SEAT3' :evSetSeat2Heat,
+                 'SEAT4' :evSetSeat4Heat,
+                 'SEAT5' :evSetSeat5Heat,
                  'STEERINGW' : evSteeringWheelHeat   
 
                 }

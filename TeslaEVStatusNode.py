@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 
-#import udi_interface
-
-
-#from os import truncate
-import sys
 import time
 import re
-from xml.etree.ElementTree import TreeBuilder
 from TeslaEVChargeNode import teslaEV_ChargeNode
 from TeslaEVClimateNode import teslaEV_ClimateNode 
 
@@ -24,7 +18,7 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     def __init__(self, polyglot, primary, address, name, id, TEV):
         super(teslaEV_StatusNode, self).__init__(polyglot, primary, address, name)
-        logging.info('_init_ Tesla Power Wall Status Node')
+        logging.info('_init_ Tesla EV  Status Node')
         self.ISYforced = False
         self.EVid = id
         self.TEV = TEV
@@ -148,25 +142,52 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     def evWakeUp (self, command):
         logging.debug('EVwakeUp called')
+        self.TEV.teslaEV_Wake(self.EVid)
+
 
     def evHonkHorn (self, command):
         logging.debug('EVhonkHorn called')
+        self.TEV.teslaEV_HonkHorn(self.EVid)
+
 
     def evFlashLights (self, command):
         logging.debug('EVflashLights called')
+        self.TEV.teslaEV_FlashLights(self.EVid)
+
 
     def evControlDoors (self, command):
         logging.debug('EVctrlDoors called')
+        doorCtrl = int(command.get('value'))
+        if doorCtrl == 1:
+            self.TEV.teslaEV_Doors(self.EVid, 'unlock')
+        elif doorCtrl == 0:
+            self.TEV.teslaEV_Doors(self.EVid, 'lock')            
+        else:
+            logging.debug('Unknown command for evControlDoors {}'.format(command))
 
     def evControlSunroof (self, command):
         logging.debug('evControlSunroof called')
+        sunroofCtrl = int(command.get('value'))
+        if sunroofCtrl == 1:
+            self.TEV.teslaEV_SunRoof(self.EVid, 'vent')
+        elif sunroofCtrl == 0:
+            self.TEV.teslaEV_SunRoof(self.EVid, 'close')            
+        else:
+            logging.debug('Wrong command for evSunroof: {}'.format(sunroofCtrl))         
+
+    def evOpenFrunk (self, command):
+        logging.debug('evOpenFrunk called')                
+        self.TEV.teslaEV_TrunkFrunk(self.EVid, 'front')
+
+    def evOpenTrunk (self, command):
+        logging.debug('evOpenTrunk called')                
+        self.TEV.teslaEV_TrunkFrunk(self.EVid, 'rear')
 
 
-    def evOpenTrunkFrunk (self, command):
-        logging.debug('evOpenTrunkFrunk called')                
 
     def evHomelink (self, command):
         logging.debug('evHomelink called')   
+        self.TEV.teslaEV_HomeLink(self.EVid)
 
     id = 'evstatus'
     commands = { 'UPDATE': ISYupdate, 
@@ -175,8 +196,8 @@ class teslaEV_StatusNode(udi_interface.Node):
                  'FLASHLIGHT' : evFlashLights,
                  'DOORS' : evControlDoors,
                  'SUNROOF' : evControlSunroof,
-                 'TRUNK' : evOpenTrunkFrunk,
-                 'FRUNK' : evOpenTrunkFrunk,
+                 'TRUNK' : evOpenTrunk,
+                 'FRUNK' : evOpenFrunk,
                  'HOMELINK' : evHomelink,
                 }
 

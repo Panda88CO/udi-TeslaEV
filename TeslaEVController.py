@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-#from os import truncate
 import sys
 import time 
 import os
@@ -14,8 +13,6 @@ except ImportError:
     logging.basicConfig(level=30)
 
 
-#from TeslaEVInfo import tesla_info
-#from TeslaPWCtrlNodeNode import teslaPWSetupNode
 from TeslaEVStatusNode import teslaEV_StatusNode
 from TeslaCloudEVapi  import teslaCloudEVapi
 
@@ -291,7 +288,7 @@ class TeslaEVController(udi_interface.Node):
 
 if __name__ == "__main__":
     try:
-        #logging.info('Starting Tesla Power Wall Controller')
+        logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
         polyglot.start()
         polyglot.updateProfile()
