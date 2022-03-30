@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 import requests
 import time
 from requests_oauth2 import OAuth2BearerToken

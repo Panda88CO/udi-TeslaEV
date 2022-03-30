@@ -16,10 +16,6 @@ except ImportError:
 from TeslaEVStatusNode import teslaEV_StatusNode
 from TeslaCloudEVapi  import teslaCloudEVapi
 
-#NODES_DEBUG = True
-NODES_DEBUG = False
-
-
 
 class TeslaEVController(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):

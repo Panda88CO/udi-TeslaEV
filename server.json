@@ -8,7 +8,7 @@
     "notice": "Uses APIs from https://tesla-api.timdorr.com/ - not official Tesla APIs.",
     "shortPoll": "60",
     "longPoll": "180",
-    "profile_version": "0.1.x",
+    "profile_version": "0.1.0",
     "logLevel":"INFO",
 	"customParams": {
 		"REFRESH_TOKEN": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlR3bjV2bmNQUHhYNmprc2w5SUYyNnF4VVFfdyJ9.eyJpc3MiOiJodHRwczovL2F1dGgudGVzbGEuY29tL29hdXRoMi92MyIsImF1ZCI6Imh0dHBzOi8vYXV0aC50ZXNsYS5jb20vb2F1dGgyL3YzL3Rva2VuIiwiaWF0IjoxNjQ3NDcxNTI5LCJzY3AiOlsib3BlbmlkIiwib2ZmbGluZV9hY2Nlc3MiXSwiZGF0YSI6eyJ2IjoiMSIsImF1ZCI6Imh0dHBzOi8vb3duZXItYXBpLnRlc2xhbW90b3JzLmNvbS8iLCJzdWIiOiJhNWY1Y2IyOS1hYjlkLTQ4ZGEtOTFlYS00YWIwY2Q1ZmJhZjYiLCJzY3AiOlsib3BlbmlkIiwiZW1haWwiLCJvZmZsaW5lX2FjY2VzcyJdLCJhenAiOiJvd25lcmFwaSIsImFtciI6WyJwd2QiXSwiYXV0aF90aW1lIjoxNjQ3NDcxNTI5fX0.q0h6KsDyDHsWUv8hR1E0he-bKqk5WGFWbn2xyHgGjVf0xPl3MZ2LS7oUWZVsWSja_BZs4GEKUnjNNj3XunQQ0DuflJFx4zi1DqDPhKCInZjXfgjCmkSz5LLGJis54pQW_wUpwS-q7POwhykFBgIEDE3I7y8TZLuawcpktuJh9_oBU11aYkRK3X69zUbkJUl-fLa5MgNI0MmVcyoXENo7HbImvp-w3NqUwrTKQzv4kNLNs9BHjdhpoliHji0it6T7fA7L0Bb-jvS0vBEyoMMNIh1VsqT1tfL00P6wzjiabbV4TIWLhmaQAua_X4aKGRkqP8JZ5JwE1ougXcCBVBiPxg"
@@ -18,7 +18,7 @@
             "title": "A NodeServer to integrate control of Tesla EVs",
             "author": "Panda88CO",
             "version": "0.1.0",
-            "date": "Feb12,  2022",
+            "date": "March25,  2022",
             "source": "https://github.com/Panda88CO/udi-TeslaEV",
             "license": "https://github.com/Panda88CO/udi-TeslaEV/blob/main/license"
         }
