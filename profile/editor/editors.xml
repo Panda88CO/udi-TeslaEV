@@ -115,7 +115,7 @@
   </editor>
 
   <editor id = "CHGSTATE" > 
-     <range  uom="25" subset="0-4,99" nls="CHGSTATE"  />  
+     <range  uom="25" subset="0-5,99" nls="CHGSTATE"  />  
   </editor>
 
   <editor id = "STARTSTOP" > 

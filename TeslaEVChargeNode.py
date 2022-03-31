@@ -60,16 +60,18 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def state2ISY(self, state): # Still TBD - 
         stateL = state.lower()
-        if stateL == 'not connected':
+        if stateL == 'disconnected':
             return(0)
-        elif state == 'connected':
+        elif stateL == 'nopower':
             return(1)          
-        elif stateL== 'charging':
+        elif stateL == 'starting':
             return(2)
-        elif stateL== 'stopped':
+        elif stateL == 'charging':
             return(3)
-        elif stateL== 'complete':
+        elif stateL == 'stopped':
             return(4)
+        elif stateL == 'complete':
+            return(5)
         else:
             return(99)  
 
