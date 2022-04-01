@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import requests
 import json
-import os
 import time
 from requests_oauth2 import OAuth2BearerToken
 
@@ -15,38 +14,23 @@ except ImportError:
     logging.basicConfig(level=logging.DEBUG)
 
 
-#import logging
+
+
 class teslaCloudApi(object):
 
-    def __init__(self):
+    def __init__(self, refreshToken):
         logging.debug('teslaCloudApi')
         self.tokenInfo = None
+        self.Rtoken = refreshToken
         self.tokenExpMargin = 600 #10min
         self.TESLA_URL = "https://owner-api.teslamotors.com"
         self.API = "/api/1"
 
-        #self.CLIENT_ID = "81527cff06843c8634fdc09e8ac0abefb46ac849f38fe1e431c2ef2106796384"
-        #self.CLIENT_SECRET = "c7257eb71a564034f9419ee651c7d0e5f7aa6bfbd18bafb5c5c033b093bb2fa3"
-        #self.TESLA_URL = "https://owner-api.teslamotors.com"
-
-        #self.state_str = 'ThisIsATest' 
         self.cookies = None
         self.data = {}
         
-        try:
-            if (os.path.exists('./refreshToken.txt')):
-                dataFile = open('./refreshToken.txt', 'r')
-                self.Rtoken = dataFile.read()
-                dataFile.close()
-                #logging.info('Rtoken: {}'.format(self.Rtoken) )
-        except Exception as e:
-            logging.error('Exception storeDaysData: '+  str(e))         
-            logging.error ('Failed to write ./refreshToken.txt')
-            self.Rtoken = ''
-        #self.running = False
-        #self.teslaAuth = TPWauth()
         self.tokenInfo = self.tesla_refresh_token()
-        #logging.info('tokenInfo: {}'.format(self.tokenInfo))
+
 
     '''
     def isNodeServerUp(self):
@@ -79,7 +63,6 @@ class teslaCloudApi(object):
         return(self.__teslaGetToken())
 
 
-
     def teslaGetProduct(self):
         S = self.__teslaConnect()
         with requests.Session() as s:
@@ -89,10 +72,13 @@ class teslaCloudApi(object):
                 products = r.json()
                 return(products)        
             except Exception as e:
-                logging.error('Exception teslaGetProduct: '+ str(e))
+                logging.debug('Exception teslaGetProduct: '+ str(e))
                 logging.error('Error getting product info')
                 return(None)
 
+
+    def getRtoken(self):
+        return(self.Rtoken)
 
     def tesla_refresh_token(self):
         dateNow = int(time.time())
@@ -113,8 +99,6 @@ class teslaCloudApi(object):
                 dataFile.write( self.Rtoken)
                 dataFile.close()
 
-            #else:
-            #    self.Rtoken = None
 
             '''
             data = {}

@@ -1,4 +1,4 @@
-# udi-powerwall
+# teslaEV
 
 ## Installation
 
@@ -7,7 +7,7 @@ For cloud access through Tesla cloud service one must provide a "refresh token" 
 It can be obtained e.g. using Auth for Tesla iPhone app 
 https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613 or Tesla Tokens https://play.google.com/store/apps/details?id=net.leveugle.teslatokens
 
-Once the token is accepted the node server will try to keep the token refreshed.  Note, the token is stored in a file as part of the node server
+Once the token is accepted the node server will try to keep the token refreshed. 
 
 Once installed a status node for each EV registered in the user account is created with sub-nodes for each EV addressing charging and climate control.
 

@@ -3,7 +3,6 @@ import requests
 import time
 from requests_oauth2 import OAuth2BearerToken
 
-
 try:
     import udi_interface
     logging = udi_interface.LOGGER
@@ -15,9 +14,9 @@ except ImportError:
 from TeslaCloudApi import teslaCloudApi
 
 class teslaCloudEVapi(object):
-    def __init__(self):
+    def __init__(self, Rtoken):
         logging.debug('teslaCloudEVapi')
-        self.teslaApi = teslaCloudApi()
+        self.teslaApi = teslaCloudApi(Rtoken)
 
         self.TESLA_URL = self.teslaApi.TESLA_URL
         self.API = self.teslaApi.API
@@ -32,6 +31,9 @@ class teslaCloudEVapi(object):
     def isConnectedToEV(self):
        return(self.teslaApi.isConnectedToTesla())
 
+    def getRtoken(self):
+        return(self.teslaApi.getRtoken())
+
     def teslaEV_GetIdList(self ):
         logging.debug('teslaEV_GetVehicleIdList:')
         S = self.teslaApi.teslaConnect()
@@ -45,7 +47,7 @@ class teslaCloudEVapi(object):
                     temp.append(list['response'][id]['id_s'])
                 return (temp)
             except Exception as e:
-                logging.error('Exception teslaEV_GetVehicleIdList: ' + str(e))
+                logging.debug('Exception teslaEV_GetVehicleIdList: ' + str(e))
                 logging.error('Error getting vehicle list')
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
@@ -66,7 +68,7 @@ class teslaCloudEVapi(object):
                 logging.debug('carinfo : {}'.format(self.carInfo))
                 #return()
             except Exception as e:
-                logging.error('Exception teslaGetSiteInfo: {}'.format(e))
+                logging.debug('Exception teslaGetSiteInfo: {}'.format(e))
                 logging.error('Error getting data from vehicle id: {}'.format(EVid))
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )

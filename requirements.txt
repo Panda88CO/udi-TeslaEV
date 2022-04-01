@@ -2,3 +2,4 @@
 requests_oauth2
 udi_interface>=3.0.35
 requests>=2.25
+#Crypto>=1.4.1

@@ -59,131 +59,132 @@ class teslaEV_ClimateNode(udi_interface.Node):
 
 
     def updateISYdrivers(self):
+        logging.info('Climate updateISYdrivers {}'.format(self.EVid))
         logging.debug('Climate updateISYdrivers {}'.format(self.TEV.teslaEV_GetClimateInfo(self.EVid)))
 
-        #logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCabinTemp(self.EVid)))
+        logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCabinTemp(self.EVid)))
         tempC = self.TEV.teslaEV_GetCabinTemp(self.EVid)
         if tempC == -99:
             self.setDriver('GV1', 0, True, True, 25)
         else:
             self.setDriver('GV1', self.TEV.teslaEV_GetCabinTemp(self.EVid), True, True, 4)
-        #logging.debug('CLITEMP: {} '.format(self.TEV.teslaEV_GetOutdoorTemp(self.EVid)))
+        logging.debug('CLITEMP: {} '.format(self.TEV.teslaEV_GetOutdoorTemp(self.EVid)))
         tempC = self.TEV.teslaEV_GetOutdoorTemp(self.EVid)
         if tempC == -99:
             self.setDriver('CLITEMP', 0, True, True, 25)
         else:
             self.setDriver('CLITEMP', self.TEV.teslaEV_GetOutdoorTemp(self.EVid), True, True, 4)
-        #logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
+        logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
         self.setDriver('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid), True, True, 4)
-        #logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
+        logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
         self.setDriver('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid), True, True, 4)
-        #logging.debug('GV5-9: {}'.format(self.TEV.teslaEV_GetSeatHeating(self.EVid)))
+        logging.debug('GV5-9: {}'.format(self.TEV.teslaEV_GetSeatHeating(self.EVid)))
         temp = self.TEV.teslaEV_GetSeatHeating(self.EVid)
         self.setDriver('GV5', temp['FrontLeft'], True, True)
         self.setDriver('GV6', temp['FrontRight'], True, True)
         self.setDriver('GV7', temp['RearLeft'], True, True)
         self.setDriver('GV8', temp['RearMiddle'], True, True)
         self.setDriver('GV9', temp['RearRight'], True, True)
-        #logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
+        logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
         self.setDriver('GV10', self.cond2ISY(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)), True, True)
-        #logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
+        logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
         self.setDriver('GV11',self.cond2ISY(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)), True, True)
-        #logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
+        logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
         self.setDriver('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid), True, True, 4)
-        #logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
+        logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
         self.setDriver('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid), True, True, 4)
-        #logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
+        logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
         self.setDriver('GV14', self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid), True, True) #nned to be implemented                                                
 
     def ISYupdate (self, command):
-        logging.debug('ISY-update called')
+        logging.info('ISY-update called')
         self.TEV.teslaEV_GetInfo(self.EVid)
         self.updateISYdrivers()
  
  
     def evWindows (self, command):
-        logging.debug('evWindows- called')
+        logging.info('evWindows- called')
         windowCtrl = int(command.get('value'))
         if windowCtrl == 1:
             self.TEV.teslaEV_Windows(self.EVid, 'vent')
         elif windowCtrl == 0:
             self.TEV.teslaEV_Windows(self.EVid, 'close')            
         else:
-            logging.debug('Wrong command for evWndows: {}'.format(windowCtrl))
+            logging.error('Wrong command for evWndows: {}'.format(windowCtrl))
 
 
     def evSunroof (self, command):
-        logging.debug('evSunroof called')   
+        logging.info('evSunroof called')   
         sunroofCtrl = int(command.get('value'))
         if sunroofCtrl == 1:
             self.TEV.teslaEV_SunRoof(self.EVid, 'vent')
         elif sunroofCtrl == 0:
             self.TEV.teslaEV_SunRoof(self.EVid, 'close')            
         else:
-            logging.debug('Wrong command for evSunroof: {}'.format(sunroofCtrl)) 
+            logging.error('Wrong command for evSunroof: {}'.format(sunroofCtrl)) 
 
     def evAutoCondition (self, command):
-        logging.debug('evAutoCondition called')  
+        logging.info('evAutoCondition called')  
         autoCond = int(command.get('value'))  
         if autoCond == 1:
             self.TEV.teslaEV_AutoCondition(self.EVid, 'start')
         elif autoCond == 0:
             self.TEV.teslaEV_AutoCondition(self.EVid, 'stop')            
         else:
-            logging.debug('Wrong command for evAutoCondition: {}'.format(autoCond)) 
+            logging.error('Wrong command for evAutoCondition: {}'.format(autoCond)) 
 
     def evDefrostMax (self, command):
-        logging.debug('evDefrostMax called')    
+        logging.info('evDefrostMax called')    
         defrost = int(command.get('value'))  
         if defrost == 1:
             self.TEV.teslaEV_DefrostMax(self.EVid, 'on')
         elif defrost == 0:
             self.TEV.teslaEV_DefrostMax(self.EVid, 'off')            
         else:
-            logging.debug('Wrong command for evDefrostMax: {}'.format(defrost)) 
+            logging.error('Wrong command for evDefrostMax: {}'.format(defrost)) 
 
 
     def evSetCabinTemp (self, command):
-        logging.debug('evSetCabinTemp called')      
+        logging.info('evSetCabinTemp called')      
         cabinTemp = float(command.get('value'))  
         self.TEV.teslaEV_SetCabinTemps(self.EVid, cabinTemp)
         
 
     def evSetSeat0Heat (self, command):
-        logging.debug('evSetSeatHeat called')    
+        logging.info('evSetSeat0Heat called')    
         seatTemp = int(command.get('value'))  
         self.TEV.teslaEV_SetSeatHeating(self.EVid, 0, seatTemp)
 
     def evSetSeat1Heat (self, command):
-        logging.debug('evSetSeatHeat called')    
+        logging.info('evSetSeat1Heat called')    
         seatTemp = int(command.get('value'))  
         self.TEV.teslaEV_SetSeatHeating(self.EVid, 1, seatTemp)
 
     def evSetSeat2Heat (self, command):
-        logging.debug('evSetSeatHeat called')    
+        logging.info('evSetSea2tHeat called')    
         seatTemp = int(command.get('value'))  
         self.TEV.teslaEV_SetSeatHeating(self.EVid, 2, seatTemp)
 
     def evSetSeat4Heat (self, command):
-        logging.debug('evSetSeatHeat called')    
+        logging.info('evSetSeat4Heat called')    
         seatTemp = int(command.get('value'))  
         self.TEV.teslaEV_SetSeatHeating(self.EVid, 4, seatTemp)
 
     def evSetSeat5Heat (self, command):
-        logging.debug('evSetSeatHeat called')    
+        logging.info('evSetSeat5Heat called')    
         seatTemp = int(command.get('value'))  
         self.TEV.teslaEV_SetSeatHeating(self.EVid, 5, seatTemp)
 
 
     def evSteeringWheelHeat (self, command):
-        logging.debug('evSteeringWheelHeat called')    
+        logging.info('evSteeringWheelHeat called')    
         wheel = int(command.get('value'))  
         if wheel == 1:
             self.TEV.teslaEV_SteeringWheelHeat(self.EVid, 'on')
         elif wheel == 0:
             self.TEV.teslaEV_SteeringWheelHeat(self.EVid, 'off')            
         else:
-            logging.debug('Wrong command for evDefrostMax: {}'.format(wheel)) 
+            logging.error('Wrong command for evDefrostMax: {}'.format(wheel)) 
 
     id = 'evclimate'
     commands = { 'UPDATE': ISYupdate, 

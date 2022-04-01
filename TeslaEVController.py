@@ -2,7 +2,7 @@
 
 import sys
 import time 
-import os
+
 
 try:
     import udi_interface
@@ -17,17 +17,19 @@ from TeslaEVStatusNode import teslaEV_StatusNode
 from TeslaCloudEVapi  import teslaCloudEVapi
 
 
+
 class TeslaEVController(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
         super(TeslaEVController, self).__init__(polyglot, primary, address, name)
         self.poly = polyglot
-
-        logging.info('_init_ Tesla EV Controller - 1')
+        self.TEV = None
+        logging.info('_init_ Tesla EV Controller ')
         self.ISYforced = False
         self.name = 'Tesla EV Info'
         self.primary = primary
         self.address = address
-
+        self.tokenPassword = ""
+        self.Rtoken = None
 
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
@@ -36,11 +38,12 @@ class TeslaEVController(udi_interface.Node):
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.n_queue = []
 
-        self.Parameters = Custom(polyglot, 'customparams')
+        self.Parameters = Custom(polyglot, 'customParams')      
         self.Notices = Custom(polyglot, 'notices')
-       
-        logging.debug('self.address : ' + str(self.address))
-        logging.debug('self.name :' + str(self.name))
+
+
+        #logging.debug('self.address : ' + str(self.address))
+        #logging.debug('self.name :' + str(self.name))
         self.hb = 0
 
         self.connected = False
@@ -53,8 +56,8 @@ class TeslaEVController(udi_interface.Node):
         self.wait_for_node_done()
         self.setDriver('ST', 1, True, True)
 
-        self.poly.setLogLevel('debug')
-        logging.debug('Controller init DONE')
+        #self.poly.setLogLevel('debug')
+        logging.Info('Controller init DONE')
 
     def node_queue(self, data):
         self.n_queue.append(data['address'])
@@ -66,33 +69,49 @@ class TeslaEVController(udi_interface.Node):
 
 
     def start(self):
-        logging.debug('start')
+        logging.info('start')
+        self.poly.updateProfile()
+        self.poly.setCustomParamsDoc()
         self.tesla_initialize()
+        self.createNodes()
         # Wait for things to initialize....
-
- 
-
-
         # Poll for current values (and update drivers)
         #self.TEV.pollSystemData('all')          
         #self.updateISYdrivers('all')
         #self.systemReady = True
-   
+
+
+    def stop(self):
+        self.Notices.clear()
+        if self.TEV:
+            self.TEV.disconnectTEV()
+        self.setDriver('ST', 0 , True, True)
+        logging.debug('stop - Cleaning up')
+        self.poly.stop()
+
+    def query(self,command=None):
+        """
+        Optional.
+
+        The query method will be called when the ISY attempts to query the
+        status of the node directly.  You can do one of two things here.
+        You can send the values currently held by Polyglot back to the
+        ISY by calling reportDriver() or you can actually query the 
+        device represented by the node and report back the current 
+        status.
+        """
+        nodes = self.poly.getNodes()
+        for node in nodes:
+            nodes[node].reportDrivers()
 
     '''
     This may be called multiple times with different settings as the user
     could be enabling or disabling the various types of access.  So if the
     user changes something, we want to re-initialize.
     '''
-    def tesla_initialize(self):
-        logging.debug('starting Login process')
-        try:
-            self.TEV = teslaCloudEVapi()
-            self.connected = self.TEV.isConnectedToEV()
-            if not self.connected:
-                logging.info ('Failed to get acces to Tesla Cloud')
-                exit()
 
+    def createNodes(self):
+        try:
             self.vehicleList = self.TEV.teslaEV_GetIdList()
             logging.debug('vehicleList: {}'.format(self.vehicleList))
             self.GV1 =len(self.vehicleList)
@@ -113,102 +132,118 @@ class TeslaEVController(udi_interface.Node):
                     self.statusNodeReady = True
                     
             self.longPoll()
+        except Exception as e:
+            logging.error('Exception Controller start: '+ str(e))
+            logging.info('Did not obtain data from EV ')
 
+
+    def tesla_initialize(self):
+        logging.info('starting Login process')
+        try:
+            while self.Rtoken == '':
+                logging.info('Waiting for token')
+                time.sleep(10)
+            self.TEV = teslaCloudEVapi(self.Rtoken)
+            self.connected = self.TEV.isConnectedToEV()
+            if not self.connected:
+                logging.error ('Failed to get acces to Tesla Cloud')
+                exit()
 
 
         except Exception as e:
-            logging.error('Exception Controller start: '+ str(e))
-            logging.info('Did not connect to EV ')
+            logging.debug('Exception Controller start: '+ str(e))
+            logging.error('Did not connect to Tesla Cloud ')
 
         logging.debug ('Controller - initialization done')
 
     def handleLevelChange(self, level):
         logging.info('New log level: {}'.format(level))
 
-    def handleParams (self, userParam ):
+    def handleParams (self, customParams ):
         logging.debug('handleParams')
+        #supportParams = ['REFRESH_TOKEN', 'TOKEN_PASSWORD']
         supportParams = ['REFRESH_TOKEN']
-        self.Parameters.load(userParam)
+        self.Parameters.load(customParams)
 
-        logging.debug('handleParams load')
+        logging.debug('handleParams load - {}'.format(customParams))
         #logging.debug(self.Parameters)  ### TEMP
         self.poly.Notices.clear()
         self.cloudAccess = False
-        for param in userParam:
+        for param in customParams:
             if param not in supportParams:
                 del self.Parameters[param]
                 logging.debug ('erasing key: ' + str(param))
-
+        '''
+        if 'TOKEN_PASSWORD' in customParams:
+            self.tokenPassword = self.Parameters['TOKEN_PASSWORD']
+            if self.tokenPassword == "":
+                self.poly.Notices['tp'] = 'Enter a Password to encrypt Tokens stored in Files'
+            else:
+                if 'tp' in self.poly.Notices:
+                    self.poly.Notices.delete('tp')
+        else:
+            self.poly.Notices['tp'] = 'Enter a Password to encrypt Tokens stored in Files'
+            self.tokenPassword == ""
+        '''
+        if 'REFRESH_TOKEN' in customParams:
+            self.Rtoken = self.Parameters['REFRESH_TOKEN']
+            if self.Rtoken  == '':
+                self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
+            else:
+                if 'ct' in self.poly.Notices:
+                    self.poly.Notices.delete('ct')        
+                            
+        else:
+            self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
+            self.Rtoken  = ''
+           
+        '''
         if 'REFRESH_TOKEN' in userParam:
             cloud_token = userParam['REFRESH_TOKEN']
             if cloud_token != '':
                 if (os.path.exists('./inputToken.txt')):
-                    
-                    dataFile = open('./inputToken.txt', 'r')
-                    tmpToken = dataFile.read()
-                    dataFile.close()
-                    if tmpToken != cloud_token:
-                        logging.info('Newer input from config')
-                        dataFile = open('./inputToken.txt', 'w')
-                        dataFile.write( cloud_token)
-                        dataFile.close()
-                        dataFile = open('./refreshToken.txt', 'w')
-                        dataFile.write( cloud_token)
-                        dataFile.close()   
-                        self.Rtoken = cloud_token
-                    elif (os.path.exists('./refreshToken.txt')): #assume refreshToken is newer
-                        dataFile = open('./refreshToken.txt', 'r')
-                        self.Rtoken = dataFile.read()
-                        cloud_token = self.Rtoken
-                        dataFile.close() 
-                    else: #InputToken must exist (this should never trigger)
-                        dataFile = open('./refreshToken.txt', 'w') 
-                        dataFile.write( cloud_token)
-                        dataFile.close()                   
-                        self.Rtoken = cloud_token
+                    if self.tokenPassword != "":
+                        tmpToken = self.readTokenFile('./inputToken.txt', self.tokenPassword)
+                        if tmpToken != cloud_token:
+                            logging.info('Newer input from config')
+                            self.writeTokenFile('./inputToken.txt', cloud_token, self.tokenPassword)
+                            self.writeTokenFile('./refreshToken.txt', cloud_token, self.tokenPassword)
+                            self.Rtoken = cloud_token
+                        elif (os.path.exists('./refreshToken.txt')): #assume refreshToken is newer
+                            self.Rtoken =  self.readTokenFile('./refreshToken.txt', self.tokenPassword)
+                            cloud_token = self.Rtoken
+                        else: #InputToken must exist (this should never trigger)
+                            self.writeTokenFile('./refreshToken.txt', cloud_token, self.tokenPassword)               
+                            self.Rtoken = cloud_token
 
-                else: #first time input - must overwrite refreshToken as well 
-                    dataFile = open('./inputToken.txt', 'w')
-                    dataFile.write( cloud_token)
-                    dataFile.close()
-                    dataFile = open('./refreshToken.txt', 'w')
-                    dataFile.write( cloud_token)
-                    dataFile.close()                        
-                    self.Rtoken = cloud_token    
-                                 
-            else: # nothing has changed - use refreshToken 
-                if (os.path.exists('./refreshToken.txt')):
-                    dataFile = open('./refreshToken.txt', 'r')
-                    self.Rtoken = dataFile.read()
-                    cloud_token = self.Rtoken
-                    dataFile.close()
-                    
+                    else: #first time input - must overwrite refreshToken as well 
+                        self.writeTokenFile('./inputToken.txt', cloud_token, self.tokenPassword)
+                        self.writeTokenFile('./refreshToken.txt', cloud_token, self.tokenPassword)                   
+                        self.Rtoken = cloud_token    
+                                    
+                else: # nothing has changed - use refreshToken 
+                    if (os.path.exists('./refreshToken.txt')):
+                        self.Rtoken = self.readTokenFile('./refreshToken.txt', self.tokenPassword)
+                        cloud_token = self.Rtoken
+                        
         else: #no token provided yet 
             if (os.path.exists('./refreshToken.txt')):
-                dataFile = open('./refreshToken.txt', 'r')
-                self.Rtoken = dataFile.read() 
+                self.Rtoken = self.readTokenFile('./refreshToken.txt', self.tokenPassword)
                 cloud_token = self.Rtoken  
-                dataFile.close()
                 noFile = False
             else:
                 self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
                 cloud_token = ''
+        '''
+
                
-        if cloud_token == '':
+        if self.Rtoken == '':
             self.poly.Notices['ct'] = 'Please enter the Tesla Refresh Token - see readme for futher info '
         else:
-            logging.debug('Cloud access is valid, configure....')
-            self.cloudAccess = True
-            self.tesla_initialize( )
+
+            self.tesla_initialize()
         logging.debug('done with parameter processing')
         
-    def stop(self):
-        self.removeNoticesAll()
-        if self.TEV:
-            self.TEV.disconnectTEV()
-        self.setDriver('ST', 0 , True, True)
-        logging.debug('stop - Cleaning up')
-        self.poly.stop()
 
     def heartbeat(self):
         logging.debug('heartbeat: ' + str(self.hb))
@@ -221,14 +256,14 @@ class TeslaEVController(udi_interface.Node):
         
     def systemPoll(self, pollList):
         logging.debug('systemPoll')
-        
-        if self.TEV.isConnectedToEV(): 
-            if 'longPoll' in pollList:
-                self.longPoll()
-            elif 'shortPoll' in pollList:
-                self.shortPoll()
-        else:
-            logging.info('Waiting for system/nodes to initialize')
+        if self.TEV:
+            if self.TEV.isConnectedToEV(): 
+                if 'longPoll' in pollList:
+                    self.longPoll()
+                elif 'shortPoll' in pollList:
+                    self.shortPoll()
+            else:
+                logging.info('Waiting for system/nodes to initialize')
 
     def shortPoll(self):
         logging.info('Tesla EV Controller shortPoll(HeartBeat)')
@@ -248,6 +283,10 @@ class TeslaEVController(udi_interface.Node):
                     node.poll()
             except Exception as E:
                 logging.info('Not all nodes ready: {}'.format(E))
+
+            self.Rtoken  = self.TEV.getRtoken()
+            if self.Rtoken  != self.Parameters['REFRESH_TOKEN']:
+                self.Parameters['REFRESH_TOKEN'] = self.Rtoken 
 
 
     def poll(self): # dummey poll function 

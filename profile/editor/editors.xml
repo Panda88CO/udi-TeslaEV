@@ -134,6 +134,9 @@
      <range  uom="25" subset="0-1" nls="CHARGECTRL"  />  
   </editor>
 
+  <editor id = "CPLSTATE" > 
+     <range  uom="25" subset="0-2,99" nls="CPLSTATE"  />  
+  </editor>
 
   <editor id = "TEMPUNIT" > 
      <range  uom="25" subset="0-1" nls="TEMPUNIT"  />  

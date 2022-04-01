@@ -126,6 +126,11 @@ PRESENT-0 = Yes
 PRESENT-99 = Unknown 
 ST-nlsevcharge-GV2-NAME = Charge Port Open
 ST-nlsevcharge-GV3-NAME = Charger Port Latched
+CPLSTATE-0 = Disengaged
+CPLSTATE-1 = Engaged
+CPLSTATE-2 = Blocking
+CPLSTATE-99 = Unknown/Not Connected
+
 ST-nlsevcharge-BATLVL-NAME = Battery Level 
 ST-nlsevcharge-GV5-NAME = Max Charge Current
 ST-nlsevcharge-GV6-NAME = Charging State
