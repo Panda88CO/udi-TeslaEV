@@ -92,7 +92,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
         self.setDriver('GV10', self.cond2ISY(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)), True, True)
         logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
-        self.setDriver('GV11',self.cond2ISY(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)), True, True)
+        self.setDriver('GV11', self.cond2ISY(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)), True, True)
         logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
         logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
 
@@ -209,7 +209,11 @@ class teslaEV_ClimateNode(udi_interface.Node):
     def setTempUnit(self, command):
         logging.debug('setTempUnit')
         self.tempUnit  = int(command.get('value'))
-        
+        self.setDriver('GV15', self.tempUnit, True, True)  
+        self.updateISYdrivers()
+
+
+
     id = 'evclimate'
     commands = { 'UPDATE': ISYupdate, 
                  'WINDOWS' : evWindows,
@@ -238,7 +242,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
             {'driver': 'GV8', 'value': 0, 'uom': 25},  #seat_heater_rear_center
             {'driver': 'GV9', 'value': 0, 'uom': 25},  #seat_heater_rear_right
             {'driver': 'GV10', 'value': 0, 'uom': 25}, #is_auto_conditioning_on
-            {'driver': 'GV12', 'value': 0, 'uom': 25}, #is_preconditioning
+            {'driver': 'GV11', 'value': 0, 'uom': 25}, #is_preconditioning
             {'driver': 'GV12', 'value': 0, 'uom': 4}, #max_avail_temp
             {'driver': 'GV13', 'value': 0, 'uom': 4}, #min_avail_temp   
             {'driver': 'GV14', 'value': 99, 'uom': 25}, #Steering Wheel Heat
