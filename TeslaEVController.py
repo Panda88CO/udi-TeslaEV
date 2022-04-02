@@ -28,7 +28,7 @@ class TeslaEVController(udi_interface.Node):
         self.name = 'Tesla EV Info'
         self.primary = primary
         self.address = address
-        self.tokenPassword = ""
+        #self.tokenPassword = ""
         self.Rtoken = None
 
         self.poly.subscribe(self.poly.START, self.start, address)
@@ -56,8 +56,11 @@ class TeslaEVController(udi_interface.Node):
         self.wait_for_node_done()
         self.setDriver('ST', 1, True, True)
 
+        self.tempUnit = 0 # C
+        self.distUnit = 0 # KM
+
         #self.poly.setLogLevel('debug')
-        logging.Info('Controller init DONE')
+        logging.info('Controller init DONE')
 
     def node_queue(self, data):
         self.n_queue.append(data['address'])
@@ -110,6 +113,23 @@ class TeslaEVController(udi_interface.Node):
     user changes something, we want to re-initialize.
     '''
 
+    def tesla_initialize(self):
+        logging.info('starting Login process')
+        try:
+            while self.Rtoken == '':
+                logging.info('Waiting for token')
+                time.sleep(10)
+            self.TEV = teslaCloudEVapi(self.Rtoken)
+            self.connected = self.TEV.isConnectedToEV()
+            if not self.connected:
+                logging.error ('Failed to get acces to Tesla Cloud')
+                exit()
+        except Exception as e:
+            logging.debug('Exception Controller start: '+ str(e))
+            logging.error('Did not connect to Tesla Cloud ')
+
+        logging.debug ('Controller - initialization done')
+
     def createNodes(self):
         try:
             self.vehicleList = self.TEV.teslaEV_GetIdList()
@@ -137,24 +157,7 @@ class TeslaEVController(udi_interface.Node):
             logging.info('Did not obtain data from EV ')
 
 
-    def tesla_initialize(self):
-        logging.info('starting Login process')
-        try:
-            while self.Rtoken == '':
-                logging.info('Waiting for token')
-                time.sleep(10)
-            self.TEV = teslaCloudEVapi(self.Rtoken)
-            self.connected = self.TEV.isConnectedToEV()
-            if not self.connected:
-                logging.error ('Failed to get acces to Tesla Cloud')
-                exit()
 
-
-        except Exception as e:
-            logging.debug('Exception Controller start: '+ str(e))
-            logging.error('Did not connect to Tesla Cloud ')
-
-        logging.debug ('Controller - initialization done')
 
     def handleLevelChange(self, level):
         logging.info('New log level: {}'.format(level))
@@ -301,6 +304,10 @@ class TeslaEVController(udi_interface.Node):
 
 
 
+
+
+
+
     def ISYupdate (self, command):
         logging.debug('ISY-update called')
 
@@ -308,12 +315,14 @@ class TeslaEVController(udi_interface.Node):
 
  
     id = 'controller'
-    commands = { 'UPDATE': ISYupdate }
+    commands = { 'UPDATE': ISYupdate ,
+                
+                }
+
     drivers = [
             {'driver': 'ST', 'value':0, 'uom':2},
             {'driver': 'GV0', 'value':0, 'uom':25},  
             {'driver': 'GV1', 'value':0, 'uom':107},
-        
             ]
             # ST - node started
             # GV0 Access to TeslaApi

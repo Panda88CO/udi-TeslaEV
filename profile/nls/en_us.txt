@@ -43,6 +43,13 @@ ST-nlsevstatus-GV12-NAME = Frunk State
 OPENCLOSE-0 = Closed
 OPENCLOSE-1 = Open
 OPENCLOSE-99 = Unknown
+ST-nlsevstatus-GV13-NAME = Distance Unit
+DISTUNIT-0 = Km
+DISTUNIT-1 = Miles
+
+
+
+
 CMD-nlsevstatus-UPDATE-NAME = Update EV Status
 CMD-nlsevstatus-WAKEUP-NAME = Wake Up
 CMD-nlsevstatus-HONKHORN-NAME = Honk Horn
@@ -56,6 +63,7 @@ SUNROOFCTRL-1 = Vent
 CMD-nlsevstatus-TRUNK-NAME = Actuate Trunk
 CMD-nlsevstatus-FRUNK-NAME = Actuate Frunk
 CMD-nlsevstatus-HOMELINK-NAME = Toggle HomeLink
+CMD-nlsevstatus-DUNIT-NAME = Set Unit of Dist
 
 
 
@@ -89,6 +97,12 @@ ST-nlsevclimate-GV14-NAME = Steering Wheel Heat
 ONOFF-0 = Off
 ONOFF-1 = On
 ONOFF-99 = Unknown/Unsupported
+
+ST-nlsevclimate-GV15-NAME = Temperatue Unit
+TEMPUNIT-0 = Celcius (C)
+TEMPUNIT-1 = Farenheit (F)
+
+
 CMD-nlsevclimate-UPDATE-NAME = Update EV Climate Data
 CMD-nlsevclimate-SUNROOF-NAME = Sunroof Control
 CMD-nlsevclimate-WINDOWS-NAME = Windows control
@@ -111,10 +125,10 @@ HEAT-0 = Off
 HEAT-1 = Low Heat
 HEAT-2 = Medium Heat
 HEAT-3 = Maximum Heat
-CMD-nlsevclimate-STEERINGW-NAME =Steering Wheel Heat
+CMD-nlsevclimate-STEERINGW-NAME = Steering Wheel Heat
 STEERINGW-0 = Disabled
 STEERINGW-0 = Enabled
-
+CMD-nlsevclimate-TUNIT-NAME = Set Unit of Temp
 
 
 ND-evcharge-NAME = EV charging Data

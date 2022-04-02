@@ -24,7 +24,8 @@ class teslaEV_ClimateNode(udi_interface.Node):
         self.nodeReady = False
         #self.node = self.poly.getNode(address)
         self.poly.subscribe(polyglot.START, self.start, address)
-        
+        self.tempUnit = 0
+
     def start(self):                
         logging.debug('Start TeslaEV Climate Node')  
         self.setDriver('ST', 1, True, True)
@@ -37,6 +38,9 @@ class teslaEV_ClimateNode(udi_interface.Node):
     def climateNodeReady (self):
         return(self.nodeReady )
     
+
+
+
     def poll(self):
         
         logging.debug('Climate node {}'.format(self.EVid) )
@@ -57,27 +61,27 @@ class teslaEV_ClimateNode(udi_interface.Node):
         else:
             return(0)
 
+    def tempUnitAdjust(self, tempC):
+        if self.tempUnit == 0:
+            return(tempC)  # C
+        else:
+            return(tempC*1.8+32) #F
+
 
     def updateISYdrivers(self):
         logging.info('Climate updateISYdrivers {}'.format(self.EVid))
         logging.debug('Climate updateISYdrivers {}'.format(self.TEV.teslaEV_GetClimateInfo(self.EVid)))
 
         logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCabinTemp(self.EVid)))
-        tempC = self.TEV.teslaEV_GetCabinTemp(self.EVid)
-        if tempC == -99:
+        tempCabin = self.TEV.teslaEV_GetCabinTemp(self.EVid)
+        if tempCabin == -99:
             self.setDriver('GV1', 0, True, True, 25)
-        else:
-            self.setDriver('GV1', self.TEV.teslaEV_GetCabinTemp(self.EVid), True, True, 4)
         logging.debug('CLITEMP: {} '.format(self.TEV.teslaEV_GetOutdoorTemp(self.EVid)))
-        tempC = self.TEV.teslaEV_GetOutdoorTemp(self.EVid)
-        if tempC == -99:
+        tempOutdoor = self.TEV.teslaEV_GetOutdoorTemp(self.EVid)
+        if tempOutdoor == -99:
             self.setDriver('CLITEMP', 0, True, True, 25)
-        else:
-            self.setDriver('CLITEMP', self.TEV.teslaEV_GetOutdoorTemp(self.EVid), True, True, 4)
         logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
-        self.setDriver('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid), True, True, 4)
         logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
-        self.setDriver('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid), True, True, 4)
         logging.debug('GV5-9: {}'.format(self.TEV.teslaEV_GetSeatHeating(self.EVid)))
         temp = self.TEV.teslaEV_GetSeatHeating(self.EVid)
         self.setDriver('GV5', temp['FrontLeft'], True, True)
@@ -90,11 +94,25 @@ class teslaEV_ClimateNode(udi_interface.Node):
         logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
         self.setDriver('GV11',self.cond2ISY(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)), True, True)
         logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
-        self.setDriver('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid), True, True, 4)
         logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
-        self.setDriver('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid), True, True, 4)
+
+        if self.tempUnit  == 0:
+            self.setDriver('GV1', tempCabin, True, True, 4)
+            self.setDriver('CLITEMP', tempOutdoor, True, True, 4)
+            self.setDriver('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid), True, True, 4)
+            self.setDriver('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid), True, True, 4)
+            self.setDriver('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid), True, True, 4)
+            self.setDriver('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid), True, True, 4)
+        else:
+            self.setDriver('GV1', 32+ 1.8*tempCabin, True, True, 17)
+            self.setDriver('CLITEMP', 32+ 1.8*tempOutdoor, True, True, 17)
+            self.setDriver('GV3', 32+1.8*self.TEV.teslaEV_GetLeftTemp(self.EVid), True, True, 17)
+            self.setDriver('GV4', 32+1.8*self.TEV.teslaEV_GetRightTemp(self.EVid), True, True, 17)
+            self.setDriver('GV12', 32+1.8*self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid), True, True, 17)
+            self.setDriver('GV13', 32+1.8*self.TEV.teslaEV_MinCabinTempCtrl(self.EVid), True, True, 17)
+
         logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
-        self.setDriver('GV14', self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid), True, True) #nned to be implemented                                                
+        self.setDriver('GV14', self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid), True, True) #need to be implemented                                                
 
     def ISYupdate (self, command):
         logging.info('ISY-update called')
@@ -147,6 +165,8 @@ class teslaEV_ClimateNode(udi_interface.Node):
     def evSetCabinTemp (self, command):
         logging.info('evSetCabinTemp called')      
         cabinTemp = float(command.get('value'))  
+        if self.tempUnit == 1:
+            cabinTemp = (cabinTemp-32)/1.8 # Must be set in C
         self.TEV.teslaEV_SetCabinTemps(self.EVid, cabinTemp)
         
 
@@ -186,6 +206,10 @@ class teslaEV_ClimateNode(udi_interface.Node):
         else:
             logging.error('Wrong command for evDefrostMax: {}'.format(wheel)) 
 
+    def setTempUnit(self, command):
+        logging.debug('setTempUnit')
+        self.tempUnit  = int(command.get('value'))
+        
     id = 'evclimate'
     commands = { 'UPDATE': ISYupdate, 
                  'WINDOWS' : evWindows,
@@ -198,8 +222,8 @@ class teslaEV_ClimateNode(udi_interface.Node):
                  'SEAT3' :evSetSeat2Heat,
                  'SEAT4' :evSetSeat4Heat,
                  'SEAT5' :evSetSeat5Heat,
-                 'STEERINGW' : evSteeringWheelHeat   
-
+                 'STEERINGW' : evSteeringWheelHeat,   
+                 'TUNIT' : setTempUnit,
                 }
 
     drivers = [
@@ -218,6 +242,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
             {'driver': 'GV12', 'value': 0, 'uom': 4}, #max_avail_temp
             {'driver': 'GV13', 'value': 0, 'uom': 4}, #min_avail_temp   
             {'driver': 'GV14', 'value': 99, 'uom': 25}, #Steering Wheel Heat
+            {'driver': 'GV15', 'value': 0, 'uom': 25}, #Temp Unit
             ]
 
 

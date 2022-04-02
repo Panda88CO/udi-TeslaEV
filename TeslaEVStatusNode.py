@@ -29,6 +29,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.statusNodeReady = False
         self.climateNodeReady = False
         self.chargeNodeReady = False
+        self.distUnit = 0
 
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
@@ -43,7 +44,9 @@ class teslaEV_StatusNode(udi_interface.Node):
             time.sleep(0.1)
             #logging.debug('wait_for_node_done')
         self.n_queue.pop()
-
+    
+    def setDistUnit(self, distUnit):
+        self.distUnit = distUnit
 
     def start(self):       
         logging.info('Start Tesla EV Status Node for {}'.format(self.EVid)) 
@@ -102,6 +105,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.updateISYdrivers()
 
 
+        
 
     def updateISYdrivers(self):
         logging.info('updateISYdrivers - Status for {}'.format(self.EVid))
@@ -116,10 +120,13 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
         self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
         logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
-        self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True)
+        if self.distUnit == 1:
+            self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True, uom=116)
+        else:
+            self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid) * 1.6 , True, True, uom=83 )
         logging.debug('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
         self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)), True, True)
-        logging.indebugfo('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
+        logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
         temp = self.TEV.teslaEV_GetWindoStates(self.EVid)
         logging.debug('Windows: {} {} {} {}'.format(temp['FrontLeft'], temp['FrontRight'], temp['RearLeft'],temp['RearRight']))
         self.setDriver('GV6', temp['FrontLeft'], True, True)
@@ -128,10 +135,10 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.setDriver('GV9', temp['RearRight'], True, True)
         logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
         self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofState(self.EVid), True, True)
-        logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-        self.setDriver('GV11', self.TEV.teslaEV_GetSunRoofState(self.EVid), True, True)
-        logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-        self.setDriver('GV12', self.TEV.teslaEV_GetSunRoofState(self.EVid), True, True)
+        logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
+        self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
+        logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
+        self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
         #else:
         #    logging.info('System not ready yet')
 
@@ -190,6 +197,10 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.info('evHomelink called')   
         self.TEV.teslaEV_HomeLink(self.EVid)
 
+    def setDistUnit(self,command):
+        logging.debug('setTempUnit')
+        self.distUnit = int(command.get('value'))        
+
     id = 'evstatus'
     commands = { 'UPDATE': ISYupdate, 
                  'WAKEUP' : evWakeUp,
@@ -200,6 +211,7 @@ class teslaEV_StatusNode(udi_interface.Node):
                  'TRUNK' : evOpenTrunk,
                  'FRUNK' : evOpenFrunk,
                  'HOMELINK' : evHomelink,
+                 'DUNIT' : setDistUnit 
                 }
 
 
@@ -217,6 +229,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
+            {'driver': 'GV13', 'value': 0, 'uom': 25}, #Dist Unit
             ]
 
 
