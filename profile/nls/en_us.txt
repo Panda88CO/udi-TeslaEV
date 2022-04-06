@@ -127,7 +127,7 @@ HEAT-2 = Medium Heat
 HEAT-3 = Maximum Heat
 CMD-nlsevclimate-STEERINGW-NAME = Steering Wheel Heat
 STEERINGW-0 = Disabled
-STEERINGW-0 = Enabled
+STEERINGW-1 = Enabled
 CMD-nlsevclimate-TUNIT-NAME = Set Unit of Temp
 
 
