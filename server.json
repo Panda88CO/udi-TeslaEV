@@ -1,6 +1,6 @@
 {
     "name": "TeslaPowerWall-pg3",
-    "docs": "https://github.com/Panda88CO/udi-TeslaPWpgv3",
+    "docs": "https://github.com/Panda88CO/udi-TeslaEV",
     "type": "python3",
     "executable": "TeslaEVController.py",
     "install": "install.sh",
@@ -24,3 +24,4 @@
         }
     ]
 }
+
