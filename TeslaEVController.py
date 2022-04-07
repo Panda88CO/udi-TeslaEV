@@ -31,6 +31,10 @@ class TeslaEVController(udi_interface.Node):
         #self.tokenPassword = ""
         self.Rtoken = None
 
+
+        self.Parameters = Custom(polyglot, 'customParams')      
+        self.Notices = Custom(polyglot, 'notices')
+
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.LOGLEVEL, self.handleLevelChange)
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
@@ -38,8 +42,6 @@ class TeslaEVController(udi_interface.Node):
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
         self.n_queue = []
 
-        self.Parameters = Custom(polyglot, 'customParams')      
-        self.Notices = Custom(polyglot, 'notices')
 
 
         #logging.debug('self.address : ' + str(self.address))
