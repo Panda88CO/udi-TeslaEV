@@ -28,6 +28,10 @@
      <range  uom="25" subset="0-1, 99" nls="WINDOW" />
   </editor>
 
+   <editor id = "WINDOWCTRL" > 
+     <range  uom="25" subset="0-1" nls="WINDOWCTRL" />
+  </editor>
+
   <editor id = "LOCKUNLOCK" > 
      <range  uom="25" subset="0-1" nls="LOCKUNLOCK" />
   </editor>
