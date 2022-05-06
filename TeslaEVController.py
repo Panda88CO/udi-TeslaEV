@@ -52,7 +52,7 @@ class TeslaEVController(udi_interface.Node):
         self.nodeDefineDone = False
         self.statusNodeReady = False
 
-
+        self.poly.updateProfile()
         self.poly.ready()
         self.poly.addNode(self)
         self.wait_for_node_done()
