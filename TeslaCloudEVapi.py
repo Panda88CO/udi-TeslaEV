@@ -45,6 +45,19 @@ class teslaCloudEVapi(object):
                 temp = []
                 for id in range(0,len(list['response'])):
                     temp.append(list['response'][id]['id_s'])
+                    r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']))
+                    if not r.ok:                        
+                        time.sleep(30)
+                        r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']))
+                    resp = r.json()
+                    if 'state' in resp: 
+                        attempts = 0
+                        while resp['response']['state'] != 'online' and attempts < 3:
+                            r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s'])+'/wake_up')
+                            time.sleep(10)                            
+                            attempts = attempts + 1
+                            r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']))
+                            resp = r.json()
                 return (temp)
             except Exception as e:
                 logging.debug('Exception teslaEV_GetVehicleIdList: ' + str(e))
@@ -62,6 +75,20 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])            
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data')          
                 logging.debug(r)
+                attempts = 0
+                if not r.ok:
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up')
+                    if r.ok:
+                        onlineInfo = r.json()
+                        if 'state ' in onlineInfo['response']: 
+                            attempts = 0
+                            while onlineInfo['response']['state'] != 'online' and attempts < 3:
+                                time.sleep(10)
+                                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up')
+                                onlineInfo = r.json()
+                                attempts = attempts + 1
+                            r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data')     
+
                 carInfo = r.json()
                 if 'response' in carInfo:
                     self.carInfo[EVid] = carInfo['response']
