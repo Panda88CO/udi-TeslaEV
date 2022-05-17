@@ -126,58 +126,92 @@ class teslaCloudEVapi(object):
     def teslaEV_GetChargingInfo(self, id):
         logging.debug('teslaEV_GetChargingInfo: for {}'.format(id))
         temp = {}
-        temp['fast_charger_present'] = self.carInfo[id]['charge_state']['fast_charger_present']
-        temp['charge_port_latch'] =  self.carInfo[id]['charge_state']['charge_port_latch']
-        temp['charge_port_door_open'] =  self.carInfo[id]['charge_state']['charge_port_door_open']
-        temp['battery_level'] = self.carInfo[id]['charge_state']['battery_level']
-        temp['charge_current_request_max'] = self.carInfo[id]['charge_state']['charge_current_request_max']
-        temp['est_battery_range'] = self.carInfo[id]['charge_state']['est_battery_range']
-        temp['charging_state'] = self.carInfo[id]['charge_state']['charging_state']
-        temp['charge_enable_request'] = self.carInfo[id]['charge_state']['charge_enable_request']
-        temp['charger_power'] = self.carInfo[id]['charge_state']['charger_power']
-        temp['charge_limit_soc'] = self.carInfo[id]['charge_state']['charge_limit_soc']      
+        if 'fast_charger_present' in  self.carInfo[id]['charge_state']:
+            temp['fast_charger_present'] = self.carInfo[id]['charge_state']['fast_charger_present']
+        if 'charge_port_latch' in  self.carInfo[id]['charge_state']:    
+            temp['charge_port_latch'] =  self.carInfo[id]['charge_state']['charge_port_latch']
+        if 'charge_port_door_open' in  self.carInfo[id]['charge_state']: 
+            temp['charge_port_door_open'] =  self.carInfo[id]['charge_state']['charge_port_door_open']
+        if 'battery_level' in  self.carInfo[id]['charge_state']: 
+            temp['battery_level'] = self.carInfo[id]['charge_state']['battery_level']
+        if 'charge_current_request_max' in  self.carInfo[id]['charge_state']: 
+            temp['charge_current_request_max'] = self.carInfo[id]['charge_state']['charge_current_request_max']
+        if 'est_battery_range' in  self.carInfo[id]['charge_state']: 
+            temp['est_battery_range'] = self.carInfo[id]['charge_state']['est_battery_range']
+        if 'charging_state' in  self.carInfo[id]['charge_state']: 
+            temp['charging_state'] = self.carInfo[id]['charge_state']['charging_state']
+        if 'charge_enable_request' in  self.carInfo[id]['charge_state']: 
+            temp['charge_enable_request'] = self.carInfo[id]['charge_state']['charge_enable_request']
+        if 'charger_power' in  self.carInfo[id]['charge_state']: 
+            temp['charger_power'] = self.carInfo[id]['charge_state']['charger_power']
+        if 'charge_limit_soc' in  self.carInfo[id]['charge_state']: 
+            temp['charge_limit_soc'] = self.carInfo[id]['charge_state']['charge_limit_soc']      
         return(temp)
 
 
     def teslaEV_FastChargerPresent(self, id):
         #logging.debug('teslaEV_FastchargerPresent for {}'.format(id))
-        return(self.carInfo[id]['charge_state']['fast_charger_present'])
+        if 'fast_charger_present' in self.carInfo[id]['charge_state']:
+            return(self.carInfo[id]['charge_state']['fast_charger_present'])
+        else:
+            return(None)
 
   
     def teslaEV_ChargePortOpen(self, id):
         #logging.debug('teslaEV_ChargePortOpen for {}'.format(id))
-        return(self.carInfo[id]['charge_state']['charge_port_door_open'])  
+        if 'charge_port_door_open' in self.carInfo[id]['charge_state']:
+            return(self.carInfo[id]['charge_state']['charge_port_door_open']) 
+        else:
+            return(None) 
 
     def teslaEV_ChargePortLatched(self, id):
         #logging.debug('teslaEV_ChargePortOpen for {}'.format(id))
-        return(self.carInfo[id]['charge_state']['charge_port_latch'])             
+        if 'charge_port_latch' in self.carInfo[id]['charge_state']:
+            return(self.carInfo[id]['charge_state']['charge_port_latch']) 
+        else:
+            return(None)         
 
     def teslaEV_GetBatteryLevel(self, id):
         #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
-        return(round(self.carInfo[id]['charge_state']['battery_level'],1)) 
+        if 'battery_level' in self.carInfo[id]['charge_state']:
+            return(round(self.carInfo[id]['charge_state']['battery_level'],1)) 
+        else:
+            return(None)
 
     def teslaEV_MaxChargeCurrent(self, id):
         #logging.debug('teslaEV_MaxChargeCurrent for {}'.format(id))
-        return( self.carInfo[id]['charge_state']['charge_current_request_max'])                
+        if 'charge_current_request_max' in self.carInfo[id]['charge_state']:
+            return( self.carInfo[id]['charge_state']['charge_current_request_max'])             
+        else:
+            return(None)          
 
     def teslaEV_ChargeState(self, id):
         #logging.debug('teslaEV_GetChargingState for {}'.format(id))
-        return( self.carInfo[id]['charge_state']['charging_state'])  
+        if 'charging_state' in self.carInfo[id]['charge_state']:
+            return( self.carInfo[id]['charge_state']['charging_state'])  
+        else:
+            return(None)
 
     def teslaEV_ChargingRequested(self, id):
         #logging.debug('teslaEV_ChargingRequested for {}'.format(id))
-        return(  self.carInfo[id]['charge_state']['charge_enable_request'])  
+        if 'charge_enable_request' in self.carInfo[id]['charge_state']:
+            return(  self.carInfo[id]['charge_state']['charge_enable_request'])  
+        else:
+            return(None)
 
     def teslaEV_GetChargingPower(self, id):
         #logging.debug('teslaEV_GetChargingPower for {}'.format(id))
-        if self.carInfo[id]['charge_state']['charger_power']:
+        if 'charger_power' in self.carInfo[id]['charge_state']:
             return(round(self.carInfo[id]['charge_state']['charger_power'],1)) 
         else:
-            return(0)
+            return(None)
 
     def teslaEV_GetBatteryMaxCharge(self, id):
         #logging.debug('teslaEV_GetBatteryMaxCharge for {}'.format(id))
-        return(round(self.carInfo[id]['charge_state']['charge_limit_soc'],1)) 
+        if 'charge_limit_soc' in self.carInfo[id]['charge_state']:
+            return(round(self.carInfo[id]['charge_state']['charge_limit_soc'],1)) 
+        else:
+            return(None)
 
 
     def teslaEV_ChargePort(self, id, ctrl):
@@ -281,76 +315,109 @@ class teslaCloudEVapi(object):
     def teslaEV_GetClimateInfo(self, id):
         logging.debug('teslaEV_GetClimateInfo: for {}'.format(id))
         temp = {}
-        temp['inside_temp'] = self.carInfo[id]['climate_state']['inside_temp']
-        temp['outside_temp'] = self.carInfo[id]['climate_state']['outside_temp']
-        temp['driver_temp_setting'] = self.carInfo[id]['climate_state']['driver_temp_setting']
-        temp['passenger_temp_setting'] = self.carInfo[id]['climate_state']['passenger_temp_setting']
-        temp['seat_heater_left'] = self.carInfo[id]['climate_state']['seat_heater_left']
-        temp['seat_heater_right'] = self.carInfo[id]['climate_state']['seat_heater_right']
-        temp['seat_heater_rear_center'] = self.carInfo[id]['climate_state']['seat_heater_rear_center']
-        temp['seat_heater_rear_left'] = self.carInfo[id]['climate_state']['seat_heater_rear_left']
-        temp['seat_heater_rear_right'] = self.carInfo[id]['climate_state']['seat_heater_rear_right']
-        temp['is_auto_conditioning_on'] = self.carInfo[id]['climate_state']['is_auto_conditioning_on']
-        temp['is_preconditioning'] = self.carInfo[id]['climate_state']['is_preconditioning']
-        temp['max_avail_temp'] = self.carInfo[id]['climate_state']['max_avail_temp']
-        temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
+        if 'inside_temp' in self.carInfo[id]['climate_state']:
+            temp['inside_temp'] = self.carInfo[id]['climate_state']['inside_temp']
+        if 'outside_temp' in self.carInfo[id]['climate_state']:
+            temp['outside_temp'] = self.carInfo[id]['climate_state']['outside_temp']
+        if 'idriver_temp_setting' in self.carInfo[id]['climate_state']:
+            temp['driver_temp_setting'] = self.carInfo[id]['climate_state']['driver_temp_setting']
+        if 'passenger_temp_setting' in self.carInfo[id]['climate_state']:
+            temp['passenger_temp_setting'] = self.carInfo[id]['climate_state']['passenger_temp_setting']
+        if 'seat_heater_left' in self.carInfo[id]['climate_state']:
+            temp['seat_heater_left'] = self.carInfo[id]['climate_state']['seat_heater_left']
+        if 'seat_heater_right' in self.carInfo[id]['climate_state']:
+            temp['seat_heater_right'] = self.carInfo[id]['climate_state']['seat_heater_right']
+        if 'seat_heater_rear_center' in self.carInfo[id]['climate_state']:
+            temp['seat_heater_rear_center'] = self.carInfo[id]['climate_state']['seat_heater_rear_center']
+        if 'seat_heater_rear_left' in self.carInfo[id]['climate_state']:
+            temp['seat_heater_rear_left'] = self.carInfo[id]['climate_state']['seat_heater_rear_left']
+        if 'seat_heater_rear_right' in self.carInfo[id]['climate_state']:
+            temp['seat_heater_rear_right'] = self.carInfo[id]['climate_state']['seat_heater_rear_right']
+        if 'is_auto_conditioning_on' in self.carInfo[id]['climate_state']:
+            temp['is_auto_conditioning_on'] = self.carInfo[id]['climate_state']['is_auto_conditioning_on']
+        if 'is_preconditioning' in self.carInfo[id]['climate_state']:
+            temp['is_preconditioning'] = self.carInfo[id]['climate_state']['is_preconditioning']
+        if 'max_avail_temp' in self.carInfo[id]['climate_state']:
+            temp['max_avail_temp'] = self.carInfo[id]['climate_state']['max_avail_temp']
+        if 'min_avail_temp' in self.carInfo[id]['climate_state']:
+            temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
         return(temp)
 
     def teslaEV_GetCabinTemp(self, id):
         logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(id, self.carInfo[id]['climate_state']['inside_temp'] ))
-        if self.carInfo[id]['climate_state']['inside_temp']:
+        if 'inside_temp' in self.carInfo[id]['climate_state']:
             return(round(self.carInfo[id]['climate_state']['inside_temp'],1)) 
         else:
-            return(-99)
+            return(None)
 
     def teslaEV_GetOutdoorTemp(self, id):
         logging.debug('teslaEV_GetOutdoorTemp for {} = {}'.format(id, self.carInfo[id]['climate_state']['outside_temp']))
-        if self.carInfo[id]['climate_state']['outside_temp']:
+        if 'outside_temp' in self.carInfo[id]['climate_state']:
             return(round(self.carInfo[id]['climate_state']['outside_temp'],1)) 
         else:
-            return(-99)
+            return(None)
 
     def teslaEV_GetLeftTemp(self, id):
         #logging.debug('teslaEV_GetLeftTemp for {}'.format(id))
-        return(round(self.carInfo[id]['climate_state']['driver_temp_setting'],1))        
+        if 'driver_temp_setting' in self.carInfo[id]['climate_state']:
+            return(round(self.carInfo[id]['climate_state']['driver_temp_setting'],1))   
+        else:
+            return(None)     
 
     def teslaEV_GetRightTemp(self, id):
         #logging.debug('teslaEV_GetRightTemp for {}'.format(id))
-        return(round(self.carInfo[id]['climate_state']['passenger_temp_setting'],1))   
+        if 'passenger_temp_setting' in self.carInfo[id]['climate_state']:
+            return(round(self.carInfo[id]['climate_state']['passenger_temp_setting'],1))   
+        else:
+            return(None)
 
     def teslaEV_GetSeatHeating(self, id):
         #logging.debug('teslaEV_GetSeatHeating for {}'.format(id))
         temp = {}
-        temp['FrontLeft'] = self.carInfo[id]['climate_state']['seat_heater_left']
-        temp['FrontRight'] = self.carInfo[id]['climate_state']['seat_heater_right']   
-        temp['RearLeft'] = self.carInfo[id]['climate_state']['seat_heater_rear_left']   
-        temp['RearMiddle'] = self.carInfo[id]['climate_state']['seat_heater_rear_center']           
-        temp['RearRight'] = self.carInfo[id]['climate_state']['seat_heater_rear_right']           
+        if 'seat_heater_left' in self.carInfo[id]['climate_state']:
+            temp['FrontLeft'] = self.carInfo[id]['climate_state']['seat_heater_left']
+        if 'seat_heater_right' in self.carInfo[id]['climate_state']:
+            temp['FrontRight'] = self.carInfo[id]['climate_state']['seat_heater_right']   
+        if 'seat_heater_rear_left' in self.carInfo[id]['climate_state']:
+            temp['RearLeft'] = self.carInfo[id]['climate_state']['seat_heater_rear_left']   
+        if 'seat_heater_rear_center' in self.carInfo[id]['climate_state']:
+            temp['RearMiddle'] = self.carInfo[id]['climate_state']['seat_heater_rear_center']           
+        if 'seat_heater_rear_right' in self.carInfo[id]['climate_state']:
+            temp['RearRight'] = self.carInfo[id]['climate_state']['seat_heater_rear_right']           
         return(temp)
 
     def teslaEV_AutoConditioningRunning(self, id):
         #logging.debug('teslaEV_AutoConditioningRunning for {}'.format(id))
-        if self.carInfo[id]['climate_state']['is_auto_conditioning_on']:
+        if 'is_auto_conditioning_on' in self.carInfo[id]['climate_state']:
             return( self.carInfo[id]['climate_state']['is_auto_conditioning_on']) 
         else:
-            return(99)
+            return(None)
 
     def teslaEV_PreConditioningEnabled(self, id):
         #logging.debug('teslaEV_PreConditioningEnabled for {}'.format(id))
-        return(self.carInfo[id]['climate_state']['is_preconditioning']) 
-    
+        if 'is_preconditioning' in self.carInfo[id]['climate_state']:
+            return(self.carInfo[id]['climate_state']['is_preconditioning']) 
+        else:
+            return(None)
+
     def teslaEV_MaxCabinTempCtrl(self, id):
         #logging.debug('teslaEV_MaxCabinTempCtrl for {}'.format(id))
-        return(round(self.carInfo[id]['climate_state']['max_avail_temp'],1))   
+        if 'max_avail_temp' in self.carInfo[id]['climate_state']:
+            return(round(self.carInfo[id]['climate_state']['max_avail_temp'],1))   
+        else:
+            return(None)
 
     def teslaEV_MinCabinTempCtrl(self, id):
         #logging.debug('teslaEV_MinCabinTempCtrl for {}'.format(id))
-        return(round(self.carInfo[id]['climate_state']['min_avail_temp'],1))   
-
+        if 'min_avail_temp' in self.carInfo[id]['climate_state']:
+            return(round(self.carInfo[id]['climate_state']['min_avail_temp'],1))   
+        else:
+            return(None)
 
     def teslaEV_SteeringWheelHeatOn(self, id):
         #logging.debug('teslaEV_SteeringWheelHeatOn for {}'.format(id))
-        return(99)  
+
+        return(None)  
 
 
 
@@ -516,66 +583,121 @@ class teslaCloudEVapi(object):
 # Status Data
 ####################
     def teslaEV_GetStatusInfo(self, id):
-        logging.debug('teslaEV_GetStatusInfo: for {}'.format(id))
+        logging.debug('teslaEV_GetStatusInfo: for {} : {}'.format(id, self.carInfo[id]))
+
         temp = {}
-        temp['center_display_state'] = self.carInfo[id]['vehicle_state']['center_display_state']
-        temp['homelink_nearby'] = self.carInfo[id]['vehicle_state']['homelink_nearby']
-        temp['fd_window'] = self.carInfo[id]['vehicle_state']['fd_window']
-        temp['fp_window'] = self.carInfo[id]['vehicle_state']['fp_window']
-        temp['rd_window'] = self.carInfo[id]['vehicle_state']['rd_window']
-        temp['rp_window'] = self.carInfo[id]['vehicle_state']['rp_window']
-        temp['frunk'] = self.carInfo[id]['vehicle_state']['ft']
-        temp['trunk'] = self.carInfo[id]['vehicle_state']['rt']
-        temp['locked'] = self.carInfo[id]['vehicle_state']['locked']
-        temp['odometer'] = self.carInfo[id]['vehicle_state']['odometer']
-        temp['sun_roof_percent_open'] = self.carInfo[id]['vehicle_state']['sun_roof_percent_open']
-        temp['state'] = self.carInfo[id]['state']
+        if 'center_display_state' in self.carInfo[id]['vehicle_state']:
+            temp['center_display_state'] = self.carInfo[id]['vehicle_state']['center_display_state']
+        if 'homelink_nearby' in self.carInfo[id]['vehicle_state']:    
+            temp['homelink_nearby'] = self.carInfo[id]['vehicle_state']['homelink_nearby']
+        if 'hfd_window' in self.carInfo[id]['vehicle_state']:        
+            temp['fd_window'] = self.carInfo[id]['vehicle_state']['fd_window']
+        if 'fp_window' in self.carInfo[id]['vehicle_state']:    
+            temp['fp_window'] = self.carInfo[id]['vehicle_state']['fp_window']
+        if 'rd_window' in self.carInfo[id]['vehicle_state']:    
+            temp['rd_window'] = self.carInfo[id]['vehicle_state']['rd_window']
+        if 'rp_window' in self.carInfo[id]['vehicle_state']:    
+            temp['rp_window'] = self.carInfo[id]['vehicle_state']['rp_window']
+        if 'frunk' in self.carInfo[id]['vehicle_state']:    
+            temp['trunk'] = self.carInfo[id]['vehicle_state']['ft']
+        if 'homelink_nearby' in self.carInfo[id]['vehicle_state']:    
+            temp['trunk'] = self.carInfo[id]['vehicle_state']['rt']
+        if 'locked' in self.carInfo[id]['vehicle_state']:    
+            temp['locked'] = self.carInfo[id]['vehicle_state']['locked']
+        if 'odometer' in self.carInfo[id]['vehicle_state']:    
+            temp['odometer'] = self.carInfo[id]['vehicle_state']['odometer']
+        if 'sun_roof_percent_open' in self.carInfo[id]['vehicle_state']:    
+            temp['sun_roof_percent_open'] = self.carInfo[id]['vehicle_state']['sun_roof_percent_open']
+        if 'sun_roof_state' in self.carInfo[id]['vehicle_state']:
+            temp['sun_roof_state'] = self.carInfo[id]['vehicle_state']['sun_roof_state']
+        if 'state' in self.carInfo[id]['vehicle_state']:    
+            temp['state'] = self.carInfo[id]['state']
         return(temp)
 
     def teslaEV_GetCenterDisplay(self,id):
 
         #logging.debug('teslaEV_GetCenterDisplay: for {}'.format(id))
         #logging.debug('Car info : {}'.format(self.carInfo))
-        return(self.carInfo[id]['vehicle_state']['center_display_state'])
+        if 'center_display_state' in self.carInfo[id]['vehicle_state']:
+            return(self.carInfo[id]['vehicle_state']['center_display_state'])
+        else:
+            return(None)
 
 
     def teslaEV_HomeLinkNearby(self,id):
         #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
-        return(self.carInfo[id]['vehicle_state']['homelink_nearby'])
+        if 'homelink_nearby' in self.carInfo[id]['vehicle_state']:
+            return(self.carInfo[id]['vehicle_state']['homelink_nearby'])
+        else:
+            return(None)
 
     def teslaEV_GetLockState(self,id):
         #logging.debug('teslaEV_GetLockState: for {}'.format(id))
-        return(self.carInfo[id]['vehicle_state']['locked'])
+        if 'locked' in self.carInfo[id]['vehicle_state']:
+            return(self.carInfo[id]['vehicle_state']['locked'])
+        else:
+            return(None)
 
     def teslaEV_GetWindoStates(self,id):
         #logging.debug('teslaEV_GetWindoStates: for {}'.format(id))
         temp = {}
-        temp['FrontLeft'] = self.carInfo[id]['vehicle_state']['fd_window']
-        temp['FrontRight'] = self.carInfo[id]['vehicle_state']['fp_window']
-        temp['RearLeft'] = self.carInfo[id]['vehicle_state']['rd_window']
-        temp['RearRight'] = self.carInfo[id]['vehicle_state']['rp_window']
+        if 'fd_window' in self.carInfo[id]['vehicle_state']:
+            temp['FrontLeft'] = self.carInfo[id]['vehicle_state']['fd_window']
+        else:
+            temp['FrontLeft'] = None
+        if 'fp_window' in self.carInfo[id]['vehicle_state']:
+            temp['FrontRight'] = self.carInfo[id]['vehicle_state']['fp_window']
+        else:
+            temp['FrontRight'] = None
+        if 'rd_window' in self.carInfo[id]['vehicle_state']:
+            temp['RearLeft'] = self.carInfo[id]['vehicle_state']['rd_window']
+        else:
+            temp['RearLeft'] = None
+        if 'rp_window' in self.carInfo[id]['vehicle_state']:
+            temp['RearRight'] = self.carInfo[id]['vehicle_state']['rp_window']
+        else:
+            temp['RearRight'] = None
+
         return(temp)
 
     def teslaEV_GetOnlineState(self,id):
         #logging.debug('teslaEV_GetOnlineState: for {}'.format(id))
+
         return(self.carInfo[id]['state'])
 
     def teslaEV_GetOdometer(self,id):
         #logging.debug('teslaEV_GetOdometer: for {}'.format(id))
-        return(round(self.carInfo[id]['vehicle_state']['odometer'], 2))
+        if 'odometer' in self.carInfo[id]['vehicle_state']:
+            return(round(self.carInfo[id]['vehicle_state']['odometer'], 2))
+        else:
+            return(0.0)
+
+    def teslaEV_GetSunRoofPercent(self,id):
+        #logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
+        if 'sun_roof_percent_open' in self.carInfo[id]['vehicle_state']:
+            return(round(self.carInfo[id]['vehicle_state']['sun_roof_percent_open']))
+        else:
+            return(None)
 
     def teslaEV_GetSunRoofState(self,id):
         #logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
-        return(round(self.carInfo[id]['vehicle_state']['sun_roof_percent_open']))
-
+        if 'sun_roof_state' in self.carInfo[id]['vehicle_state']:
+            return(round(self.carInfo[id]['vehicle_state']['sun_roof_state']))
+        else:
+            return(99)
 
     def teslaEV_GetTrunkState(self,id):
         #logging.debug('teslaEV_GetTrunkState: for {}'.format(id))
-        return(self.carInfo[id]['vehicle_state']['rt'])
-
+        if 'rt' in self.carInfo[id]['vehicle_state']:
+            return(self.carInfo[id]['vehicle_state']['rt'])
+        else:
+            return(None)
     def teslaEV_GetFrunkState(self,id):
         #logging.debug('teslaEV_GetFrunkState: for {}'.format(id))
-        return(self.carInfo[id]['vehicle_state']['ft'])        
+        if 'ft' in self.carInfo[id]['vehicle_state']:
+            return(self.carInfo[id]['vehicle_state']['ft'])
+        else:
+            return(None)     
 
 ###############
 # Controls

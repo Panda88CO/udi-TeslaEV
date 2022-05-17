@@ -41,7 +41,8 @@
   </editor>
 
   <editor id = "PERCENT" > 
-     <range  uom="51" min="0" max="100" prec="1" />
+     <range uom="51" min="0" max="100" prec="1" />
+     <range uom="25" subset="0-1, 99" nls="OPENCLOSE"/>
   </editor>
   
   <editor id = "OPENCLOSE" > 
@@ -53,7 +54,7 @@
   <editor id = "TEMP" > 
     <range uom="4" min="-50" max="75" step="0.5" prec="1" />
     <range uom="17" min="-50" max="150" step="1" prec="1" />
-    <range  uom="25" subset="0-1" nls="UNKNOWN" />
+    <range  uom="25" subset="0-1,99" nls="UNKNOWN" />
   </editor>
 
   <editor id = "HEAT_LVL" > 
@@ -116,6 +117,7 @@
 
   <editor id = "AMPS" > 
      <range  uom="1" min="0" max="300" prec="1" />
+     <range  uom="25" subset="0-1,99" nls="UNKNOWN"  />
   </editor>
 
   <editor id = "CHGSTATE" > 
@@ -128,6 +130,7 @@
 
   <editor id = "KWH" > 
      <range  uom="33" min="0" max="300" prec="1" />
+     <range  uom="25" subset="0-1,99" nls="UNKNOWN" />
   </editor>
 
   <editor id = "CHARGEPORT" > 

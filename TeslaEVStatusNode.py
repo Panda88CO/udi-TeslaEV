@@ -86,21 +86,30 @@ class teslaEV_StatusNode(udi_interface.Node):
     def bool2ISY(self, bool):
         if bool == True:
             return(1)
-        else:
+        elif bool == False:
             return(0)
+        else:
+            return(99)
 
     def online2ISY(self, state):
         if state == 'Online':
             return(1)
         else:
             return(0)
-    
+    def openClose2ISY(self, state):
+        if state == None:
+            return(99)
+        elif state == 'closed':
+            return(0)
+        else:
+            return(1)
+
     def ready(self):
         return(self.chargeNodeReady and self.climateNodeReady)
 
     def poll (self):    
         logging.info('Status Node Poll for {}'.format(self.EVid))        
-        #self.TEV.teslaEV_GetInfo(self.EVid)
+        self.TEV.teslaEV_GetInfo(self.EVid)
         if self.statusNodeReady:
             self.updateISYdrivers()
 
@@ -129,16 +138,31 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
         temp = self.TEV.teslaEV_GetWindoStates(self.EVid)
         logging.debug('Windows: {} {} {} {}'.format(temp['FrontLeft'], temp['FrontRight'], temp['RearLeft'],temp['RearRight']))
+        if  temp['FrontLeft'] == None:
+            temp['FrontLeft'] = 99
+        if temp['FrontRight'] == None:    
+            temp['FrontRight'] = 99
+        if temp['RearLeft'] == None:    
+            temp['RearLeft'] = 99
+        if temp['RearRight'] == None:    
+            temp['RearRight'] = 99
         self.setDriver('GV6', temp['FrontLeft'], True, True)
         self.setDriver('GV7', temp['FrontRight'], True, True)
         self.setDriver('GV8', temp['RearLeft'], True, True)
         self.setDriver('GV9', temp['RearRight'], True, True)
         logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-        self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofState(self.EVid), True, True)
+        if self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
+            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
+        elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+            self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
+
         logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
-        self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
+        self.setDriver('GV11', self.openClose2ISY(self.TEV.teslaEV_GetTrunkState(self.EVid)), True, True)
+
         logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
-        self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
+        self.setDriver('GV12', self.openClose2ISY(self.TEV.teslaEV_GetFrunkState(self.EVid)), True, True)
         #else:
         #    logging.info('System not ready yet')
 

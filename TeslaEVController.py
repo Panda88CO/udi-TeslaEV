@@ -79,6 +79,7 @@ class TeslaEVController(udi_interface.Node):
         self.poly.setCustomParamsDoc()
         self.tesla_initialize()
         self.createNodes()
+
         # Wait for things to initialize....
         # Poll for current values (and update drivers)
         #self.TEV.pollSystemData('all')          
@@ -126,6 +127,8 @@ class TeslaEVController(udi_interface.Node):
             if not self.connected:
                 logging.error ('Failed to get acces to Tesla Cloud')
                 exit()
+            else:
+                self.setDriver('GV0', 1, True, True)
         except Exception as e:
             logging.debug('Exception Controller start: '+ str(e))
             logging.error('Did not connect to Tesla Cloud ')
@@ -282,10 +285,11 @@ class TeslaEVController(udi_interface.Node):
             for vehicle in range(0,len(self.vehicleList)):
                  self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
             try:
-                for node in self.poly.nodes():
+                nodes = self.poly.getNodes()
+                for node in nodes:
                     #if node != 'controller'    
                     logging.debug('Controller poll  node {}'.format(node) )
-                    node.poll()
+                    nodes[node].poll()
             except Exception as E:
                 logging.info('Not all nodes ready: {}'.format(E))
 
