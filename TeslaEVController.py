@@ -299,7 +299,7 @@ class TeslaEVController(udi_interface.Node):
 
 
     def poll(self): # dummey poll function 
-
+        self.updateISYdrivers()
         pass
 
     def updateISYdrivers(self):
@@ -307,8 +307,6 @@ class TeslaEVController(udi_interface.Node):
         value = self.TEV.isConnectedToEV()
         self.setDriver('GV0', value, True, True)
         self.setDriver('GV1', self.GV1, True, True)
-
-
 
 
 
