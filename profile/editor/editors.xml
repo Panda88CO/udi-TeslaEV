@@ -86,24 +86,8 @@
      <range  uom="25" subset="0-1" nls="DEFROST" />
   </editor>
   
-  <editor id = "HEAT1" > 
-     <range  uom="25" subset="0-3" nls="SEATHEAT" />
-  </editor>
-
-  <editor id = "HEAT2" > 
-     <range  uom="25" subset="0-3" nls="SEATHEAT" />
-  </editor>
-
-  <editor id = "HEAT3" > 
-     <range  uom="25" subset="0-3" nls="SEATHEAT" />
-  </editor>
-
-  <editor id = "HEAT4" > 
-     <range  uom="25" subset="0-3" nls="SEATHEAT" />
-  </editor>
-
-  <editor id = "HEAT5" > 
-     <range  uom="25" subset="0-3" nls="SEATHEAT" />
+  <editor id = "HEAT" > 
+     <range  uom="25" subset="0-3" nls="HEAT" />
   </editor>
 
   <editor id = "STEERINGW" > 
