@@ -339,7 +339,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start()
+        polyglot.start('0.1.7')
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
