@@ -131,7 +131,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
             self.TEV.teslaEV_ChargePort(self.EVid, 'close')
         else:
             logging.debug('Wrong parameter passed to evChargePort : {}'.format(chargePort))
-        
+        self.setDriver('GV2', self.cond2ISY(self.TEV.teslaEV_ChargePortOpen(self.EVid)), True, True)
 
     def evChargeControl (self, command):
         logging.info('evChargeControl called')
@@ -142,17 +142,30 @@ class teslaEV_ChargeNode(udi_interface.Node):
             self.TEV.teslaEV_Charging(self.EVid, 'stop')
         else:
             logging.debug('Wrong parameter passed to evChargeControl : {}'.format(chargeCtrl))
+        self.setDriver('GV6',self.state2ISY(self.TEV.teslaEV_ChargeState(self.EVid)), True, True)
+        self.setDriver('GV7', self.cond2ISY(self.TEV.teslaEV_ChargingRequested(self.EVid)), True, True)
+
 
     def evSetBatteryChargeLimit (self, command):
         logging.info('evSetBatteryChargeLimit called')
         batLimitPercent = int(command.get('value'))
         self.TEV.teslaEV_SetChargeLimit(self.EVid, batLimitPercent)
-
+        if self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid) != None:
+            logging.debug('GV9: {}'.format(self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid)))
+            self.setDriver('GV9', self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid), True, True, 51)
+        else:
+            self.setDriver('GV9', 99, True, True, 25)
 
     def evSetCurrentChargeLimit (self, command):
         logging.info('evSetCurrentChargeLimit called')
         ampLimit = int(command.get('value'))
         self.TEV.teslaEV_SetChargeLimitAmps(self.EVid, ampLimit)
+        if self.TEV.teslaEV_MaxChargeCurrent(self.EVid) != None:
+            logging.debug('GV5: {}'.format(self.TEV.teslaEV_MaxChargeCurrent(self.EVid)))
+            self.setDriver('GV5', self.TEV.teslaEV_MaxChargeCurrent(self.EVid), True, True, 1)
+        else:
+            self.setDriver('GV5', 99, True, True, 25)
+
 
     id = 'evcharge'
 

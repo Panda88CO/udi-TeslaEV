@@ -151,7 +151,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.setDriver('GV8', temp['RearLeft'], True, True)
         self.setDriver('GV9', temp['RearRight'], True, True)
         logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-        if self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
+        if self.TEV.teslaEV_GetSunRoofPercent(self.EVid) != None:
             logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
             self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
         elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
@@ -159,10 +159,10 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
 
         logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
-        self.setDriver('GV11', self.openClose2ISY(self.TEV.teslaEV_GetTrunkState(self.EVid)), True, True)
+        self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
 
         logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
-        self.setDriver('GV12', self.openClose2ISY(self.TEV.teslaEV_GetFrunkState(self.EVid)), True, True)
+        self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
         #else:
         #    logging.info('System not ready yet')
 
@@ -196,7 +196,8 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.TEV.teslaEV_Doors(self.EVid, 'lock')            
         else:
             logging.error('Unknown command for evControlDoors {}'.format(command))
-
+        self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
+        
     def evControlSunroof (self, command):
         logging.info('evControlSunroof called')
         sunroofCtrl = int(command.get('value'))
@@ -206,15 +207,22 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.TEV.teslaEV_SunRoof(self.EVid, 'close')            
         else:
             logging.error('Wrong command for evSunroof: {}'.format(sunroofCtrl))         
+        if self.TEV.teslaEV_GetSunRoofPercent(self.EVid) != None:
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
+            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
+        elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+            self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
 
     def evOpenFrunk (self, command):
         logging.info('evOpenFrunk called')                
         self.TEV.teslaEV_TrunkFrunk(self.EVid, 'Frunk')
+        self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
     def evOpenTrunk (self, command):
         logging.info('evOpenTrunk called')                
         self.TEV.teslaEV_TrunkFrunk(self.EVid, 'Trunk')
-
+        self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
 
 
     def evHomelink (self, command):
