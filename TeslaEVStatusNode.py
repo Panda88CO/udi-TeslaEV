@@ -209,11 +209,11 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     def evOpenFrunk (self, command):
         logging.info('evOpenFrunk called')                
-        self.TEV.teslaEV_TrunkFrunk(self.EVid, 'front')
+        self.TEV.teslaEV_TrunkFrunk(self.EVid, 'Frunk')
 
     def evOpenTrunk (self, command):
         logging.info('evOpenTrunk called')                
-        self.TEV.teslaEV_TrunkFrunk(self.EVid, 'rear')
+        self.TEV.teslaEV_TrunkFrunk(self.EVid, 'Trunk')
 
 
 

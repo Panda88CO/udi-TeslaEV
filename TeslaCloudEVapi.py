@@ -811,9 +811,9 @@ class teslaCloudEVapi(object):
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])
-                if frunkTrunk == 'Frunk':
+                if frunkTrunk.upper() == 'FRUNK' or frunkTrunk.upper() == 'FRONT':
                     cmd = 'front' 
-                elif frunkTrunk == 'Trunk':
+                elif frunkTrunk.upper()  == 'TRUNK' or frunkTrunk.upper() == 'REAR':
                      cmd = 'rear' 
                 else:
                     logging.debug('Unknown trunk command passed: {}'.format(cmd))
@@ -823,7 +823,7 @@ class teslaCloudEVapi(object):
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
-                logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
+                logging.error('Exception teslaEV_TrunkFrunk for vehicle id {}: {}'.format(id, e))
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
