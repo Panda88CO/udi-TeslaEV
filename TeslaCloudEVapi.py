@@ -20,6 +20,7 @@ class teslaCloudEVapi(object):
 
         self.TESLA_URL = self.teslaApi.TESLA_URL
         self.API = self.teslaApi.API
+        self.Header= {'Accept':'application/json'}
         self.carInfo = None
         if self.teslaApi.isConnectedToTesla():
             self.connnected = True
@@ -40,23 +41,23 @@ class teslaCloudEVapi(object):
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])  
-                r = s.get(self.TESLA_URL + self.API+ '/vehicles')                         
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles', headers=self.Header)                         
                 list = r.json()
                 temp = []
                 for id in range(0,len(list['response'])):
                     temp.append(list['response'][id]['id_s'])
-                    r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']))
+                    r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']), headers=self.Header)
                     if not r.ok:                        
                         time.sleep(30)
-                        r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']))
+                        r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']), headers=self.Header)
                     resp = r.json()
                     if 'state' in resp: 
                         attempts = 0
                         while resp['response']['state'] != 'online' and attempts < 3:
-                            r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s'])+'/wake_up')
+                            r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s'])+'/wake_up', headers=self.Header)
                             time.sleep(10)                            
                             attempts = attempts + 1
-                            r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']))
+                            r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']), headers=self.Header)
                             resp = r.json()
                 return (temp)
             except Exception as e:
@@ -73,21 +74,21 @@ class teslaCloudEVapi(object):
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
-                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data')          
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)          
                 logging.debug(r)
                 attempts = 0
                 if not r.ok:
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up')
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
                     if r.ok:
                         onlineInfo = r.json()
                         if 'state ' in onlineInfo['response']: 
                             attempts = 0
                             while onlineInfo['response']['state'] != 'online' and attempts < 3:
                                 time.sleep(10)
-                                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up')
+                                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
                                 onlineInfo = r.json()
                                 attempts = attempts + 1
-                            r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data')     
+                            r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)     
 
                 carInfo = r.json()
                 if 'response' in carInfo:
@@ -223,9 +224,9 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {}      
                 if ctrl == 'open':  
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_port_door_open', json=payload ) 
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_port_door_open', headers=self.Header, json=payload ) 
                 elif ctrl == 'close':
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_port_door_close', json=payload ) 
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_port_door_close', headers=self.Header, json=payload ) 
                 else:
                     logging.debug('Unknown teslaEV_ChargePort command passed for vehicle id (open, close) {}: {}'.format(id, ctrl))
                     return(False)
@@ -247,9 +248,9 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {}      
                 if ctrl == 'start':  
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_start', json=payload ) 
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_start', headers=self.Header, json=payload ) 
                 elif ctrl == 'stop':
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_stop', json=payload ) 
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/charge_stop', headers=self.Header, json=payload ) 
                 else:
                     logging.debug('Unknown teslaEV_Charging command passed for vehicle id (start, stop) {}: {}'.format(id, ctrl))
                     return(False)
@@ -273,7 +274,7 @@ class teslaCloudEVapi(object):
             try:
                 payload = { 'percent':limit}    
                 s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -293,7 +294,7 @@ class teslaCloudEVapi(object):
             try:
                 payload = { 'charging_amps': int(limit)}    
                 s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charging_amps', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charging_amps', headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -433,7 +434,7 @@ class teslaCloudEVapi(object):
                 payload = {'lat':self.carInfo[id]['drive_state']['latitude'],
                            'lon':self.carInfo[id]['drive_state']['longitude'],
                            'command': cmd}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/window_control', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/window_control', headers=self.Header,  json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -453,7 +454,7 @@ class teslaCloudEVapi(object):
                     return(False)
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = { 'state': cmd}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/sun_roof_control', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/sun_roof_control',headers=self.Header,  json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -472,9 +473,9 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {}      
                 if ctrl == 'start':  
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/auto_conditioning_start', json=payload ) 
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/auto_conditioning_start', headers=self.Header,  json=payload ) 
                 elif ctrl == 'stop':
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/auto_conditioning_stop', json=payload ) 
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/auto_conditioning_stop', headers=self.Header,  json=payload ) 
                 else:
                     logging.debug('Unknown AutoCondition command passed for vehicle id {}: {}'.format(id, ctrl))
                     return(False)
@@ -495,7 +496,7 @@ class teslaCloudEVapi(object):
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {'driver_temp' : float(tempC), 'passenger_temp':float(tempC) }      
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_temps', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_temps', headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -520,7 +521,7 @@ class teslaCloudEVapi(object):
                     logging.error('Wrong parameter for teslaEV_DefrostMax (on/off) for vehicle id {}: {}'.format(id, ctrl))
                     return(False)
                 s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_preconditioning_max', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_preconditioning_max', headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -545,7 +546,7 @@ class teslaCloudEVapi(object):
             try:
                 payload = { 'heater':seats[seat], 'level':int(levelHeat)}    
                 s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/remote_seat_heater_request', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/remote_seat_heater_request', headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -569,7 +570,7 @@ class teslaCloudEVapi(object):
                     logging.error('Wrong parameter for teslaEV_SteeringWheelHeat (on/off) for vehicle id {}: {}'.format(id, ctrl))
                     return(False)
                 s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/remote_steering_wheel_heater_request', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/remote_steering_wheel_heater_request', headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -708,7 +709,7 @@ class teslaCloudEVapi(object):
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
-                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data')          
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/vehicle_data', headers=self.Header)          
                 temp = r.json()
                 self.carInfo[id] = temp['response']
                 return(self.carInfo[id])
@@ -731,7 +732,7 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])            
                 while not online and attempts < MAX_ATTEMPTS:
                     attempts = attempts + 1
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/wake_up') 
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/wake_up', headers=self.Header) 
                     temp = r.json()
                     self.online = temp['response']['state']
                     if self.online == 'online':
@@ -753,7 +754,7 @@ class teslaCloudEVapi(object):
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/honk_horn', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/honk_horn',headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -770,7 +771,7 @@ class teslaCloudEVapi(object):
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/flash_lights', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/flash_lights', headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -789,9 +790,9 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {}      
                 if ctrl == 'unlock':  
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/door_unlock', json=payload ) 
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/door_unlock', headers=self.Header, json=payload ) 
                 elif ctrl == 'lock':
-                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/door_lock', json=payload ) 
+                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/door_lock', headers=self.Header,  json=payload ) 
                 else:
                     logging.debug('Unknown door control passed: {}'.format(ctrl))
                     return(False)
@@ -819,7 +820,7 @@ class teslaCloudEVapi(object):
                     logging.debug('Unknown trunk command passed: {}'.format(cmd))
                     return(False)
                 payload = {'which_trunk':cmd}      
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/actuate_trunk', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/actuate_trunk',headers=self.Header,  json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:
@@ -837,7 +838,7 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {'lat':self.carInfo[id]['drive_state']['latitude'],
                            'lon':self.carInfo[id]['drive_state']['longitude']}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/trigger_homelink', json=payload ) 
+                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/trigger_homelink', headers=self.Header, json=payload ) 
                 temp = r.json()
                 return(temp['response']['result'])
             except Exception as e:

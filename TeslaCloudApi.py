@@ -28,7 +28,7 @@ class teslaCloudApi(object):
 
         self.cookies = None
         self.data = {}
-        
+        self.Header = {'Accept':'application/json'}
         self.tokenInfo = self.tesla_refresh_token()
 
 
@@ -68,7 +68,7 @@ class teslaCloudApi(object):
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.get(self.TESLA_URL + self.API + "/products")
+                r = s.get(self.TESLA_URL + self.API + "/products", headers=self.Header)
                 products = r.json()
                 return(products)        
             except Exception as e:
@@ -89,7 +89,7 @@ class teslaCloudApi(object):
             data['client_id'] = 'ownerapi'
             data['refresh_token']=self.Rtoken
             data['scope']='openid email offline_access'      
-            r = requests.post('https://auth.tesla.com/oauth2/v3/token', data=data)
+            r = requests.post('https://auth.tesla.com/oauth2/v3/token', headers=self.Header, data=data)
             S = json.loads(r.text)
             S['created_at'] = dateNow
             if 'refresh_token' in S:
