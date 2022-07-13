@@ -68,6 +68,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
             return(tempC*1.8+32) #F
 
     def setDriverTemp(self, Id, value):
+        logging.debug('setDriverTemp : TempUnit: {}, value: {}'.format(self.tempUnit, value))
         if value == None:
             self.setDriver(Id, 99, True, True, 25)  
         elif self.tempUnit  == 0:
@@ -251,7 +252,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
 
 
     id = 'evclimate'
-    commands = { 'UPDATE': ISYupdate, 
+    commands = { 'UPDATE' : ISYupdate, 
                  'WINDOWS' : evWindows,
                  'SUNROOF' : evSunroof,
                  'AUTOCON' : evAutoCondition,
