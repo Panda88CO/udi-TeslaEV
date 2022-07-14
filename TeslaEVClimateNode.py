@@ -173,6 +173,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         if self.tempUnit == 1:
             cabinTemp = (cabinTemp-32)/1.8 # Must be set in C
         self.TEV.teslaEV_SetCabinTemps(self.EVid, cabinTemp)
+        temp = self.TEV.tesleEV_GetCabinTemp(self.EVid)
         self.setDriverTemp('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid))
         self.setDriverTemp('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid))
 
