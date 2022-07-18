@@ -94,7 +94,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             return(99)
 
     def online2ISY(self, state):
-        if state == 'Online':
+        if state.lower() == 'online':
             return(1)
         else:
             return(0)
@@ -184,16 +184,19 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     def evHonkHorn (self, command):
         logging.info('EVhonkHorn called')
+        self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_HonkHorn(self.EVid)
 
 
     def evFlashLights (self, command):
         logging.info('EVflashLights called')
+        self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_FlashLights(self.EVid)
 
 
     def evControlDoors (self, command):
         logging.info('EVctrlDoors called')
+        self.TEV.teslaEV_Wake(self.EVid)
         doorCtrl = int(command.get('value'))
         if doorCtrl == 1:
             self.TEV.teslaEV_Doors(self.EVid, 'unlock')
@@ -205,6 +208,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         
     def evControlSunroof (self, command):
         logging.info('evControlSunroof called')
+        self.TEV.teslaEV_Wake(self.EVid)
         sunroofCtrl = int(command.get('value'))
         if sunroofCtrl == 1:
             self.TEV.teslaEV_SunRoof(self.EVid, 'vent')
@@ -220,18 +224,21 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
 
     def evOpenFrunk (self, command):
-        logging.info('evOpenFrunk called')                
+        logging.info('evOpenFrunk called')
+        self.TEV.teslaEV_Wake(self.EVid)                
         self.TEV.teslaEV_TrunkFrunk(self.EVid, 'Frunk')
         self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
     def evOpenTrunk (self, command):
-        logging.info('evOpenTrunk called')                
+        logging.info('evOpenTrunk called')   
+        self.TEV.teslaEV_Wake(self.EVid)             
         self.TEV.teslaEV_TrunkFrunk(self.EVid, 'Trunk')
         self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
 
 
     def evHomelink (self, command):
-        logging.info('evHomelink called')   
+        logging.info('evHomelink called')
+        self.TEV.teslaEV_Wake(self.EVid)   
         self.TEV.teslaEV_HomeLink(self.EVid)
 
     def setDistUnit(self,command):

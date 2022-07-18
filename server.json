@@ -17,7 +17,7 @@
         {
             "title": "A NodeServer to integrate control of Tesla EVs",
             "author": "Panda88CO",
-            "version": "0.1.14",
+            "version": "0.1.15",
             "date": "June 17,  2022",
             "source": "https://github.com/Panda88CO/udi-TeslaEV",
             "license": "https://github.com/Panda88CO/udi-TeslaEV/blob/main/license"

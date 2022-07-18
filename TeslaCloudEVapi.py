@@ -663,7 +663,6 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetOnlineState(self,id):
         #logging.debug('teslaEV_GetOnlineState: for {}'.format(id))
-
         return(self.carInfo[id]['state'])
 
     def teslaEV_GetOdometer(self,id):

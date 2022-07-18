@@ -127,6 +127,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
     def evChargePort (self, command):
         logging.info('evChargePort called')
         chargePort = int(command.get('value'))
+        self.TEV.teslaEV_Wake(self.EVid)
         if chargePort == 1:
             self.TEV.teslaEV_ChargePort(self.EVid, 'open')
         elif chargePort == 0:
@@ -151,6 +152,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
     def evSetBatteryChargeLimit (self, command):
         logging.info('evSetBatteryChargeLimit called')
         batLimitPercent = int(command.get('value'))
+        self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_SetChargeLimit(self.EVid, batLimitPercent)
         if self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid) != None:
             logging.debug('GV9: {}'.format(self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid)))
@@ -160,7 +162,9 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def evSetCurrentChargeLimit (self, command):
         logging.info('evSetCurrentChargeLimit called')
+        
         ampLimit = int(command.get('value'))
+        self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_SetChargeLimitAmps(self.EVid, ampLimit)
         if self.TEV.teslaEV_MaxChargeCurrent(self.EVid) != None:
             logging.debug('GV5: {}'.format(self.TEV.teslaEV_MaxChargeCurrent(self.EVid)))
