@@ -121,9 +121,8 @@ class teslaEV_ClimateNode(udi_interface.Node):
 
     def ISYupdate (self, command):
         logging.info('ISY-update called')
-        self.TEV.teslaEV_GetInfo(self.EVid)
+        self.TEV.teslaEV_UpdateCloudInfo(self.EVid)
         self.updateISYdrivers()
- 
  
     def evWindows (self, command):
         logging.info('evWindows- called')
