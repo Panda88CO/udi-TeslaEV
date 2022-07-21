@@ -65,7 +65,7 @@
       <sts>
          <st id="ST" editor="NODE_ST" />
          <st id="GV1" editor="TEMP" />
-         <st id="CLITEMP" editor="TEMP" />
+         <st id="GV2" editor="TEMP" />
          <st id="GV3" editor="TEMP" />
          <st id="GV4" editor="TEMP" />
          <st id="GV5" editor="HEAT_LVL" />

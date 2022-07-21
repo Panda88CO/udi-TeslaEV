@@ -8,7 +8,7 @@
     "notice": "Uses APIs from https://tesla-api.timdorr.com/ - not official Tesla APIs.",
     "shortPoll": "60",
     "longPoll": "180",
-    "profile_version": "0.1.7",
+    "profile_version": "0.1.8",
     "logLevel":"INFO",
 	"customParams": {
 		"REFRESH_TOKEN": ""
@@ -17,7 +17,7 @@
         {
             "title": "A NodeServer to integrate control of Tesla EVs",
             "author": "Panda88CO",
-            "version": "0.1.17",
+            "version": "0.1.18",
             "date": "June 17,  2022",
             "source": "https://github.com/Panda88CO/udi-TeslaEV",
             "license": "https://github.com/Panda88CO/udi-TeslaEV/blob/main/license"

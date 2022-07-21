@@ -316,32 +316,33 @@ class teslaCloudEVapi(object):
     def teslaEV_GetClimateInfo(self, id):
         logging.debug('teslaEV_GetClimateInfo: for {}'.format(id))
         temp = {}
-        if 'inside_temp' in self.carInfo[id]['climate_state']:
-            temp['inside_temp'] = self.carInfo[id]['climate_state']['inside_temp']
-        if 'outside_temp' in self.carInfo[id]['climate_state']:
-            temp['outside_temp'] = self.carInfo[id]['climate_state']['outside_temp']
-        if 'idriver_temp_setting' in self.carInfo[id]['climate_state']:
-            temp['driver_temp_setting'] = self.carInfo[id]['climate_state']['driver_temp_setting']
-        if 'passenger_temp_setting' in self.carInfo[id]['climate_state']:
-            temp['passenger_temp_setting'] = self.carInfo[id]['climate_state']['passenger_temp_setting']
-        if 'seat_heater_left' in self.carInfo[id]['climate_state']:
-            temp['seat_heater_left'] = self.carInfo[id]['climate_state']['seat_heater_left']
-        if 'seat_heater_right' in self.carInfo[id]['climate_state']:
-            temp['seat_heater_right'] = self.carInfo[id]['climate_state']['seat_heater_right']
-        if 'seat_heater_rear_center' in self.carInfo[id]['climate_state']:
-            temp['seat_heater_rear_center'] = self.carInfo[id]['climate_state']['seat_heater_rear_center']
-        if 'seat_heater_rear_left' in self.carInfo[id]['climate_state']:
-            temp['seat_heater_rear_left'] = self.carInfo[id]['climate_state']['seat_heater_rear_left']
-        if 'seat_heater_rear_right' in self.carInfo[id]['climate_state']:
-            temp['seat_heater_rear_right'] = self.carInfo[id]['climate_state']['seat_heater_rear_right']
-        if 'is_auto_conditioning_on' in self.carInfo[id]['climate_state']:
-            temp['is_auto_conditioning_on'] = self.carInfo[id]['climate_state']['is_auto_conditioning_on']
-        if 'is_preconditioning' in self.carInfo[id]['climate_state']:
-            temp['is_preconditioning'] = self.carInfo[id]['climate_state']['is_preconditioning']
-        if 'max_avail_temp' in self.carInfo[id]['climate_state']:
-            temp['max_avail_temp'] = self.carInfo[id]['climate_state']['max_avail_temp']
-        if 'min_avail_temp' in self.carInfo[id]['climate_state']:
-            temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
+        if 'climate_state' in self.carInfo[id]:
+            if 'inside_temp' in self.carInfo[id]['climate_state']:
+                temp['inside_temp'] = self.carInfo[id]['climate_state']['inside_temp']
+            if 'outside_temp' in self.carInfo[id]['climate_state']:
+                temp['outside_temp'] = self.carInfo[id]['climate_state']['outside_temp']
+            if 'idriver_temp_setting' in self.carInfo[id]['climate_state']:
+                temp['driver_temp_setting'] = self.carInfo[id]['climate_state']['driver_temp_setting']
+            if 'passenger_temp_setting' in self.carInfo[id]['climate_state']:
+                temp['passenger_temp_setting'] = self.carInfo[id]['climate_state']['passenger_temp_setting']
+            if 'seat_heater_left' in self.carInfo[id]['climate_state']:
+                temp['seat_heater_left'] = self.carInfo[id]['climate_state']['seat_heater_left']
+            if 'seat_heater_right' in self.carInfo[id]['climate_state']:
+                temp['seat_heater_right'] = self.carInfo[id]['climate_state']['seat_heater_right']
+            if 'seat_heater_rear_center' in self.carInfo[id]['climate_state']:
+                temp['seat_heater_rear_center'] = self.carInfo[id]['climate_state']['seat_heater_rear_center']
+            if 'seat_heater_rear_left' in self.carInfo[id]['climate_state']:
+                temp['seat_heater_rear_left'] = self.carInfo[id]['climate_state']['seat_heater_rear_left']
+            if 'seat_heater_rear_right' in self.carInfo[id]['climate_state']:
+                temp['seat_heater_rear_right'] = self.carInfo[id]['climate_state']['seat_heater_rear_right']
+            if 'is_auto_conditioning_on' in self.carInfo[id]['climate_state']:
+                temp['is_auto_conditioning_on'] = self.carInfo[id]['climate_state']['is_auto_conditioning_on']
+            if 'is_preconditioning' in self.carInfo[id]['climate_state']:
+                temp['is_preconditioning'] = self.carInfo[id]['climate_state']['is_preconditioning']
+            if 'max_avail_temp' in self.carInfo[id]['climate_state']:
+                temp['max_avail_temp'] = self.carInfo[id]['climate_state']['max_avail_temp']
+            if 'min_avail_temp' in self.carInfo[id]['climate_state']:
+                temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
         return(temp)
 
     def teslaEV_GetCabinTemp(self, id):
