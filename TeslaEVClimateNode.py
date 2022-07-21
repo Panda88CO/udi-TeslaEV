@@ -95,11 +95,16 @@ class teslaEV_ClimateNode(udi_interface.Node):
 
             logging.debug('GV5-9: {}'.format(self.TEV.teslaEV_GetSeatHeating(self.EVid)))
             temp = self.TEV.teslaEV_GetSeatHeating(self.EVid)
-            self.setDriver('GV5', self.cond2ISY(temp['FrontLeft']), True, True)
-            self.setDriver('GV6', self.cond2ISY(temp['FrontRight']), True, True)
-            self.setDriver('GV7', self.cond2ISY(temp['RearLeft']), True, True)
-            self.setDriver('GV8', self.cond2ISY(temp['RearMiddle']), True, True)
-            self.setDriver('GV9', self.cond2ISY(temp['RearRight']), True, True)
+            if 'FrontLeft' in temp:
+                self.setDriver('GV5', self.cond2ISY(temp['FrontLeft']), True, True)
+            if 'FrontRight' in temp: 
+                self.setDriver('GV6', self.cond2ISY(temp['FrontRight']), True, True)
+            if 'RearLeft' in temp:    
+                self.setDriver('GV7', self.cond2ISY(temp['RearLeft']), True, True)
+            if 'RearMiddle' in temp:     
+                self.setDriver('GV8', self.cond2ISY(temp['RearMiddle']), True, True)
+            if 'RearRight' in temp:   
+                self.setDriver('GV9', self.cond2ISY(temp['RearRight']), True, True)
             logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
             self.setDriver('GV10', self.bool2ISY(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)), True, True)
             logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
