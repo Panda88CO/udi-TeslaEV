@@ -115,11 +115,16 @@ class teslaEV_StatusNode(udi_interface.Node):
         if self.statusNodeReady:
             self.updateISYdrivers()
 
+    def forceUpdateISYdrivers(self):
+        logging.debug('forceUpdateISYdrivers: {}'.format(self.EVid))
+        time.sleep(1)
+        self.TEV.teslaEV_UpdateCloudInfo(self.EVid)
+        self.updateISYdrivers()
 
-        
 
     def updateISYdrivers(self):
         try:
+            
             logging.info('updateISYdrivers - Status for {}'.format(self.EVid))
             #if self.TEV.isConnectedToEV():
             #self.TEV.teslaEV_GetInfo(self.EVid)
@@ -181,22 +186,25 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.info('EVwakeUp called')
         self.TEV.teslaEV_Wake(self.EVid)
 
+        self.forceUpdateISYdrivers()
 
     def evHonkHorn (self, command):
         logging.info('EVhonkHorn called')
-        self.TEV.teslaEV_Wake(self.EVid)
+        #self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_HonkHorn(self.EVid)
 
+        self.forceUpdateISYdrivers()
 
     def evFlashLights (self, command):
         logging.info('EVflashLights called')
-        self.TEV.teslaEV_Wake(self.EVid)
+        #self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_FlashLights(self.EVid)
 
+        self.forceUpdateISYdrivers()
 
     def evControlDoors (self, command):
         logging.info('EVctrlDoors called')
-        self.TEV.teslaEV_Wake(self.EVid)
+        #self.TEV.teslaEV_Wake(self.EVid)
         doorCtrl = int(command.get('value'))
         if doorCtrl == 1:
             self.TEV.teslaEV_Doors(self.EVid, 'unlock')
@@ -204,11 +212,14 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.TEV.teslaEV_Doors(self.EVid, 'lock')            
         else:
             logging.error('Unknown command for evControlDoors {}'.format(command))
-        self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
-        
+        #self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
+  
+        self.forceUpdateISYdrivers()
+
+
     def evControlSunroof (self, command):
         logging.info('evControlSunroof called')
-        self.TEV.teslaEV_Wake(self.EVid)
+        #self.TEV.teslaEV_Wake(self.EVid)
         sunroofCtrl = int(command.get('value'))
         if sunroofCtrl == 1:
             self.TEV.teslaEV_SunRoof(self.EVid, 'vent')
@@ -223,29 +234,38 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
             self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
 
+        self.forceUpdateISYdrivers()
+
     def evOpenFrunk (self, command):
         logging.info('evOpenFrunk called')
-        self.TEV.teslaEV_Wake(self.EVid)                
+        #self.TEV.teslaEV_Wake(self.EVid)                
         self.TEV.teslaEV_TrunkFrunk(self.EVid, 'Frunk')
-        self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
+
+        self.forceUpdateISYdrivers()
+        #self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
     def evOpenTrunk (self, command):
         logging.info('evOpenTrunk called')   
-        self.TEV.teslaEV_Wake(self.EVid)             
+        #self.TEV.teslaEV_Wake(self.EVid)             
         self.TEV.teslaEV_TrunkFrunk(self.EVid, 'Trunk')
-        self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
+
+        self.forceUpdateISYdrivers()
+        #self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
 
 
     def evHomelink (self, command):
         logging.info('evHomelink called')
-        self.TEV.teslaEV_Wake(self.EVid)   
+        #self.TEV.teslaEV_Wake(self.EVid)   
         self.TEV.teslaEV_HomeLink(self.EVid)
+
+        self.forceUpdateISYdrivers()
 
     def setDistUnit(self,command):
         logging.debug('setTempUnit')
         self.distUnit = int(command.get('value'))   
-        self.setDriver('GV13', self.distUnit, True, True)  
-        self.updateISYdrivers()
+        #self.setDriver('GV13', self.distUnit, True, True)  
+
+        self.forceUpdateISYdrivers()
        
 
     id = 'evstatus'
