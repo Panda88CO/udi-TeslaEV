@@ -72,9 +72,9 @@ class teslaEV_ClimateNode(udi_interface.Node):
         if value == None:
             self.setDriver(Id, 99, True, True, 25)  
         elif self.tempUnit  == 0:
-            self.setDriver(Id, value, True, True, 4)
+            self.setDriver(Id, round(round(2*value,0)/2,1), True, True, 4)
         else:
-            self.setDriver(Id, round(32+ 1.8*value, 2), True, True, 17)
+            self.setDriver(Id, round(32+ 1.8*value, 0), True, True, 17)
 
     def forceUpdateISYdrivers(self):
         logging.debug('forceUpdateISYdrivers: {}'.format(self.EVid))
