@@ -65,7 +65,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         if self.tempUnit == 0:
             return(tempC)  # C
         else:
-            return(tempC*1.8+32) #F
+            return(round(tempC*1.8+32, 2)) #F
 
     def setDriverTemp(self, Id, value):
         logging.debug('setDriverTemp : TempUnit: {}, value: {}'.format(self.tempUnit, value))
@@ -74,7 +74,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         elif self.tempUnit  == 0:
             self.setDriver(Id, value, True, True, 4)
         else:
-            self.setDriver(Id, 32+ 1.8*value, True, True, 17)
+            self.setDriver(Id, round(32+ 1.8*value, 2), True, True, 17)
 
     def forceUpdateISYdrivers(self):
         logging.debug('forceUpdateISYdrivers: {}'.format(self.EVid))
@@ -200,7 +200,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         cabinTemp = float(command.get('value'))  
         self.TEV.teslaEV_Wake(self.EVid)
         if self.tempUnit == 1:
-            cabinTemp = (cabinTemp-32)/1.8 # Must be set in C
+            cabinTemp = round((cabinTemp-32)/1.8,2) # Must be set in C
         self.TEV.teslaEV_SetCabinTemps(self.EVid, cabinTemp)
         temp = self.TEV.tesleEV_GetCabinTemp(self.EVid)
 
