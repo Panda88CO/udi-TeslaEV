@@ -117,6 +117,11 @@
      <range  uom="25" subset="0-1,99" nls="UNKNOWN" />
   </editor>
 
+  <editor id = "KW" > 
+     <range  uom="30" min="0" max="300" prec="1" />
+     <range  uom="25" subset="0-1,99" nls="UNKNOWN" />
+  </editor>
+
   <editor id = "CHARGEPORT" > 
      <range  uom="25" subset="0-1" nls="CHARGEPORT"  />  
   </editor>
