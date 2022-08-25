@@ -8,7 +8,7 @@
     "notice": "Uses APIs from https://tesla-api.timdorr.com/ - not official Tesla APIs.",
     "shortPoll": "60",
     "longPoll": "180",
-    "profile_version": "0.1.10",
+    "profile_version": "0.1.11",
     "logLevel":"INFO",
 	"customParams": {
 		"REFRESH_TOKEN": ""
