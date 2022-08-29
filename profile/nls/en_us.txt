@@ -34,6 +34,8 @@ ST-nlsevstatus-GV6-NAME = Front Driver Window
 ST-nlsevstatus-GV7-NAME = Front Passenger Window
 ST-nlsevstatus-GV8-NAME = Rear Driver Window 
 ST-nlsevstatus-GV9-NAME = Rear Passenger Window
+
+
 WINDOW-0 = Closed
 WINDOW-1 = Open
 WINDOW-99 = Unknown
@@ -46,9 +48,8 @@ OPENCLOSE-99 = Unknown
 ST-nlsevstatus-GV13-NAME = Distance Unit
 DISTUNIT-0 = Km
 DISTUNIT-1 = Miles
-
 UNKNOWN-99 = Not Reported
-
+ST-nlsevstatus-GV20-NAME = Last Epoch Timestamp
 
 CMD-nlsevstatus-UPDATE-NAME = Update EV Status
 CMD-nlsevstatus-WAKEUP-NAME = Wake Up
@@ -83,6 +84,7 @@ ST-nlsevclimate-GV6-NAME = Seat Heating - Front Right
 ST-nlsevclimate-GV7-NAME = Seat Heating - Rear Left
 ST-nlsevclimate-GV8-NAME = Seat Heating - Rear Middle
 ST-nlsevclimate-GV9-NAME = Seat Heating - Rear Right
+
 HEAT_LVL-0 = Off
 HEAT_LVL-1 = Low Heat
 HEAT_LVL-2 = Medium Heat
@@ -103,7 +105,7 @@ ONOFF-99 = Unknown
 ST-nlsevclimate-GV15-NAME = Temperatue Unit
 TEMPUNIT-0 = Celcius (C)
 TEMPUNIT-1 = Farenheit (F)
-
+ST-nlsevclimate-GV20-NAME = Last Epoch Timestamp
 
 CMD-nlsevclimate-UPDATE-NAME = Update EV Climate Data
 CMD-nlsevclimate-SUNROOF-NAME = Sunroof Control
@@ -164,6 +166,7 @@ STARTSTOP-99 = Unknown
 ST-nlsevcharge-GV8-NAME = Charging Power
 ST-nlsevcharge-GV9-NAME = Battery Charge Target
 
+ST-nlsevcharge-GV20-NAME = Last Epoch Timestamp
 
 CMD-nlsevcharge-UPDATE-NAME = Update System Data
 CMD-nlsevcharge-CHARGEPORT-NAME = Charge Port Control 

@@ -127,6 +127,10 @@ class teslaEV_ClimateNode(udi_interface.Node):
             self.setDriver('GV14', self.cond2ISY(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)), True, True) #need to be implemented                                                
             logging.debug('GV15: {} - C=0, F=1'.format(self.tempUnit))
             self.setDriver('GV15', self.tempUnit, True, True)  
+
+            logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetClimateTimestamp(self.EVid)))
+            self.setDriver('GV20', self.TEV.teslaEV_GetClimateTimestamp(self.EVid), True, True)
+   
         except Exception as e:
             logging.error('updateISYdriversclimate node  failed: {}'.format(e))
 
@@ -337,6 +341,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
             {'driver': 'GV13', 'value': 0, 'uom': 4}, #min_avail_temp   
             {'driver': 'GV14', 'value': 99, 'uom': 25}, #Steering Wheel Heat
             {'driver': 'GV15', 'value': 0, 'uom': 25}, #Temp Unit
+            {'driver': 'GV20', 'value': 0, 'uom': 110},  #Last update Epoch            
             ]
 
 

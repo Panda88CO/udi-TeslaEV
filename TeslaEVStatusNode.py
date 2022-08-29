@@ -171,6 +171,10 @@ class teslaEV_StatusNode(udi_interface.Node):
 
             logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
             self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
+
+            logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetStatusTimestamp(self.EVid)))
+            self.setDriver('GV20', self.TEV.teslaEV_GetStatusTimestamp(self.EVid), True, True)
+       
             #else:
             #    logging.info('System not ready yet')
 
@@ -284,6 +288,7 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     drivers = [
             {'driver': 'ST', 'value': 0, 'uom': 2},
+            
             {'driver': 'GV1', 'value': 99, 'uom': 25},  #center_display_state
             {'driver': 'GV2', 'value': 99, 'uom': 25},  #homelink_nearby
             {'driver': 'GV3', 'value': 99, 'uom': 25},  #locked
@@ -297,6 +302,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
             {'driver': 'GV13', 'value': 1, 'uom': 25}, #Dist Unit
+            {'driver': 'GV20', 'value': 0, 'uom': 110},  #Last update Epoch                        
             ]
 
 

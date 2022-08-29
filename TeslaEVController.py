@@ -277,7 +277,21 @@ class TeslaEVController(udi_interface.Node):
     def shortPoll(self):
         logging.info('Tesla EV Controller shortPoll(HeartBeat)')
         self.heartbeat()    
+        if self.TEV.isConnectedToEV():
+            for vehicle in range(0,len(self.vehicleList)):
+                 self.TEV.teslaEV_LatestCloudInfo(self.vehicleList[vehicle])
+            try:
+                nodes = self.poly.getNodes()
+                for node in nodes:
+                    #if node != 'controller'    
+                    logging.debug('Controller poll  node {}'.format(node) )
+                    nodes[node].poll()
+            except Exception as E:
+                logging.info('Not all nodes ready: {}'.format(E))
 
+            self.Rtoken  = self.TEV.getRtoken()
+            if self.Rtoken  != self.Parameters['REFRESH_TOKEN']:
+                self.Parameters['REFRESH_TOKEN'] = self.Rtoken 
         
     def longPoll(self):
         logging.info('Tesla EV  Controller longPoll - connected = {}'.format(self.TEV.isConnectedToEV()))
@@ -339,7 +353,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.22')
+        polyglot.start('0.1.23')
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')

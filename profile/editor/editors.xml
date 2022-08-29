@@ -6,6 +6,10 @@
   <editor id = "API" > 
      <range  uom="25" subset="0-1" nls="API" />
   </editor>
+  <editor id = "EPOCH" > 
+     <range  uom="110"  min="0" max="4102444800" />
+  </editor> 
+
   <editor id = "NBREVS" > 
      <range  uom="107" min="0" max="9" />
   </editor>

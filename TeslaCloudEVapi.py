@@ -68,8 +68,30 @@ class teslaCloudEVapi(object):
                 return(None)
 
     
+    def teslaEV_getLatestCloudInfo(self, EVid):
+        logging.debug('teslaEV_getLatestCloudInfo: {}'.format(EVid))
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
+                logging.debug(r)
+                carInfo = r.json()
+                if 'response' in carInfo:
+                    self.carInfo[EVid] = carInfo['response']
+                logging.debug('carinfo : {}'.format(self.carInfo))
+
+            except Exception as e:
+                logging.debug('Exception teslaGetSiteInfo: {}'.format(e))
+                logging.error('Error getting data from vehicle id: {}'.format(EVid))
+                logging.error('Trying to reconnect')
+                self.teslaApi.tesla_refresh_token( )
+                return(None)
+
+
     def teslaEV_UpdateCloudInfo(self, EVid):
             #if self.connectionEstablished:
+        logging.debug('teslaEV_getLatestCloudInfo: {}'.format(EVid))
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
@@ -147,8 +169,15 @@ class teslaCloudEVapi(object):
             temp['charger_power'] = self.carInfo[id]['charge_state']['charger_power']
         if 'charge_limit_soc' in  self.carInfo[id]['charge_state']: 
             temp['charge_limit_soc'] = self.carInfo[id]['charge_state']['charge_limit_soc']      
+        if 'timestamp' in  self.carInfo[id]['charge_state']: 
+            temp['timestamp'] = self.carInfo[id]['charge_state']['timestamp']                  
         return(temp)
 
+    def teslaEV_GetChargeTimestamp(self,id):
+        if 'timestamp' in self.carInfo[id]['charge_state']:
+            return(self.carInfo[id]['charge_state']['timestamp'])
+        else:
+            return(None)
 
     def teslaEV_FastChargerPresent(self, id):
         #logging.debug('teslaEV_FastchargerPresent for {}'.format(id))
@@ -343,7 +372,16 @@ class teslaCloudEVapi(object):
                 temp['max_avail_temp'] = self.carInfo[id]['climate_state']['max_avail_temp']
             if 'min_avail_temp' in self.carInfo[id]['climate_state']:
                 temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
+            if 'timestamp' in  self.carInfo[id]['climate_state']: 
+                temp['timestamp'] = self.carInfo[id]['climate_state']['timestamp']                  
         return(temp)
+
+    def teslaEV_GetClimateTimestamp(self,id):
+        if 'timestamp' in self.carInfo[id]['climate_state']:
+            return(self.carInfo[id]['climate_state']['timestamp'])
+        else:
+            return(None)
+
 
     def teslaEV_GetCabinTemp(self, id):
         logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(id, self.carInfo[id]['climate_state']['inside_temp'] ))
@@ -614,6 +652,8 @@ class teslaCloudEVapi(object):
             temp['sun_roof_state'] = self.carInfo[id]['vehicle_state']['sun_roof_state']
         if 'state' in self.carInfo[id]['vehicle_state']:    
             temp['state'] = self.carInfo[id]['state']
+        if 'timestamp' in  self.carInfo[id]['charge_state']: 
+            temp['timestamp'] = self.carInfo[id]['charge_state']['timestamp']              
         return(temp)
 
     def teslaEV_GetCenterDisplay(self,id):
@@ -625,6 +665,11 @@ class teslaCloudEVapi(object):
         else:
             return(None)
 
+    def teslaEV_GetStatusTimestamp(self,id):
+        if 'timestamp' in self.carInfo[id]['vehicle_state']:
+            return(self.carInfo[id]['vehicle_state']['timestamp'])
+        else:
+            return(None)
 
     def teslaEV_HomeLinkNearby(self,id):
         #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
