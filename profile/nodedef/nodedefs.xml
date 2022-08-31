@@ -35,7 +35,7 @@
          <st id="GV11" editor="OPENCLOSE" />
          <st id="GV12" editor="OPENCLOSE" />
          <st id="GV13" editor="DISTUNIT" />
-         <st id="GV20" editor="EPOCH" />     
+         <st id="GV20" editor="DURATION_S" />     
       </sts>
       <cmds>
          <sends>
@@ -80,7 +80,7 @@
          <st id="GV13" editor="TEMP" />
          <st id="GV14" editor="ONOFF" />
          <st id="GV15" editor="TEMPUNIT" />
-         <st id="GV20" editor="EPOCH" />   
+         <st id="GV20" editor="DURATION_S" />   
       </sts>
       <cmds>
          <sends>
@@ -142,7 +142,7 @@
          <st id="GV7" editor="STARTSTOP" />
          <st id="GV8" editor="KW" />
          <st id="GV9" editor="PERCENT" />
-         <st id="GV20" editor="EPOCH" />   
+         <st id="GV20" editor="DURATION_S" />   
       </sts>
       <cmds>
          <sends>

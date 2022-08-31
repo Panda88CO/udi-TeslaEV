@@ -6,14 +6,13 @@
   <editor id = "API" > 
      <range  uom="25" subset="0-1" nls="API" />
   </editor>
-  <editor id = "EPOCH" > 
+  <editor id = "DURATION_S" > 
      <range  uom="58"  min="0" max="4102444800" />
   </editor> 
 
   <editor id = "NBREVS" > 
      <range  uom="107" min="0" max="9" />
   </editor>
-
 
   <editor id = "CONSOLE" > 
      <range  uom="25" subset="0-9,99" nls="CONSOLE" />
