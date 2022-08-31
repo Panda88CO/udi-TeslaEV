@@ -172,8 +172,8 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
             self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
-            logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetStatusTimestamp(self.EVid)))
-            self.setDriver('GV20', self.TEV.teslaEV_GetStatusTimestamp(self.EVid), True, True, 58)
+            logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)))
+            self.setDriver('GV20', self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid), True, True, 58)
        
             #else:
             #    logging.info('System not ready yet')
@@ -209,7 +209,7 @@ class teslaEV_StatusNode(udi_interface.Node):
     def evControlDoors (self, command):
         logging.info('EVctrlDoors called')
         #self.TEV.teslaEV_Wake(self.EVid)
-        doorCtrl = int(command.get('value'))
+        doorCtrl = int(float(command.get('value')))
         if doorCtrl == 1:
             self.TEV.teslaEV_Doors(self.EVid, 'unlock')
         elif doorCtrl == 0:
@@ -224,7 +224,7 @@ class teslaEV_StatusNode(udi_interface.Node):
     def evControlSunroof (self, command):
         logging.info('evControlSunroof called')
         #self.TEV.teslaEV_Wake(self.EVid)
-        sunroofCtrl = int(command.get('value'))
+        sunroofCtrl = int(float(command.get('value')))
         if sunroofCtrl == 1:
             self.TEV.teslaEV_SunRoof(self.EVid, 'vent')
         elif sunroofCtrl == 0:
@@ -266,7 +266,7 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     def setDistUnit(self,command):
         logging.debug('setTempUnit')
-        self.distUnit = int(command.get('value'))   
+        self.distUnit = int(float(command.get('value')))   
         #self.setDriver('GV13', self.distUnit, True, True)  
 
         self.forceUpdateISYdrivers()

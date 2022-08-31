@@ -122,8 +122,8 @@ class teslaEV_ChargeNode(udi_interface.Node):
             else:
                 self.setDriver('GV9', 99, True, True, 25)
 
-            logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetChargeTimestamp(self.EVid)))
-            self.setDriver('GV20', self.TEV.teslaEV_GetChargeTimestamp(self.EVid), True, True, 58)
+            logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetTimeSinceLastChargeUpdate(self.EVid)))
+            self.setDriver('GV20', self.TEV.teslaEV_GetTimeSinceLastChargeUpdate(self.EVid), True, True, 58)
 
         except Exception as e:
             logging.error('updateISYdrivers charge node failed: {}'.format(e))
@@ -136,7 +136,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def evChargePort (self, command):
         logging.info('evChargePort called')
-        chargePort = int(command.get('value'))
+        chargePort = int(float(command.get('value')))
         self.TEV.teslaEV_Wake(self.EVid)
         if chargePort == 1:
             self.TEV.teslaEV_ChargePort(self.EVid, 'open')
@@ -150,7 +150,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def evChargeControl (self, command):
         logging.info('evChargeControl called')
-        chargeCtrl = int(command.get('value'))
+        chargeCtrl = int(float(command.get('value')))
         if chargeCtrl == 1:
             self.TEV.teslaEV_Charging(self.EVid, 'start')
         elif chargeCtrl == 0:
@@ -165,7 +165,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def evSetBatteryChargeLimit (self, command):
         logging.info('evSetBatteryChargeLimit called')
-        batLimitPercent = int(command.get('value'))
+        batLimitPercent = command.get('value')
         self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_SetChargeLimit(self.EVid, batLimitPercent)
 
@@ -179,7 +179,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
     def evSetCurrentChargeLimit (self, command):
         logging.info('evSetCurrentChargeLimit called')
         
-        ampLimit = int(command.get('value'))
+        ampLimit = int(float(command.get('value')))
         self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_SetChargeLimitAmps(self.EVid, ampLimit)
 

@@ -179,6 +179,10 @@ class teslaCloudEVapi(object):
         else:
             return(None)
 
+    def teslaEV_GetTimeSinceLastChargeUpdate(self, id):
+        timeNow = int(time.time())
+        return(int(timeNow - float(self.carInfo[id]['charge_state']['timestamp']/1000)))
+
     def teslaEV_FastChargerPresent(self, id):
         #logging.debug('teslaEV_FastchargerPresent for {}'.format(id))
         if 'fast_charger_present' in self.carInfo[id]['charge_state']:
@@ -381,6 +385,10 @@ class teslaCloudEVapi(object):
             return(self.carInfo[id]['climate_state']['timestamp'])
         else:
             return(None)
+
+    def teslaEV_GetTimeSinceLastClimateUpdate(self, id):
+        timeNow = int(time.time())
+        return(int(timeNow - float(self.carInfo[id]['climate_state']['timestamp']/1000)))
 
 
     def teslaEV_GetCabinTemp(self, id):
@@ -653,7 +661,7 @@ class teslaCloudEVapi(object):
         if 'state' in self.carInfo[id]['vehicle_state']:    
             temp['state'] = self.carInfo[id]['state']
         if 'timestamp' in  self.carInfo[id]['charge_state']: 
-            temp['timestamp'] = int(self.carInfo[id]['charge_state']['timestamp'] /1000) # Tesla reports in miliseconds
+            temp['timestamp'] = int(self.carInfo[id]['vehicle_state']['timestamp'] /1000) # Tesla reports in miliseconds
         return(temp)
 
     def teslaEV_GetCenterDisplay(self,id):
@@ -670,6 +678,11 @@ class teslaCloudEVapi(object):
             return(self.carInfo[id]['vehicle_state']['timestamp'])
         else:
             return(None)
+
+    def teslaEV_GetTimeSinceLastStatusUpdate(self, id):
+        timeNow = int(time.time())
+        return(int(timeNow - float(self.carInfo[id]['vehicle_state']['timestamp']/1000)))
+
 
     def teslaEV_HomeLinkNearby(self,id):
         #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
