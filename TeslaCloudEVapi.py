@@ -170,7 +170,7 @@ class teslaCloudEVapi(object):
         if 'charge_limit_soc' in  self.carInfo[id]['charge_state']: 
             temp['charge_limit_soc'] = self.carInfo[id]['charge_state']['charge_limit_soc']      
         if 'timestamp' in  self.carInfo[id]['charge_state']: 
-            temp['timestamp'] = self.carInfo[id]['charge_state']['timestamp']                  
+            temp['timestamp'] = int(self.carInfo[id]['charge_state']['timestamp'] /1000)                 
         return(temp)
 
     def teslaEV_GetChargeTimestamp(self,id):
@@ -373,7 +373,7 @@ class teslaCloudEVapi(object):
             if 'min_avail_temp' in self.carInfo[id]['climate_state']:
                 temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
             if 'timestamp' in  self.carInfo[id]['climate_state']: 
-                temp['timestamp'] = self.carInfo[id]['climate_state']['timestamp']                  
+                temp['timestamp'] = int(self.carInfo[id]['climate_state']['timestamp'] /1000) 
         return(temp)
 
     def teslaEV_GetClimateTimestamp(self,id):
@@ -653,7 +653,7 @@ class teslaCloudEVapi(object):
         if 'state' in self.carInfo[id]['vehicle_state']:    
             temp['state'] = self.carInfo[id]['state']
         if 'timestamp' in  self.carInfo[id]['charge_state']: 
-            temp['timestamp'] = self.carInfo[id]['charge_state']['timestamp']              
+            temp['timestamp'] = int(self.carInfo[id]['charge_state']['timestamp'] /1000)
         return(temp)
 
     def teslaEV_GetCenterDisplay(self,id):
