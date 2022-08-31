@@ -113,7 +113,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
             self.setDriver('GV7', self.cond2ISY(self.TEV.teslaEV_ChargingRequested(self.EVid)), True, True)
             if self.TEV.teslaEV_GetChargingPower(self.EVid) != None:
                 logging.debug('GV8: {}'.format(self.TEV.teslaEV_GetChargingPower(self.EVid)))
-                self.setDriver('GV8', self.TEV.teslaEV_GetChargingPower(self.EVid), True, True, 33)
+                self.setDriver('GV8', self.TEV.teslaEV_GetChargingPower(self.EVid), True, True, 30)
             else:
                 self.setDriver('GV8', 99, True, True, 25)
             if self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid) != None:
@@ -123,7 +123,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
                 self.setDriver('GV9', 99, True, True, 25)
 
             logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetChargeTimestamp(self.EVid)))
-            self.setDriver('GV20', self.TEV.teslaEV_GetChargeTimestamp(self.EVid), True, True)
+            self.setDriver('GV20', self.TEV.teslaEV_GetChargeTimestamp(self.EVid), True, True, 58)
 
         except Exception as e:
             logging.error('updateISYdrivers charge node failed: {}'.format(e))
@@ -210,9 +210,9 @@ class teslaEV_ChargeNode(udi_interface.Node):
             {'driver': 'GV5', 'value': 0, 'uom': 1},  #charge_current_request_max
             {'driver': 'GV6', 'value': 99, 'uom': 25},  #charging_state
             {'driver': 'GV7', 'value': 0, 'uom': 25},  #charge_enable_request
-            {'driver': 'GV8', 'value': 99, 'uom':33},  #charger_power
+            {'driver': 'GV8', 'value': 99, 'uom':30},  #charger_power
             {'driver': 'GV9', 'value': 0, 'uom': 51},  #bat charge_limit_soc
-            {'driver': 'GV20', 'value': 0, 'uom': 110},  #Last update Epoch
+            {'driver': 'GV20', 'value': 0, 'uom': 58},  #Last update Epoch
 
 
             ]
