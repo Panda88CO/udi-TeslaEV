@@ -49,7 +49,7 @@ ST-nlsevstatus-GV13-NAME = Distance Unit
 DISTUNIT-0 = Km
 DISTUNIT-1 = Miles
 UNKNOWN-99 = Not Reported
-ST-nlsevstatus-GV20-NAME =  Time since last update(s)
+ST-nlsevstatus-GV20-NAME =  seconds since last update
 
 CMD-nlsevstatus-UPDATE-NAME = Update EV Status
 CMD-nlsevstatus-WAKEUP-NAME = Wake Up
@@ -105,7 +105,7 @@ ONOFF-99 = Unknown
 ST-nlsevclimate-GV15-NAME = Temperatue Unit
 TEMPUNIT-0 = Celcius (C)
 TEMPUNIT-1 = Farenheit (F)
-ST-nlsevclimate-GV20-NAME = Time since last update(s)
+ST-nlsevclimate-GV20-NAME = seconds since last update
 
 CMD-nlsevclimate-UPDATE-NAME = Update EV Climate Data
 CMD-nlsevclimate-SUNROOF-NAME = Sunroof Control
@@ -166,7 +166,7 @@ STARTSTOP-99 = Unknown
 ST-nlsevcharge-GV8-NAME = Charging Power
 ST-nlsevcharge-GV9-NAME = Battery Charge Target
 
-ST-nlsevcharge-GV20-NAME =  Time since last update(s)
+ST-nlsevcharge-GV20-NAME =  seconds since last update
 
 CMD-nlsevcharge-UPDATE-NAME = Update System Data
 CMD-nlsevcharge-CHARGEPORT-NAME = Charge Port Control 
