@@ -279,7 +279,7 @@ class TeslaEVController(udi_interface.Node):
         self.heartbeat()    
         if self.TEV.isConnectedToEV():
             for vehicle in range(0,len(self.vehicleList)):
-                 self.TEV.teslaEV_LatestCloudInfo(self.vehicleList[vehicle])
+                 self.TEV.teslaEV_GetLatestCloudInfo(self.vehicleList[vehicle])
             try:
                 nodes = self.poly.getNodes()
                 for node in nodes:
