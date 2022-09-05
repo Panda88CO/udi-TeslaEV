@@ -165,7 +165,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def evSetBatteryChargeLimit (self, command):
         logging.info('evSetBatteryChargeLimit called')
-        batLimitPercent = command.get('value')
+        batLimitPercent = float(command.get('value'))
         self.TEV.teslaEV_Wake(self.EVid)
         self.TEV.teslaEV_SetChargeLimit(self.EVid, batLimitPercent)
 

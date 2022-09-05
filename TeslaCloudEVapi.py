@@ -299,7 +299,7 @@ class teslaCloudEVapi(object):
     def teslaEV_SetChargeLimit (self, id, limit):
         logging.debug('teslaEV_SetChargeLimit for {}'.format(id))
        
-        if limit > 100 or limit < 0:
+        if float(limit) > 100 or float(limit) < 0:
             logging.error('Invalid seat heat level passed (0-100%) : {}'.format(limit))
             return(False)
         S = self.teslaApi.teslaConnect()
