@@ -57,7 +57,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.createSubNodes()
         self.statusNodeReady = True
         
-  
+
 
     def createSubNodes(self):
         logging.debug('Creating sub nodes for {}'.format(self.EVid))

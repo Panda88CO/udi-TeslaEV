@@ -162,7 +162,6 @@ class teslaEV_ChargeNode(udi_interface.Node):
         #self.setDriver('GV6',self.state2ISY(self.TEV.teslaEV_ChargeState(self.EVid)), True, True)
         #self.setDriver('GV7', self.cond2ISY(self.TEV.teslaEV_ChargingRequested(self.EVid)), True, True)
 
-
     def evSetBatteryChargeLimit (self, command):
         logging.info('evSetBatteryChargeLimit called')
         batLimitPercent = float(command.get('value'))
