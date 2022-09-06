@@ -28,6 +28,11 @@ class teslaCloudEVapi(object):
             self.connected = False
 
         self.carInfo = {}
+        self.canActuateTrunks = False
+        self.sunroofInstalled = False
+        self.readSeatHeat = False
+        self.steeringWheeelHeat = False
+        self.steeringWheelHeatDetected = False
 
     def isConnectedToEV(self):
        return(self.teslaApi.isConnectedToTesla())
@@ -339,8 +344,6 @@ class teslaCloudEVapi(object):
 
 
 
-
-
 ####################
 # Climate Data
 ####################
@@ -378,6 +381,10 @@ class teslaCloudEVapi(object):
                 temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
             if 'timestamp' in  self.carInfo[id]['climate_state']: 
                 temp['timestamp'] = int(self.carInfo[id]['climate_state']['timestamp'] /1000) # Tesla reports in miliseconds
+        if 'steering_wheel_heater' in self.carInfo[id]['vehicle_state']: 
+            self.steeringWheeelHeat = self.carInfo[id]['vehicle_state']['steering_wheel_heater']
+            self.steeringWheelHeatDetected = True
+
         return(temp)
 
     def teslaEV_GetClimateTimestamp(self,id):
@@ -465,7 +472,7 @@ class teslaCloudEVapi(object):
     def teslaEV_SteeringWheelHeatOn(self, id):
         #logging.debug('teslaEV_SteeringWheelHeatOn for {}'.format(id))
 
-        return(None)  
+        return(self.steeringWheeelHeat)  
 
 
 
@@ -581,12 +588,16 @@ class teslaCloudEVapi(object):
     def teslaEV_SetSeatHeating (self, id, seat, levelHeat):
         logging.debug('teslaEV_SetSeatHeating for {}'.format(id))
         seats = {{'frontLeft':0},{'frontRight':1},{'rearLeft':2},{'rearCenter':4},{'rearRight':5} } 
+        rearSeats =  {{'rearLeft':2},{'rearCenter':4},{'rearRight':5} } 
         if int(levelHeat) > 3 or int(levelHeat) < 0:
             logging.error('Invalid seat heat level passed (0-3) : {}'.format(levelHeat))
             return(False)
         if seat not in seats: 
             logging.error('Invalid seatpassed (frontLeft, frontRight ,rearLeft, rearCenter, rearRight) : {}'.format(seat))
-            return(False)          
+            return(False)  
+        elif not self.rearSeatHeat and seat in rearSeats:
+            logging.error('Rear seat heat not supported on this car')
+            return (False)  
 
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -605,26 +616,30 @@ class teslaCloudEVapi(object):
 
     def teslaEV_SteeringWheelHeat(self, id, ctrl):
         logging.debug('teslaEV_SteeringWheelHeat for {}'.format(id))
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                payload = {}    
-                if ctrl == 'on':
-                    payload = {'on':True}  
-                elif  ctrl == 'off':
-                    payload = {'on':False}  
-                else:
-                    logging.error('Wrong parameter for teslaEV_SteeringWheelHeat (on/off) for vehicle id {}: {}'.format(id, ctrl))
+        if self.steeringWheelHeatDetected:
+            S = self.teslaApi.teslaConnect()
+            with requests.Session() as s:
+                try:
+                    payload = {}    
+                    if ctrl == 'on':
+                        payload = {'on':True}  
+                    elif  ctrl == 'off':
+                        payload = {'on':False}  
+                    else:
+                        logging.error('Wrong parameter for teslaEV_SteeringWheelHeat (on/off) for vehicle id {}: {}'.format(id, ctrl))
+                        return(False)
+                    s.auth = OAuth2BearerToken(S['access_token'])
+                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/remote_steering_wheel_heater_request', headers=self.Header, json=payload ) 
+                    temp = r.json()
+                    return(temp['response']['result'])
+                except Exception as e:
+                    logging.error('Exception teslaEV_SteeringWheelHeat for vehicle id {}: {}'.format(id, e))
+                    logging.error('Trying to reconnect')
+                    self.teslaApi.tesla_refresh_token( )
                     return(False)
-                s.auth = OAuth2BearerToken(S['access_token'])
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/remote_steering_wheel_heater_request', headers=self.Header, json=payload ) 
-                temp = r.json()
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_SteeringWheelHeat for vehicle id {}: {}'.format(id, e))
-                logging.error('Trying to reconnect')
-                self.teslaApi.tesla_refresh_token( )
-                return(False)
+        else:
+            logging.error('Steering Wheet does not seem to support heating')
+            return(False)
 
 
 ####################
@@ -660,9 +675,21 @@ class teslaCloudEVapi(object):
             temp['sun_roof_state'] = self.carInfo[id]['vehicle_state']['sun_roof_state']
         if 'state' in self.carInfo[id]['vehicle_state']:    
             temp['state'] = self.carInfo[id]['state']
-        if 'timestamp' in  self.carInfo[id]['charge_state']: 
+        if 'timestamp' in  self.carInfo[id]['vehicle_state']: 
             temp['timestamp'] = int(self.carInfo[id]['vehicle_state']['timestamp'] /1000) # Tesla reports in miliseconds
+       
+        if 'can_actuate_trunks' in  self.carInfo[id]['vehicle_config']: 
+            self.canActuateTrunks = self.carInfo[id]['vehicle_config']['can_actuate_trunks']    
+        if 'sun_roof_installed' in  self.carInfo[id]['vehicle_config']: 
+            self.sunroofInstalled = (self.carInfo[id]['vehicle_config']['sun_roof_installed']   > 0)
+        if 'rear_seat_heaters' in  self.carInfo[id]['vehicle_config']: 
+            self.rearSeatHeat = (self.carInfo[id]['vehicle_config']['rear_seat_heaters']   > 0)
+        if 'steering_wheel_heater' in self.carInfo[id]['vehicle_state']: 
+            self.steeringWheeelHeat = self.carInfo[id]['vehicle_state']['steering_wheel_heater']
+            self.steeringWheelHeatDetected = True
+
         return(temp)
+
 
     def teslaEV_GetCenterDisplay(self,id):
 
@@ -740,21 +767,29 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetSunRoofState(self,id):
         #logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
-        if 'sun_roof_state' in self.carInfo[id]['vehicle_state']:
+        if 'sun_roof_state' in self.carInfo[id]['vehicle_state'] and self.sunroofInstalled:
             return(round(self.carInfo[id]['vehicle_state']['sun_roof_state']))
         else:
             return(99)
 
     def teslaEV_GetTrunkState(self,id):
         #logging.debug('teslaEV_GetTrunkState: for {}'.format(id))
-        if 'rt' in self.carInfo[id]['vehicle_state']:
-            return(self.carInfo[id]['vehicle_state']['rt'])
+        if 'rt' in self.carInfo[id]['vehicle_state'] and self.canActuateTrunks:
+            if self.carInfo[id]['vehicle_state']['rt'] == 0:
+                return(0)
+            else:
+                return(1)
         else:
             return(None)
+
+
     def teslaEV_GetFrunkState(self,id):
         #logging.debug('teslaEV_GetFrunkState: for {}'.format(id))
-        if 'ft' in self.carInfo[id]['vehicle_state']:
-            return(self.carInfo[id]['vehicle_state']['ft'])
+        if 'ft' in self.carInfo[id]['vehicle_state'] and self.canActuateTrunks:
+            if self.carInfo[id]['vehicle_state']['ft'] == 0:
+                return(0)
+            else:
+                return(1)
         else:
             return(None)     
 
