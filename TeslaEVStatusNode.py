@@ -178,7 +178,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             #    logging.info('System not ready yet')
 
         except Exception as e:
-            logging.error('updateISYdriver Status node failed:{}'.format(e))
+            logging.error('updateISYdriver Status node failed: {}'.format(e))
 
     def ISYupdate (self, command):
         logging.info('ISY-update called')
