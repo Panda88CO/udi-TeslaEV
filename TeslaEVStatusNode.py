@@ -20,6 +20,7 @@ class teslaEV_StatusNode(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name, id, TEV):
         super(teslaEV_StatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla EV  Status Node')
+        self.n_queue = []
         self.ISYforced = False
         self.EVid = id
         self.TEV = TEV
@@ -33,7 +34,7 @@ class teslaEV_StatusNode(udi_interface.Node):
 
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        self.n_queue = []
+        
 
 
     def node_queue(self, data):

@@ -186,6 +186,7 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetTimeSinceLastChargeUpdate(self, id):
         timeNow = int(time.time())
+        logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[id]['charge_state']['timestamp']/1000 ))
         return(int(timeNow - float(self.carInfo[id]['charge_state']['timestamp']/1000)))
 
     def teslaEV_FastChargerPresent(self, id):

@@ -22,6 +22,7 @@ class TeslaEVController(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
         super(TeslaEVController, self).__init__(polyglot, primary, address, name)
         self.poly = polyglot
+        self.n_queue = []
         self.TEV = None
         logging.info('_init_ Tesla EV Controller ')
         self.ISYforced = False
@@ -40,7 +41,7 @@ class TeslaEVController(udi_interface.Node):
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        self.n_queue = []
+        
 
 
 
