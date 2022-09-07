@@ -396,6 +396,8 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetTimeSinceLastClimateUpdate(self, id):
         timeNow = int(time.time())
+        logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[id]['climate_state']['timestamp']/1000 ))
+
         return(int(timeNow - float(self.carInfo[id]['climate_state']['timestamp']/1000)))
 
 
@@ -709,6 +711,7 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetTimeSinceLastStatusUpdate(self, id):
         timeNow = int(time.time())
+        logging.debug('Time Now {} Last Update {}'.format(timeNow,self.carInfo[id]['vehicle_state']['timestamp']/1000 ))
         return(int(timeNow - float(self.carInfo[id]['vehicle_state']['timestamp']/1000)))
 
 
