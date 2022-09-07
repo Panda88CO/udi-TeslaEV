@@ -31,7 +31,7 @@ class TeslaEVController(udi_interface.Node):
         self.address = address
         #self.tokenPassword = ""
         self.Rtoken = None
-
+        self.dUnit = 1 #  Miles = 1, Kilometer = 0
 
         self.Parameters = Custom(polyglot, 'customParams')      
         self.Notices = Custom(polyglot, 'notices')
@@ -207,6 +207,27 @@ class TeslaEVController(udi_interface.Node):
             self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
             self.Rtoken  = ''
            
+        if 'DIST_UNIT' in customParams:
+            temp  = self.Parameters['DIST_UNIT']
+            if temp == '':
+                self.poly.Notices['du'] = 'Missing Distance Unit ((M)iles/(K)ilometers)'
+            else:
+                if temp[0] == 'k' or temp[0] == 'K':
+                    self.dUnit = 0
+                    if 'du' in self.poly.Notices:
+                        self.poly.Notices.delete('du')
+                                    
+                    self.poly.Notices.delete('du')
+                elif temp[0] == 'm' or temp[0] == 'M':
+                    self.dUnit = 1
+                    if 'du' in self.poly.Notices:
+                        self.poly.Notices.delete('du')
+            self.TEV.teslaEV_SetDistUnit(self.dUnit)
+                
+                            
+        else:
+            self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
+            self.Rtoken  = ''
         '''
         if 'REFRESH_TOKEN' in userParam:
             cloud_token = userParam['REFRESH_TOKEN']
@@ -355,7 +376,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.26')
+        polyglot.start('0.1.27')
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')

@@ -30,7 +30,6 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.statusNodeReady = False
         self.climateNodeReady = False
         self.chargeNodeReady = False
-        self.distUnit = 1
 
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
@@ -46,8 +45,6 @@ class teslaEV_StatusNode(udi_interface.Node):
             #logging.debug('wait_for_node_done')
         self.n_queue.pop()
     
-    def setDistUnit(self, distUnit):
-        self.distUnit = distUnit
 
     def start(self):       
         logging.info('Start Tesla EV Status Node for {}'.format(self.EVid)) 
@@ -138,10 +135,11 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
             self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
             logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
-            if self.distUnit == 1:
+            if self.TEV.teslaEV_GetDistUnit() == 1:
                 self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True, uom=116)
             else:
                 self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid) , True, True, uom=83 )
+
             logging.debug('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
             self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)), True, True)
             logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
@@ -267,8 +265,8 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     def setDistUnit(self,command):
         logging.debug('setTempUnit')
-        self.distUnit = int(float(command.get('value')))   
-        #self.setDriver('GV13', self.distUnit, True, True)  
+        distUnit = int(float(command.get('value')))   
+        self.TEV.teslaEV_SetDistUnit( distUnit )
 
         self.forceUpdateISYdrivers()
        
@@ -302,7 +300,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
-            {'driver': 'GV13', 'value': 1, 'uom': 25}, #Dist Unit
+            #{'driver': 'GV13', 'value': 1, 'uom': 25}, #Dist Unit
             {'driver': 'GV20', 'value': 0, 'uom': 58},  #Last update Epoch                        
             ]
 

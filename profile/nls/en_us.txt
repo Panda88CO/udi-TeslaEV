@@ -150,6 +150,7 @@ CPLSTATE-2 = Blocking
 CPLSTATE-99 = Unknown/Not Connected
 
 ST-nlsevcharge-BATLVL-NAME = Battery Level 
+ST-nlsevcharge-GV4-NAME = Estimated Range
 ST-nlsevcharge-GV5-NAME = Max Charge Current
 ST-nlsevcharge-GV6-NAME = Charging State
 CHGSTATE-0 = Not Connected

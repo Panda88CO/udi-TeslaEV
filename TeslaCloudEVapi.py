@@ -33,6 +33,7 @@ class teslaCloudEVapi(object):
         self.readSeatHeat = False
         self.steeringWheeelHeat = False
         self.steeringWheelHeatDetected = False
+        self.distUnit = 1
 
     def isConnectedToEV(self):
        return(self.teslaApi.isConnectedToTesla())
@@ -148,6 +149,14 @@ class teslaCloudEVapi(object):
         return(temp)
 
 
+    def teslaEV_SetDistUnit(self, dUnit):
+        logging.debug('teslaEV_SetDistUnit: {}'.format(dUnit))
+        self.distUnit = dUnit
+
+    def teslaEV_GetDistUnit(self):
+        logging.debug('teslaEV_GetDistUnit: {}'.format(self.distUnit))
+        return(self.distUnit)
+
 ####################
 # Charge Data
 ####################
@@ -160,6 +169,8 @@ class teslaCloudEVapi(object):
             temp['charge_port_latch'] =  self.carInfo[id]['charge_state']['charge_port_latch']
         if 'charge_port_door_open' in  self.carInfo[id]['charge_state']: 
             temp['charge_port_door_open'] =  self.carInfo[id]['charge_state']['charge_port_door_open']
+        if 'est_battery_range' in  self.carInfo[id]['charge_state']: 
+            temp['est_battery_range'] = self.carInfo[id]['charge_state']['est_battery_range']            
         if 'battery_level' in  self.carInfo[id]['charge_state']: 
             temp['battery_level'] = self.carInfo[id]['charge_state']['battery_level']
         if 'charge_current_request_max' in  self.carInfo[id]['charge_state']: 
@@ -210,6 +221,13 @@ class teslaCloudEVapi(object):
             return(self.carInfo[id]['charge_state']['charge_port_latch']) 
         else:
             return(None)         
+
+    def teslaEV_GetBatteryRange(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'est_battery_range' in self.carInfo[id]['charge_state']:
+            return(round(self.carInfo[id]['charge_state']['est_battery_range'],0)) 
+        else:
+            return(None)
 
     def teslaEV_GetBatteryLevel(self, id):
         #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
