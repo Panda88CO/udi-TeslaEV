@@ -21,6 +21,7 @@ from TeslaCloudEVapi  import teslaCloudEVapi
 class TeslaEVController(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
         super(TeslaEVController, self).__init__(polyglot, primary, address, name)
+        logging.setLevel(10)
         self.poly = polyglot
         self.n_queue = []
         self.TEV = None
