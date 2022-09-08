@@ -32,6 +32,7 @@ class TeslaEVController(udi_interface.Node):
         #self.tokenPassword = ""
         self.Rtoken = None
         self.dUnit = 1 #  Miles = 1, Kilometer = 0
+        self.supportParams = ['REFRESH_TOKEN', 'DIST_UNIT']
 
         self.Parameters = Custom(polyglot, 'customParams')      
         self.Notices = Custom(polyglot, 'notices')
@@ -78,6 +79,11 @@ class TeslaEVController(udi_interface.Node):
         logging.info('start')
         self.poly.updateProfile()
         self.poly.setCustomParamsDoc()
+
+        for param in self.supportParams:
+            if param not in self.Parameters:
+                self.Parameters[param] = ''
+
         self.tesla_initialize()
         self.createNodes()
 
@@ -172,7 +178,7 @@ class TeslaEVController(udi_interface.Node):
     def handleParams (self, customParams ):
         logging.debug('handleParams')
         #supportParams = ['REFRESH_TOKEN', 'TOKEN_PASSWORD']
-        supportParams = ['REFRESH_TOKEN']
+        supportParams = ['REFRESH_TOKEN', 'DIST_UNIT']
         self.Parameters.load(customParams)
 
         logging.debug('handleParams load - {}'.format(customParams))
@@ -199,10 +205,10 @@ class TeslaEVController(udi_interface.Node):
             self.Rtoken = self.Parameters['REFRESH_TOKEN']
             if self.Rtoken  == '':
                 self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
+
             else:
                 if 'ct' in self.poly.Notices:
-                    self.poly.Notices.delete('ct')        
-                            
+                    self.poly.Notices.delete('ct')                   
         else:
             self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
             self.Rtoken  = ''
@@ -228,44 +234,6 @@ class TeslaEVController(udi_interface.Node):
         else:
             self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
             self.Rtoken  = ''
-        '''
-        if 'REFRESH_TOKEN' in userParam:
-            cloud_token = userParam['REFRESH_TOKEN']
-            if cloud_token != '':
-                if (os.path.exists('./inputToken.txt')):
-                    if self.tokenPassword != "":
-                        tmpToken = self.readTokenFile('./inputToken.txt', self.tokenPassword)
-                        if tmpToken != cloud_token:
-                            logging.info('Newer input from config')
-                            self.writeTokenFile('./inputToken.txt', cloud_token, self.tokenPassword)
-                            self.writeTokenFile('./refreshToken.txt', cloud_token, self.tokenPassword)
-                            self.Rtoken = cloud_token
-                        elif (os.path.exists('./refreshToken.txt')): #assume refreshToken is newer
-                            self.Rtoken =  self.readTokenFile('./refreshToken.txt', self.tokenPassword)
-                            cloud_token = self.Rtoken
-                        else: #InputToken must exist (this should never trigger)
-                            self.writeTokenFile('./refreshToken.txt', cloud_token, self.tokenPassword)               
-                            self.Rtoken = cloud_token
-
-                    else: #first time input - must overwrite refreshToken as well 
-                        self.writeTokenFile('./inputToken.txt', cloud_token, self.tokenPassword)
-                        self.writeTokenFile('./refreshToken.txt', cloud_token, self.tokenPassword)                   
-                        self.Rtoken = cloud_token    
-                                    
-                else: # nothing has changed - use refreshToken 
-                    if (os.path.exists('./refreshToken.txt')):
-                        self.Rtoken = self.readTokenFile('./refreshToken.txt', self.tokenPassword)
-                        cloud_token = self.Rtoken
-                        
-        else: #no token provided yet 
-            if (os.path.exists('./refreshToken.txt')):
-                self.Rtoken = self.readTokenFile('./refreshToken.txt', self.tokenPassword)
-                cloud_token = self.Rtoken  
-                noFile = False
-            else:
-                self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
-                cloud_token = ''
-        '''
 
                
         if self.Rtoken == '':
@@ -376,7 +344,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.28')
+        polyglot.start('0.1.29')
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
