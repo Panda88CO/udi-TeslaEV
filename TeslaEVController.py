@@ -86,7 +86,7 @@ class TeslaEVController(udi_interface.Node):
             if param not in self.Parameters:
                 self.Parameters[param] = ''
         '''
-        logging.debug('params: {}'.format(self.Parameters))
+        logging.debug('start params: {}'.format(self.Parameters))
         self.tesla_initialize()
         self.createNodes()
 
@@ -129,7 +129,7 @@ class TeslaEVController(udi_interface.Node):
     def tesla_initialize(self):
         logging.info('starting Login process')
         try:
-            logging.debug('token = {}'.fomat(self.Rtoken))
+            logging.debug('token = {}'.format(self.Rtoken))
             while self.Rtoken == '':
                 logging.info('Waiting for token')
                 time.sleep(10)
