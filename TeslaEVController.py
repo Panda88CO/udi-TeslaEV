@@ -95,9 +95,9 @@ class TeslaEVController(udi_interface.Node):
         #self.systemReady = True
 
     def validate_params(self):
-        logging.debug('validate_params: {}'.format(self.Parameters))
+        logging.debug('validate_params: {}'.format(self.Parameters.dump()))
         for param in self.supportedParams:
-            if param not in self.Parameters:
+            if param not in self.Parameters.keys():
                 self.Parameters[param] = ''
                 self.poly.Notices[param] = '{} must be specified in config'.format(param)
 
@@ -191,17 +191,19 @@ class TeslaEVController(udi_interface.Node):
 
     def handleParams (self, customParams ):
         logging.debug('handleParams')
-        #self.Parameters.load(customParams)
-
-        logging.debug('handleParams load - {} {}'.format(customParams, self.Parameters))
+        tempDict1 = customParams
+        self.Parameters.load(customParams)
+        tempDict2 = customParams
+        logging.debug('handleParams load - {} Before: {} After:{}'.format(customParams,tempDict1, tempDict2 ))
         #logging.debug(self.Parameters)  ### TEMP
         self.poly.Notices.clear()
         self.cloudAccess = False
 
         if 'REFRESH_TOKEN' in customParams:
-            logging.debug('REFRESH_TOKEN')
-            self.Rtoken = self.Parameters['REFRESH_TOKEN']
-            if self.Rtoken  == '':
+            
+            self.Rtoken = customParams['REFRESH_TOKEN']
+            logging.debug('REFRESH_TOKEN : {}'.format(self.Rtoken))
+            if self.Rtoken  == '' or self.Rtoken == None:
                 self.poly.Notices['REFRESH_TOKEN'] = 'Missing Cloud Refresh Token'
 
             else:
@@ -212,9 +214,10 @@ class TeslaEVController(udi_interface.Node):
             self.Rtoken  = ''
            
         if 'DIST_UNIT' in customParams:
-            logging.debug('DIST_UNIT')
-            temp  = self.Parameters['DIST_UNIT']
-            if temp == '':
+            
+            temp  = customParams['DIST_UNIT']
+            logging.debug('DIST_UNIT: {}'.format(temp))
+            if temp == '' or temp == None:
                 self.poly.Notices['DIST_UNIT'] = 'Missing Distance Unit ((M)iles/(K)ilometers)'
             else:
                 if temp[0] == 'k' or temp[0] == 'K':
@@ -330,7 +333,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.34')
+        polyglot.start('0.1.35')
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
