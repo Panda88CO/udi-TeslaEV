@@ -140,6 +140,7 @@ class TeslaEVController(udi_interface.Node):
                 exit()
             else:
                 self.setDriver('GV0', 1, True, True)
+                self.TEV.teslaEV_SetDistUnit(self.dUnit)
         except Exception as e:
             logging.debug('Exception Controller start: '+ str(e))
             logging.error('Did not connect to Tesla Cloud ')
@@ -236,7 +237,7 @@ class TeslaEVController(udi_interface.Node):
                     self.dUnit = 1
                     if 'du' in self.poly.Notices:
                         self.poly.Notices.delete('du')
-            self.TEV.teslaEV_SetDistUnit(self.dUnit)
+            
                 
                             
         else:
