@@ -26,7 +26,11 @@
       <range  uom="83" min="0" max="999999" prec="1" />
       <range  uom="116" min="0" max="999999" prec="1" />
   </editor>
-  
+   <editor id = "DISTANCE" > 
+      <range  uom="83" min="0" max="800" prec="0" />
+      <range  uom="116" min="0" max="500" prec="0" />
+  </editor>
+
   <editor id = "WINDOW" > 
      <range  uom="25" subset="0-1, 99" nls="WINDOW" />
   </editor>

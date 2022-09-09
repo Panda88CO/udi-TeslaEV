@@ -97,6 +97,14 @@ class teslaEV_ChargeNode(udi_interface.Node):
             self.setDriver('GV2', self.cond2ISY(self.TEV.teslaEV_ChargePortOpen(self.EVid)), True, True)
             logging.debug('GV3: {}'.format(self.TEV.teslaEV_ChargePortLatched(self.EVid)))
             self.setDriver('GV3', self.cond2ISY(self.TEV.teslaEV_ChargePortLatched(self.EVid)), True, True)
+            logging.debug('GV3: {}'.format(self.TEV.teslaEV_ChargePortLatched(self.EVid)))
+            self.setDriver('GV3', self.cond2ISY(self.TEV.teslaEV_ChargePortLatched(self.EVid)), True, True)
+            logging.debug('GV4: {} miles'.format(self.TEV.teslaEV_GetBatteryRange(self.EVid)))
+            if self.TEV.teslaEV_GetDistUnit == 1:
+                self.setDriver('GV4', self.TEV.teslaEV_GetBatteryRange(self.EVid), True, True, 116)
+            else:
+                self.setDriver('GV4', self.TEV.teslaEV_GetBatteryRange(self.EVid)*1.6, True, True, 83)
+
             if self.TEV.teslaEV_GetBatteryLevel(self.EVid) != None:
                 logging.debug('BATLVL: {}'.format(self.TEV.teslaEV_GetBatteryLevel(self.EVid)))
                 self.setDriver('BATLVL', self.TEV.teslaEV_GetBatteryLevel(self.EVid), True, True, 51)
@@ -206,6 +214,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
             {'driver': 'GV2', 'value': 0, 'uom': 25},  #charge_port_door_open
             {'driver': 'GV3', 'value': 0, 'uom': 25},  #charge_port_latch
             {'driver': 'BATLVL', 'value': 0, 'uom': 51},  #battery_level
+            {'driver': 'GV4', 'value': 0, 'uom': 116}, # Estimated range - Miles
             {'driver': 'GV5', 'value': 0, 'uom': 1},  #charge_current_request_max
             {'driver': 'GV6', 'value': 99, 'uom': 25},  #charging_state
             {'driver': 'GV7', 'value': 0, 'uom': 25},  #charge_enable_request
