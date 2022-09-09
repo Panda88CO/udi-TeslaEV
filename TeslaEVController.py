@@ -78,6 +78,7 @@ class TeslaEVController(udi_interface.Node):
 
     def start(self):
         logging.info('start')
+        self.Parameters.load(customParams)
         self.poly.updateProfile()
         self.poly.setCustomParamsDoc()
         '''
@@ -128,6 +129,7 @@ class TeslaEVController(udi_interface.Node):
     def tesla_initialize(self):
         logging.info('starting Login process')
         try:
+            logging.debug('token = {}'.fomat(self.Rtoken))
             while self.Rtoken == '':
                 logging.info('Waiting for token')
                 time.sleep(10)
