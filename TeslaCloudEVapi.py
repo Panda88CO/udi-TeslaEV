@@ -174,36 +174,6 @@ class teslaCloudEVapi(object):
 # Charge Data
 ####################
     def teslaEV_GetChargingInfo(self, id):
-<<<<<<< HEAD
-        try:
-            logging.debug('teslaEV_GetChargingInfo: for {}'.format(id))
-            temp = {}
-            if 'fast_charger_present' in  self.carInfo[id]['charge_state']:
-                temp['fast_charger_present'] = self.carInfo[id]['charge_state']['fast_charger_present']
-            if 'charge_port_latch' in  self.carInfo[id]['charge_state']:    
-                temp['charge_port_latch'] =  self.carInfo[id]['charge_state']['charge_port_latch']
-            if 'charge_port_door_open' in  self.carInfo[id]['charge_state']: 
-                temp['charge_port_door_open'] =  self.carInfo[id]['charge_state']['charge_port_door_open']
-            if 'battery_level' in  self.carInfo[id]['charge_state']: 
-                temp['battery_level'] = self.carInfo[id]['charge_state']['battery_level']
-            if 'charge_current_request_max' in  self.carInfo[id]['charge_state']: 
-                temp['charge_current_request_max'] = self.carInfo[id]['charge_state']['charge_current_request_max']
-            if 'est_battery_range' in  self.carInfo[id]['charge_state']: 
-                temp['est_battery_range'] = self.carInfo[id]['charge_state']['est_battery_range']
-            if 'charging_state' in  self.carInfo[id]['charge_state']: 
-                temp['charging_state'] = self.carInfo[id]['charge_state']['charging_state']
-            if 'charge_enable_request' in  self.carInfo[id]['charge_state']: 
-                temp['charge_enable_request'] = self.carInfo[id]['charge_state']['charge_enable_request']
-            if 'charger_power' in  self.carInfo[id]['charge_state']: 
-                temp['charger_power'] = self.carInfo[id]['charge_state']['charger_power']
-            if 'charge_limit_soc' in  self.carInfo[id]['charge_state']: 
-                temp['charge_limit_soc'] = self.carInfo[id]['charge_state']['charge_limit_soc']      
-            if 'timestamp' in  self.carInfo[id]['charge_state']: 
-                temp['timestamp'] = int(self.carInfo[id]['charge_state']['timestamp'] /1000) # Tesla reports in miliseconds                
-            return(temp)
-        except Exception as E:
-            logging.error('Error teslaEV_GetChargingInfo {}'.format(E))
-=======
         logging.debug('teslaEV_GetChargingInfo: for {}'.format(id))
         temp = {}
         if 'fast_charger_present' in  self.carInfo['charge_state']:
@@ -231,7 +201,6 @@ class teslaCloudEVapi(object):
         if 'timestamp' in  self.carInfo['charge_state']: 
             temp['timestamp'] = int(self.carInfo['charge_state']['timestamp'] /1000) # Tesla reports in miliseconds                
         return(temp)
->>>>>>> 7b140eb84971630bad156e25fa9bde4f0b70deaa
 
     def teslaEV_GetChargeTimestamp(self,id):
         if 'timestamp' in self.carInfo['charge_state']:
@@ -414,46 +383,6 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetClimateInfo(self, id):
         logging.debug('teslaEV_GetClimateInfo: for {}'.format(id))
-<<<<<<< HEAD
-        try:
-            temp = {}
-            if 'climate_state' in self.carInfo[id]:
-                if 'inside_temp' in self.carInfo[id]['climate_state']:
-                    temp['inside_temp'] = self.carInfo[id]['climate_state']['inside_temp']
-                if 'outside_temp' in self.carInfo[id]['climate_state']:
-                    temp['outside_temp'] = self.carInfo[id]['climate_state']['outside_temp']
-                if 'idriver_temp_setting' in self.carInfo[id]['climate_state']:
-                    temp['driver_temp_setting'] = self.carInfo[id]['climate_state']['driver_temp_setting']
-                if 'passenger_temp_setting' in self.carInfo[id]['climate_state']:
-                    temp['passenger_temp_setting'] = self.carInfo[id]['climate_state']['passenger_temp_setting']
-                if 'seat_heater_left' in self.carInfo[id]['climate_state']:
-                    temp['seat_heater_left'] = self.carInfo[id]['climate_state']['seat_heater_left']
-                if 'seat_heater_right' in self.carInfo[id]['climate_state']:
-                    temp['seat_heater_right'] = self.carInfo[id]['climate_state']['seat_heater_right']
-                if 'seat_heater_rear_center' in self.carInfo[id]['climate_state']:
-                    temp['seat_heater_rear_center'] = self.carInfo[id]['climate_state']['seat_heater_rear_center']
-                if 'seat_heater_rear_left' in self.carInfo[id]['climate_state']:
-                    temp['seat_heater_rear_left'] = self.carInfo[id]['climate_state']['seat_heater_rear_left']
-                if 'seat_heater_rear_right' in self.carInfo[id]['climate_state']:
-                    temp['seat_heater_rear_right'] = self.carInfo[id]['climate_state']['seat_heater_rear_right']
-                if 'is_auto_conditioning_on' in self.carInfo[id]['climate_state']:
-                    temp['is_auto_conditioning_on'] = self.carInfo[id]['climate_state']['is_auto_conditioning_on']
-                if 'is_preconditioning' in self.carInfo[id]['climate_state']:
-                    temp['is_preconditioning'] = self.carInfo[id]['climate_state']['is_preconditioning']
-                if 'max_avail_temp' in self.carInfo[id]['climate_state']:
-                    temp['max_avail_temp'] = self.carInfo[id]['climate_state']['max_avail_temp']
-                if 'min_avail_temp' in self.carInfo[id]['climate_state']:
-                    temp['min_avail_temp'] = self.carInfo[id]['climate_state']['min_avail_temp']
-                if 'timestamp' in  self.carInfo[id]['climate_state']: 
-                    temp['timestamp'] = int(self.carInfo[id]['climate_state']['timestamp'] /1000) # Tesla reports in miliseconds
-            if 'steering_wheel_heater' in self.carInfo[id]['vehicle_state']: 
-                self.steeringWheeelHeat = self.carInfo[id]['vehicle_state']['steering_wheel_heater']
-                self.steeringWheelHeatDetected = True
-
-            return(temp)
-        except Exception as E:
-            logging.error('Error teslaEV_GetClimateInfo : {}'.format(E))
-=======
         temp = {}
         if 'climate_state' in self.carInfo:
             if 'inside_temp' in self.carInfo['climate_state']:
@@ -487,7 +416,6 @@ class teslaCloudEVapi(object):
         if 'steering_wheel_heater' in self.carInfo['vehicle_state']: 
             self.steeringWheeelHeat = self.carInfo['vehicle_state']['steering_wheel_heater']
             self.steeringWheelHeatDetected = True
->>>>>>> 7b140eb84971630bad156e25fa9bde4f0b70deaa
 
 
     def teslaEV_GetClimateTimestamp(self,id):
@@ -751,54 +679,6 @@ class teslaCloudEVapi(object):
 # Status Data
 ####################
     def teslaEV_GetStatusInfo(self, id):
-<<<<<<< HEAD
-        logging.debug('teslaEV_GetStatusInfo: for {} : {}'.format(id, self.carInfo[id]))
-        try:
-            temp = {}
-            if 'center_display_state' in self.carInfo[id]['vehicle_state']:
-                temp['center_display_state'] = self.carInfo[id]['vehicle_state']['center_display_state']
-            if 'homelink_nearby' in self.carInfo[id]['vehicle_state']:    
-                temp['homelink_nearby'] = self.carInfo[id]['vehicle_state']['homelink_nearby']
-            if 'hfd_window' in self.carInfo[id]['vehicle_state']:        
-                temp['fd_window'] = self.carInfo[id]['vehicle_state']['fd_window']
-            if 'fp_window' in self.carInfo[id]['vehicle_state']:    
-                temp['fp_window'] = self.carInfo[id]['vehicle_state']['fp_window']
-            if 'rd_window' in self.carInfo[id]['vehicle_state']:    
-                temp['rd_window'] = self.carInfo[id]['vehicle_state']['rd_window']
-            if 'rp_window' in self.carInfo[id]['vehicle_state']:    
-                temp['rp_window'] = self.carInfo[id]['vehicle_state']['rp_window']
-            if 'frunk' in self.carInfo[id]['vehicle_state']:    
-                temp['trunk'] = self.carInfo[id]['vehicle_state']['ft']
-            if 'homelink_nearby' in self.carInfo[id]['vehicle_state']:    
-                temp['trunk'] = self.carInfo[id]['vehicle_state']['rt']
-            if 'locked' in self.carInfo[id]['vehicle_state']:    
-                temp['locked'] = self.carInfo[id]['vehicle_state']['locked']
-            if 'odometer' in self.carInfo[id]['vehicle_state']:    
-                temp['odometer'] = self.carInfo[id]['vehicle_state']['odometer']
-            if 'sun_roof_percent_open' in self.carInfo[id]['vehicle_state']:    
-                temp['sun_roof_percent_open'] = self.carInfo[id]['vehicle_state']['sun_roof_percent_open']
-            if 'sun_roof_state' in self.carInfo[id]['vehicle_state']:
-                temp['sun_roof_state'] = self.carInfo[id]['vehicle_state']['sun_roof_state']
-            if 'state' in self.carInfo[id]['vehicle_state']:    
-                temp['state'] = self.carInfo[id]['state']
-            if 'timestamp' in  self.carInfo[id]['vehicle_state']: 
-                temp['timestamp'] = int(self.carInfo[id]['vehicle_state']['timestamp'] /1000) # Tesla reports in miliseconds
-        
-            if 'can_actuate_trunks' in  self.carInfo[id]['vehicle_config']: 
-                self.canActuateTrunks = self.carInfo[id]['vehicle_config']['can_actuate_trunks']    
-            if 'sun_roof_installed' in  self.carInfo[id]['vehicle_config']: 
-                self.sunroofInstalled = (self.carInfo[id]['vehicle_config']['sun_roof_installed']  != None)
-            if 'rear_seat_heaters' in  self.carInfo[id]['vehicle_config']: 
-                self.rearSeatHeat = (self.carInfo[id]['vehicle_config']['rear_seat_heaters']   > 0)
-            if  'vehicle_state' in self.carInfo[id]:
-                    if 'steering_wheel_heater' in self.carInfo[id]['vehicle_state']: 
-                        self.steeringWheeelHeat = self.carInfo[id]['vehicle_state']['steering_wheel_heater']
-                        self.steeringWheelHeatDetected = True
-            return(temp)       
-        except Exception as E:
-            logging.error('Error  teslaEV_GetStatusInfo: {}'.format(E))
-
-=======
         logging.debug('teslaEV_GetStatusInfo: for {} : {}'.format(id, self.carInfo))
 
         temp = {}
@@ -840,7 +720,6 @@ class teslaCloudEVapi(object):
         if 'steering_wheel_heater' in self.carInfo['vehicle_state']: 
             self.steeringWheeelHeat = self.carInfo['vehicle_state']['steering_wheel_heater']
             self.steeringWheelHeatDetected = True
->>>>>>> 7b140eb84971630bad156e25fa9bde4f0b70deaa
 
         
 

@@ -98,8 +98,10 @@ class teslaCloudApi(object):
                 dataFile = open('./refreshToken.txt', 'w')
                 dataFile.write( self.Rtoken)
                 dataFile.close()
-
-
+                return S
+            else:
+                logging.error('Wrong refresh token ')
+                return None
             '''
             data = {}
             data['grant_type'] = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
