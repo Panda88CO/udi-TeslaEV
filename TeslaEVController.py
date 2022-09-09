@@ -191,7 +191,7 @@ class TeslaEVController(udi_interface.Node):
 
     def handleParams (self, customParams ):
         logging.debug('handleParams')
-        self.Parameters.load(customParams)
+        #self.Parameters.load(customParams)
 
         logging.debug('handleParams load - {} {}'.format(customParams, self.Parameters))
         #logging.debug(self.Parameters)  ### TEMP
@@ -202,45 +202,32 @@ class TeslaEVController(udi_interface.Node):
             logging.debug('REFRESH_TOKEN')
             self.Rtoken = self.Parameters['REFRESH_TOKEN']
             if self.Rtoken  == '':
-                self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
+                self.poly.Notices['REFRESH_TOKEN'] = 'Missing Cloud Refresh Token'
 
             else:
-                if 'ct' in self.poly.Notices:
-                    self.poly.Notices.delete('ct')                   
+                if 'REFRESH_TOKEN' in self.poly.Notices:
+                    self.poly.Notices.delete('REFRESH_TOKEN')                   
         else:
-            self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
+            self.poly.Notices['REFRESH_TOKEN'] = 'Missing Cloud Refresh Token'
             self.Rtoken  = ''
            
         if 'DIST_UNIT' in customParams:
             logging.debug('DIST_UNIT')
             temp  = self.Parameters['DIST_UNIT']
             if temp == '':
-                self.poly.Notices['du'] = 'Missing Distance Unit ((M)iles/(K)ilometers)'
+                self.poly.Notices['DIST_UNIT'] = 'Missing Distance Unit ((M)iles/(K)ilometers)'
             else:
                 if temp[0] == 'k' or temp[0] == 'K':
                     self.dUnit = 0
-                    if 'du' in self.poly.Notices:
-                        self.poly.Notices.delete('du')
-                                    
-                    self.poly.Notices.delete('du')
+                    if 'DIST_UNIT' in self.poly.Notices:
+                        self.poly.Notices.delete('DIST_UNIT')
+
                 elif temp[0] == 'm' or temp[0] == 'M':
                     self.dUnit = 1
-                    if 'du' in self.poly.Notices:
-                        self.poly.Notices.delete('du')
+                    if 'DIST_UNIT' in self.poly.Notices:
+                        self.poly.Notices.delete('DIST_UNIT')
             
-                
-                            
-        else:
-            self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
-            self.Rtoken  = ''
-
-               
-        if self.Rtoken == '':
-            self.poly.Notices['ct'] = 'Please enter the Tesla Refresh Token - see readme for futher info '
-        else:
-
-            self.tesla_initialize()
-        logging.debug('done with parameter processing')
+        logging.debug('done processing parameter')
         
 
     def heartbeat(self):
