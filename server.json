@@ -11,17 +11,13 @@
     "profile_version": "0.1.15",
     "logLevel":"INFO",
 	"customParams": {
-		"REFRESH_TOKEN": ""
+		"REFRESH_TOKEN": "Refresh Token","DIST_UNIT":"M"
 	},
     "credits": [
         {
             "title": "A NodeServer to integrate control of Tesla EVs",
             "author": "Panda88CO",
-<<<<<<< HEAD
-            "version": "0.1.27",
-=======
-            "version": "0.1.29",
->>>>>>> 7b140eb84971630bad156e25fa9bde4f0b70deaa
+            "version": "0.1.33",
             "date": "August28,  2022",
             "source": "https://github.com/Panda88CO/udi-TeslaEV",
             "license": "https://github.com/Panda88CO/udi-TeslaEV/blob/main/license"

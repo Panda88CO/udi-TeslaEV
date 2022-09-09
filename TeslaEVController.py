@@ -33,7 +33,7 @@ class TeslaEVController(udi_interface.Node):
         #self.tokenPassword = ""
         self.Rtoken = None
         self.dUnit = 1 #  Miles = 1, Kilometer = 0
-        self.supportParams = ['REFRESH_TOKEN', 'DIST_UNIT']
+        self.supportedParams = ['REFRESH_TOKEN', 'DIST_UNIT']
 
         self.Parameters = Custom(polyglot, 'customParams')      
         self.Notices = Custom(polyglot, 'notices')
@@ -43,7 +43,7 @@ class TeslaEVController(udi_interface.Node):
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.handleParams)
         self.poly.subscribe(self.poly.POLL, self.systemPoll)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        
+        self.poly.subscribe(self.poly.CONFIGDONE, self.validate_params)
 
 
 
@@ -82,19 +82,25 @@ class TeslaEVController(udi_interface.Node):
         #self.poly.updateProfile()
         #self.poly.setCustomParamsDoc()
         '''
-        for param in self.supportParams:
+        for param in self.supportedParams:
             if param not in self.Parameters:
                 self.Parameters[param] = ''
         '''
-        logging.debug('start params: {}'.format(self.Parameters))
-        self.tesla_initialize()
-        self.createNodes()
+        
 
         # Wait for things to initialize....
         # Poll for current values (and update drivers)
         #self.TEV.pollSystemData('all')          
         #self.updateISYdrivers('all')
         #self.systemReady = True
+
+    def validate_params(self):
+        logging.debug('validate_params: {}'.format(self.Parameters))
+        for param in self.supportedParams:
+            if param not in self.Parameters:
+                self.Parameters[param] = ''
+                self.poly.Notices[param] = '{} must be specified in config'.format(param)
+
 
 
     def stop(self):
@@ -125,6 +131,9 @@ class TeslaEVController(udi_interface.Node):
     could be enabling or disabling the various types of access.  So if the
     user changes something, we want to re-initialize.
     '''
+    def tesla_start(self):
+        self.tesla_initialize()
+        self.createNodes()
 
     def tesla_initialize(self):
         logging.info('starting Login process')
@@ -182,32 +191,13 @@ class TeslaEVController(udi_interface.Node):
 
     def handleParams (self, customParams ):
         logging.debug('handleParams')
-        #supportParams = ['REFRESH_TOKEN', 'TOKEN_PASSWORD']
-        supportParams = ['REFRESH_TOKEN', 'DIST_UNIT']
         self.Parameters.load(customParams)
 
         logging.debug('handleParams load - {} {}'.format(customParams, self.Parameters))
         #logging.debug(self.Parameters)  ### TEMP
         self.poly.Notices.clear()
         self.cloudAccess = False
-        '''
-        for param in customParams:
-            if param not in supportParams:
-                del self.Parameters[param]
-                logging.debug ('erasing key: ' + str(param))
-        '''
-        '''
-        if 'TOKEN_PASSWORD' in customParams:
-            self.tokenPassword = self.Parameters['TOKEN_PASSWORD']
-            if self.tokenPassword == "":
-                self.poly.Notices['tp'] = 'Enter a Password to encrypt Tokens stored in Files'
-            else:
-                if 'tp' in self.poly.Notices:
-                    self.poly.Notices.delete('tp')
-        else:
-            self.poly.Notices['tp'] = 'Enter a Password to encrypt Tokens stored in Files'
-            self.tokenPassword == ""
-        '''
+
         if 'REFRESH_TOKEN' in customParams:
             logging.debug('REFRESH_TOKEN')
             self.Rtoken = self.Parameters['REFRESH_TOKEN']
@@ -353,7 +343,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.32')
+        polyglot.start('0.1.33')
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
