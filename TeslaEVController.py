@@ -185,7 +185,7 @@ class TeslaEVController(udi_interface.Node):
         supportParams = ['REFRESH_TOKEN', 'DIST_UNIT']
         self.Parameters.load(customParams)
 
-        logging.debug('handleParams load - {}'.format(customParams))
+        logging.debug('handleParams load - {} {}'.format(customParams, self.Parameters))
         #logging.debug(self.Parameters)  ### TEMP
         self.poly.Notices.clear()
         self.cloudAccess = False
@@ -208,6 +208,7 @@ class TeslaEVController(udi_interface.Node):
             self.tokenPassword == ""
         '''
         if 'REFRESH_TOKEN' in customParams:
+            logging.debug('REFRESH_TOKEN')
             self.Rtoken = self.Parameters['REFRESH_TOKEN']
             if self.Rtoken  == '':
                 self.poly.Notices['ct'] = 'Missing Cloud Refresh Token'
@@ -220,6 +221,7 @@ class TeslaEVController(udi_interface.Node):
             self.Rtoken  = ''
            
         if 'DIST_UNIT' in customParams:
+            logging.debug('DIST_UNIT')
             temp  = self.Parameters['DIST_UNIT']
             if temp == '':
                 self.poly.Notices['du'] = 'Missing Distance Unit ((M)iles/(K)ilometers)'
