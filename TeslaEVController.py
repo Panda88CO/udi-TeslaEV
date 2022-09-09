@@ -78,9 +78,9 @@ class TeslaEVController(udi_interface.Node):
 
     def start(self):
         logging.info('start')
-        self.Parameters.load(customParams)
-        self.poly.updateProfile()
-        self.poly.setCustomParamsDoc()
+        #self.Parameters.load(customParams)
+        #self.poly.updateProfile()
+        #self.poly.setCustomParamsDoc()
         '''
         for param in self.supportParams:
             if param not in self.Parameters:
@@ -189,10 +189,12 @@ class TeslaEVController(udi_interface.Node):
         #logging.debug(self.Parameters)  ### TEMP
         self.poly.Notices.clear()
         self.cloudAccess = False
+        '''
         for param in customParams:
             if param not in supportParams:
                 del self.Parameters[param]
                 logging.debug ('erasing key: ' + str(param))
+        '''
         '''
         if 'TOKEN_PASSWORD' in customParams:
             self.tokenPassword = self.Parameters['TOKEN_PASSWORD']
@@ -348,7 +350,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.31')
+        polyglot.start('0.1.32')
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
