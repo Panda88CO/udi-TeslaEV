@@ -85,6 +85,7 @@ class TeslaEVController(udi_interface.Node):
             if param not in self.Parameters:
                 self.Parameters[param] = ''
         '''
+        logging.debug('params: {}'.format(self.Parameters))
         self.tesla_initialize()
         self.createNodes()
 
