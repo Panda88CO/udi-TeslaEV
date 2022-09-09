@@ -80,11 +80,11 @@ class TeslaEVController(udi_interface.Node):
         logging.info('start')
         self.poly.updateProfile()
         self.poly.setCustomParamsDoc()
-
+        '''
         for param in self.supportParams:
             if param not in self.Parameters:
                 self.Parameters[param] = ''
-
+        '''
         self.tesla_initialize()
         self.createNodes()
 
