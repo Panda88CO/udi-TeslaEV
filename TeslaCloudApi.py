@@ -70,7 +70,9 @@ class teslaCloudApi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])
                 r = s.get(self.TESLA_URL + self.API + "/products", headers=self.Header)
                 products = r.json()
-                return(products)        
+                logging.debug('teslaGetProduct : RETURN {}'.format(products))
+                return(products)     
+
             except Exception as e:
                 logging.debug('Exception teslaGetProduct: '+ str(e))
                 logging.error('Error getting product info')
@@ -91,6 +93,7 @@ class teslaCloudApi(object):
             data['scope']='openid email offline_access'      
             r = requests.post('https://auth.tesla.com/oauth2/v3/token', headers=self.Header, data=data)
             S = json.loads(r.text)
+            logging.debug('tesla_refresh_token RETURN: {}'.format(S))
             S['created_at'] = dateNow
             if 'refresh_token' in S:
                 self.Rtoken = S['refresh_token']

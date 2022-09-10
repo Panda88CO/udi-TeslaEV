@@ -57,6 +57,7 @@ class teslaCloudEVapi(object):
                         time.sleep(30)
                         r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']), headers=self.Header)
                     resp = r.json()
+                    logging.debug('teslaEV_GetIdList RETURN: {}'.format(resp))
                     if 'state' in resp: 
                         attempts = 0
                         while resp['response']['state'] != 'online' and attempts < 3:
@@ -83,6 +84,7 @@ class teslaCloudEVapi(object):
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
                 logging.debug(r)
                 carInfo = r.json()
+                logging.debug('teslaEV_getLatestCloudInfo RETURN: {}'.format(carInfo))
                 if 'response' in carInfo:
 
                     self.carInfo = self.process_EV_data(carInfo['response'][str(EVid)])
@@ -110,6 +112,7 @@ class teslaCloudEVapi(object):
                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
                     if r.ok:
                         onlineInfo = r.json()
+                        logging.debug('teslaEV_UpdateCloudInfo RETRUN: {}'.format(onlineInfo))
                         if 'state ' in onlineInfo['response']: 
                             attempts = 0
                             while onlineInfo['response']['state'] != 'online' and attempts < 3:

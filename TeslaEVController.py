@@ -346,6 +346,8 @@ class TeslaEVController(udi_interface.Node):
             {'driver': 'ST', 'value':0, 'uom':2},
             {'driver': 'GV0', 'value':0, 'uom':25},  
             {'driver': 'GV1', 'value':0, 'uom':107},
+            {'driver': 'GV2', 'value':0, 'uom':25},  
+            {'driver': 'GV3', 'value':0, 'uom':25},           
             ]
             # ST - node started
             # GV0 Access to TeslaApi
@@ -357,7 +359,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.37')
+        polyglot.start('0.1.40')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
