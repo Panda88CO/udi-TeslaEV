@@ -138,7 +138,7 @@ class TeslaEVController(udi_interface.Node):
     def tesla_initialize(self):
         logging.info('starting Login process')
         try:
-            logging.debug('token = {}'.format(self.Rtoken))
+            logging.debug('token = {}'.format(self.Rtoken[0:25]))
             while self.Rtoken == '':
                 logging.info('Waiting for token')
                 time.sleep(10)
@@ -204,7 +204,7 @@ class TeslaEVController(udi_interface.Node):
         if 'REFRESH_TOKEN' in customParams:
             
             self.Rtoken = customParams['REFRESH_TOKEN']
-            logging.debug('REFRESH_TOKEN : {}'.format(self.Rtoken))
+            logging.debug('REFRESH_TOKEN : {}'.format(self.Rtoken[0:25]))
             if self.Rtoken  == '' or self.Rtoken == None:
                 self.poly.Notices['REFRESH_TOKEN'] = 'Missing Cloud Refresh Token'
 

@@ -107,7 +107,7 @@ class teslaCloudApi(object):
             data['grant_type'] = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
             data['client_id']=self.CLIENT_ID
             data['client_secret']=self.CLIENT_SECRET
-            logging.info('tesla_refresh_token Rtoken : {}'.format(self.Rtoken ))
+            logging.info('tesla_refresh_token Rtoken : {}'.format(self.Rtoken[0:25] ))
 
             with requests.Session() as s:
                 try:
