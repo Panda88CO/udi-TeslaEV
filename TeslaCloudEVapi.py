@@ -170,6 +170,15 @@ class teslaCloudEVapi(object):
         logging.debug('teslaEV_GetDistUnit: {}'.format(self.distUnit))
         return(self.distUnit)
 
+    def teslaEV_SetTempUnit(self, tUnit):
+        logging.debug('teslaEV_SetDistUnit: {}'.format(tUnit))
+        self.tempUnit = tUnit
+
+    def teslaEV_GetTempUnit(self):
+        logging.debug('teslaEV_GetDistUnit: {}'.format(self.distUnit))
+        return(self.distUnit)
+
+
 ####################
 # Charge Data
 ####################

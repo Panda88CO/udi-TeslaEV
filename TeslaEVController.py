@@ -33,7 +33,8 @@ class TeslaEVController(udi_interface.Node):
         #self.tokenPassword = ""
         self.Rtoken = None
         self.dUnit = 1 #  Miles = 1, Kilometer = 0
-        self.supportedParams = ['REFRESH_TOKEN', 'DIST_UNIT']
+        self.tUnit = 0 #  C = 0, F=1, K=2
+        self.supportedParams = ['REFRESH_TOKEN', 'DIST_UNIT', 'TEMP_UNIT']
 
         self.Parameters = Custom(polyglot, 'customParams')      
         self.Notices = Custom(polyglot, 'notices')
@@ -150,6 +151,8 @@ class TeslaEVController(udi_interface.Node):
             else:
                 self.setDriver('GV0', 1, True, True)
                 self.TEV.teslaEV_SetDistUnit(self.dUnit)
+                self.TEV.teslaEV_SetTempUnit(self.tUnit)
+
         except Exception as e:
             logging.debug('Exception Controller start: '+ str(e))
             logging.error('Did not connect to Tesla Cloud ')
@@ -229,7 +232,29 @@ class TeslaEVController(udi_interface.Node):
                     self.dUnit = 1
                     if 'DIST_UNIT' in self.poly.Notices:
                         self.poly.Notices.delete('DIST_UNIT')
-            
+
+        if 'TEMP_UNIT' in customParams:
+             
+            temp  = customParams['TEMP_UNIT']
+            logging.debug('TEMP_UNIT: {}'.format(temp))
+            if temp == '' or temp == None:
+                self.poly.Notices['TEMP_UNIT'] = 'Missing Distance Unit ((M)iles/(K)ilometers)'
+            else:
+                if temp[0] == 'C' or temp[0] == 'c':
+                    self.tUnit = 0
+                    if 'TEMP_UNIT' in self.poly.Notices:
+                        self.poly.Notices.delete('TEMP_UNIT')
+
+                elif temp[0] == 'F' or temp[0] == 'f':
+                    self.tUnit = 1
+                    if 'TEMP_UNIT' in self.poly.Notices:
+                        self.poly.Notices.delete('TEMP_UNIT')
+                elif temp[0] == 'K' or temp[0] == 'k':
+                    self.tUnit = 2
+                    if 'TEMP_UNIT' in self.poly.Notices:
+                        self.poly.Notices.delete('TEMP_UNIT')
+                
+
         logging.debug('done processing parameter')
         
 
@@ -333,7 +358,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.35')
+        polyglot.start('0.1.36')
         polyglot.updateProfile()
         polyglot.setCustomParamsDoc()
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')

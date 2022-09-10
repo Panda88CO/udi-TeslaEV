@@ -31,6 +31,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         self.setDriver('ST', 1, True, True)
         self.nodeReady = True
         #self.updateISYdrivers()
+        self.tempUnit = self.TEV.teslaEV_GetTempUnit()
 
     def stop(self):
         logging.debug('stop - Cleaning up')
@@ -73,8 +74,10 @@ class teslaEV_ClimateNode(udi_interface.Node):
             self.setDriver(Id, 99, True, True, 25)  
         elif self.tempUnit  == 0:
             self.setDriver(Id, round(round(2*value,0)/2,1), True, True, 4)
-        else:
+        elif self.tempUnit  == 1:
             self.setDriver(Id, round(32+ 1.8*value, 0), True, True, 17)
+        else:
+            self.setDriver(Id, round(round(2*(value+273.15),0)/2,1), True, True, 26)
 
     def forceUpdateISYdrivers(self):
         logging.debug('forceUpdateISYdrivers: {}'.format(self.EVid))
