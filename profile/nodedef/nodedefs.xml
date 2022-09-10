@@ -5,6 +5,8 @@
          <st id="ST" editor="NODE_ST" />
          <st id="GV0" editor="API" />
          <st id="GV1" editor="NBREV" />
+         <st id="GV2" editor="D_UNIT" />
+         <st id="GV3" editor="T_UNIT" />
       </sts>
       <cmds>
          <sends>
@@ -78,7 +80,7 @@
          <st id="GV12" editor="TEMP" />
          <st id="GV13" editor="TEMP" />
          <st id="GV14" editor="ONOFF" />
-         <st id="GV15" editor="TEMPUNIT" />
+
          <st id="GV20" editor="DURATION_S" />   
       </sts>
       <cmds>

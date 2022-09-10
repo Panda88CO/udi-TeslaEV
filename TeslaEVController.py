@@ -35,7 +35,7 @@ class TeslaEVController(udi_interface.Node):
         self.dUnit = 1 #  Miles = 1, Kilometer = 0
         self.tUnit = 0 #  C = 0, F=1, K=2
         self.supportedParams = ['REFRESH_TOKEN', 'DIST_UNIT', 'TEMP_UNIT']
-
+        self.paramsProcessed = False
         self.Parameters = Custom(polyglot, 'customParams')      
         self.Notices = Custom(polyglot, 'notices')
 
@@ -80,14 +80,17 @@ class TeslaEVController(udi_interface.Node):
     def start(self):
         logging.info('start')
         #self.Parameters.load(customParams)
-        #self.poly.updateProfile()
+        self.poly.updateProfile()
         #self.poly.setCustomParamsDoc()
         '''
         for param in self.supportedParams:
             if param not in self.Parameters:
                 self.Parameters[param] = ''
         '''
-        
+        while not self.paramsProcessed:
+            time.sleep(2)
+        if len(self.Rtoken) > 1 : # token has a value
+            self.tesla_start()
 
         # Wait for things to initialize....
         # Poll for current values (and update drivers)
@@ -97,11 +100,7 @@ class TeslaEVController(udi_interface.Node):
 
     def validate_params(self):
         logging.debug('validate_params: {}'.format(self.Parameters.dump()))
-        for param in self.supportedParams:
-            if param not in self.Parameters.keys():
-                self.Parameters[param] = ''
-                self.poly.Notices[param] = '{} must be specified in config'.format(param)
-
+        self.paramsProcessed = True
 
 
     def stop(self):
@@ -358,10 +357,11 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.1.36')
-        polyglot.updateProfile()
-        polyglot.setCustomParamsDoc()
+        polyglot.start('0.1.37')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
+
+
+        polyglot.setCustomParamsDoc()
         polyglot.runForever()
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)

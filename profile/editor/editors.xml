@@ -142,11 +142,11 @@
      <range  uom="25" subset="0-2,99" nls="CPLSTATE"  />  
   </editor>
 
-  <editor id = "TEMPUNIT" > 
-     <range  uom="25" subset="0-1" nls="TEMPUNIT"  />  
+  <editor id = "T_UNIT" > 
+     <range  uom="25" subset="0-2" nls="TEMPUNIT"  />  
   </editor>
 
-   <editor id = "DISTUNIT" > 
+   <editor id = "D_UNIT" > 
      <range  uom="25" subset="0-1" nls="DISTUNIT"  />  
   </editor>
 

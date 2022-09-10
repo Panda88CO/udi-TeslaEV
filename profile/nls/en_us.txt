@@ -7,6 +7,16 @@ ST-nlscontroller-GV0-NAME = Connected to Tesla Cloud
 API-0 = False
 API-1 = True
 ST-nlscontroller-GV1-NAME = Number of EVs
+ST-nlscontroller-GV2-NAME = Distance Unit
+D_UNIT-0 = Km
+D_UNIT-1 = Miles
+
+
+ST-nlscontroller-GV1-NAME = Number of EVs
+T_UNIT-0 = Celcius
+T_UNIT-1 = Farenheit
+T_UNIT-2 = Kelvin
+
 
 
 ND-evstatus-NAME = EV Status
@@ -45,10 +55,7 @@ ST-nlsevstatus-GV12-NAME = Frunk State
 OPENCLOSE-0 = Closed
 OPENCLOSE-1 = Open
 OPENCLOSE-99 = Unknown
-ST-nlsevstatus-GV13-NAME = Distance Unit
-DISTUNIT-0 = Km
-DISTUNIT-1 = Miles
-UNKNOWN-99 = Not Reported
+
 ST-nlsevstatus-GV20-NAME =  seconds since last update
 
 CMD-nlsevstatus-UPDATE-NAME = Update EV Status
@@ -102,9 +109,7 @@ ONOFF-0 = Off
 ONOFF-1 = On
 ONOFF-99 = Unknown
 
-ST-nlsevclimate-GV15-NAME = Temperatue Unit
-TEMPUNIT-0 = Celcius (C)
-TEMPUNIT-1 = Farenheit (F)
+
 ST-nlsevclimate-GV20-NAME = seconds since last update
 
 CMD-nlsevclimate-UPDATE-NAME = Update EV Climate Data
