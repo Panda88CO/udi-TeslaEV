@@ -326,8 +326,8 @@ class TeslaEVController(udi_interface.Node):
         value = self.TEV.isConnectedToEV()
         self.setDriver('GV0', value, True, True)
         self.setDriver('GV1', self.GV1, True, True)
-
-
+        self.setDriver('GV2', self.dUnit, True, True)
+        self.setDriver('GV3', self.tUnit, True, True)
 
 
 
