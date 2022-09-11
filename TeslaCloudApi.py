@@ -103,7 +103,7 @@ class teslaCloudApi(object):
                 dataFile.close()
                 return S
             else:
-                logging.error('Wrong refresh token ')
+                logging.error('Wrong refresh token : {}'.format(S))
                 return None
             '''
             data = {}

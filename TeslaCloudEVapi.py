@@ -82,11 +82,9 @@ class teslaCloudEVapi(object):
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
-                logging.debug(r)
                 carInfo = r.json()
                 logging.debug('teslaEV_getLatestCloudInfo RETURN: {}'.format(carInfo))
                 if 'response' in carInfo:
-
                     self.carInfo = self.process_EV_data(carInfo['response'][str(EVid)])
                 logging.debug('carinfo : {}'.format(self.carInfo))
 
