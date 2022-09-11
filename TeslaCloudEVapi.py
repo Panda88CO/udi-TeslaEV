@@ -98,14 +98,16 @@ class teslaCloudEVapi(object):
 
     def teslaEV_UpdateCloudInfo(self, EVid):
             #if self.connectionEstablished:
-        logging.debug('teslaEV_getLatestCloudInfo: {}'.format(EVid))
+        logging.debug('teslaEV_UpdateCloudInfo: {}'.format(EVid))
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)          
-                logging.debug(r)
+                logging.debug('OAuth2BearerToken 1: {} '.format(r))
                 attempts = 0
+                carInfo = r.json()
+                logging.debug('OAuth2BearerToken 2: {} - {} '.format(r, carInfo))
                 if not r.ok:
                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
                     if r.ok:
@@ -121,6 +123,7 @@ class teslaCloudEVapi(object):
                             r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)     
 
                 carInfo = r.json()
+
                 if 'response' in carInfo:
                     #self.process_EV_data(carInfo['response'])
                     self.carInfo = self.process_EV_data(carInfo['response'][str(EVid)])
