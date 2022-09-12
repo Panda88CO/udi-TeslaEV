@@ -85,7 +85,7 @@ class teslaCloudEVapi(object):
                 carInfo = r.json()
                 logging.debug('teslaEV_getLatestCloudInfo RETURN: {}'.format(carInfo))
                 if 'response' in carInfo:
-                    self.carInfo = self.process_EV_data(carInfo['response'][str(EVid)])
+                    self.carInfo = self.process_EV_data(carInfo['response'])
                 logging.debug('carinfo : {}'.format(self.carInfo))
 
             except Exception as e:
@@ -126,7 +126,7 @@ class teslaCloudEVapi(object):
 
                 if 'response' in carInfo:
                     #self.process_EV_data(carInfo['response'])
-                    self.carInfo = self.process_EV_data(carInfo['response'][str(EVid)])
+                    self.carInfo = self.process_EV_data(carInfo['response'])
                 logging.debug('carinfo : {}'.format(self.carInfo))
                 #return()
             except Exception as e:
