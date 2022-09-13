@@ -50,13 +50,11 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.info('Start Tesla EV Status Node for {}'.format(self.EVid)) 
         tmpStr = re.findall('[0-9]+', self.address)
         self.nbrStr = tmpStr.pop()
-
-       
+        self.setDriver('ST', 1, True, True)
+        self.forceUpdateISYdrivers()
         self.createSubNodes()
         self.statusNodeReady = True
         
-
-
     def createSubNodes(self):
         logging.debug('Creating sub nodes for {}'.format(self.EVid))
         nodeAdr = 'climate'+self.nbrStr
