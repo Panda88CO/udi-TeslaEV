@@ -795,9 +795,15 @@ class teslaCloudEVapi(object):
         if 'can_actuate_trunks' in  self.carInfo['vehicle_config']: 
             self.canActuateTrunks = self.carInfo['vehicle_config']['can_actuate_trunks']    
         if 'sun_roof_installed' in  self.carInfo['vehicle_config']: 
-            self.sunroofInstalled = (self.carInfo['vehicle_config']['sun_roof_installed']   > 0)
+            if self.carInfo['vehicle_config']['sun_roof_installed']  == None:
+                self.sunroofInstalled = False
+            else:   
+                self.sunroofInstalled = (self.carInfo['vehicle_config']['sun_roof_installed']   > 0)
         if 'rear_seat_heaters' in  self.carInfo['vehicle_config']: 
-            self.rearSeatHeat = (self.carInfo['vehicle_config']['rear_seat_heaters']   > 0)
+            if self.carInfo['vehicle_config']['rear_seat_heaters']== None:
+                self.rearSeatHeat = False
+            else:
+                self.rearSeatHeat = (self.carInfo['vehicle_config']['rear_seat_heaters']   > 0)
         if 'steering_wheel_heater' in self.carInfo['vehicle_state']: 
             self.steeringWheeelHeat = self.carInfo['vehicle_state']['steering_wheel_heater']
             self.steeringWheelHeatDetected = True
