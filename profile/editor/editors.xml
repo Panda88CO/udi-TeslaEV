@@ -19,6 +19,11 @@
      <range  uom="25" subset="0-9,99" nls="CONSOLE" />
   </editor>
   
+  <editor id = "MINU" > 
+     <range  uom="44"in="0" max="1440"  />
+  </editor>
+  
+
   <editor id = "BOOLSTATE" > 
      <range  uom="25" subset="0-1,99" nls="BOOLSTATE"/>
   </editor> 
@@ -111,6 +116,10 @@
 
   <editor id = "AMPS" > 
      <range  uom="1" min="0" max="300" prec="1" />
+     <range  uom="25" subset="0-1,99" nls="UNKNOWN"  />
+  </editor>
+    <editor id = "VOLT" > 
+     <range  uom="72" min="0" max="800" prec="1" />
      <range  uom="25" subset="0-1,99" nls="UNKNOWN"  />
   </editor>
 

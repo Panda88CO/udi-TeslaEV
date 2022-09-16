@@ -130,6 +130,25 @@ class teslaEV_ChargeNode(udi_interface.Node):
             else:
                 self.setDriver('GV9', 99, True, True, 25)
 
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_charger_voltage(self.EVid)))
+            self.setDriver('GV10', self.cond2ISY(self.TEV.teslaEV_ChateslaEV_charger_voltagergingRequested(self.EVid)), True, True)
+            logging.debug('GV11: {}'.format(self.TEV.teslaEV_charge_current_request(self.EVid)))
+            self.setDriver('GV11', self.cond2ISY(self.TEV.teslaEV_charge_current_request(self.EVid)), True, True)
+            logging.debug('GV12: {}'.format(self.TEV.teslaEV_charger_actual_current(self.EVid)))
+            self.setDriver('GV12', self.cond2ISY(self.TEV.teslaEV_charger_actual_current(self.EVid)), True, True)
+            logging.debug('GV13: {}'.format(self.TEV.teslaEV_charge_amps(self.EVid)))
+            self.setDriver('GV13', self.cond2ISY(self.TEV.teslaEV_charge_amps(self.EVid)), True, True)
+            logging.debug('GV14: {}'.format(self.TEV.teslaEV_time_to_full_charge(self.EVid)))
+            self.setDriver('GV14', self.cond2ISY(self.TEV.teslaEV_time_to_full_charge(self.EVid)), True, True)
+            logging.debug('GV15: {}'.format(self.TEV.teslaEV_charge_energy_added(self.EVid)))
+            self.setDriver('GV15', self.cond2ISY(self.TEV.teslaEV_charge_energy_added(self.EVid)), True, True)
+            logging.debug('GV16: {}'.format(self.TEV.teslaEV_charge_miles_added_rated(self.EVid)))
+            self.setDriver('GV16', self.cond2ISY(self.TEV.teslaEV_charge_miles_added_rated(self.EVid)), True, True)
+            if self.TEV.teslaEV_GetDistUnit() == 1:
+                self.setDriver('GV16', self.TEV.teslaEV_charge_miles_added_rated(self.EVid), True, True, uom=116)
+            else:
+                self.setDriver('GV16', self.TEV.teslaEV_charge_miles_added_rated(self.EVid)*1.6 , True, True, uom=83 )
+
             logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetTimeSinceLastChargeUpdate(self.EVid)))
             self.setDriver('GV20', self.TEV.teslaEV_GetTimeSinceLastChargeUpdate(self.EVid), True, True, 58)
 
@@ -220,6 +239,15 @@ class teslaEV_ChargeNode(udi_interface.Node):
             {'driver': 'GV7', 'value': 0, 'uom': 25},  #charge_enable_request
             {'driver': 'GV8', 'value': 99, 'uom':30},  #charger_power
             {'driver': 'GV9', 'value': 0, 'uom': 51},  #bat charge_limit_soc
+            {'driver': 'GV10', 'value': 0, 'uom': 72},  #charger_voltage
+            {'driver': 'GV11', 'value': 0, 'uom': 1},  #charge_current_request
+            {'driver': 'GV12', 'value': 0, 'uom': 1},  #charger_actual_current
+            {'driver': 'GV13', 'value': 0, 'uom': 1},  #charge_amps
+            {'driver': 'GV14', 'value': 0, 'uom': 44},  #time_to_full_charge
+            {'driver': 'GV15', 'value': 0, 'uom': 33},  #charge_energy_added           
+            {'driver': 'GV16', 'value': 0, 'uom': 83},  #charge_miles_added_rated
+
+
             {'driver': 'GV20', 'value': 0, 'uom': 58},  #Last update Epoch
 
 

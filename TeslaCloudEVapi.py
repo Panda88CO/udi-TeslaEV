@@ -211,6 +211,22 @@ class teslaCloudEVapi(object):
             temp['charger_power'] = self.carInfo['charge_state']['charger_power']
         if 'charge_limit_soc' in  self.carInfo['charge_state']: 
             temp['charge_limit_soc'] = self.carInfo['charge_state']['charge_limit_soc']      
+        if 'charge_current_request_max' in  self.carInfo['charge_state']: 
+            temp['charge_current_request_max'] = self.carInfo['charge_state']['charge_current_request_max']      
+        if 'charge_current_request' in  self.carInfo['charge_state']: 
+            temp['charge_current_request'] = self.carInfo['charge_state']['charge_current_request']      
+        if 'charger_actual_current' in  self.carInfo['charge_state']: 
+            temp['charger_actual_current'] = self.carInfo['charge_state']['charger_actual_current']      
+        if 'charge_amps' in  self.carInfo['charge_state']: 
+            temp['charge_amps'] = self.carInfo['charge_state']['charge_amps']      
+        if 'time_to_full_charge' in  self.carInfo['charge_state']: 
+            temp['time_to_full_charge'] = self.carInfo['charge_state']['time_to_full_charge']      
+        if 'charge_energy_added' in  self.carInfo['charge_state']: 
+            temp['charge_energy_added'] = self.carInfo['charge_state']['charge_energy_added']      
+        if 'charge_miles_added_rated' in  self.carInfo['charge_state']: 
+            temp['charge_miles_added_rated'] = self.carInfo['charge_state']['charge_miles_added_rated']      
+        if 'charger_voltage' in  self.carInfo['charge_state']: 
+            temp['charger_voltage'] = self.carInfo['charge_state']['charger_voltage']                
         if 'timestamp' in  self.carInfo['charge_state']: 
             temp['timestamp'] = int(self.carInfo['charge_state']['timestamp'] /1000) # Tesla reports in miliseconds                
         return(temp)
@@ -220,6 +236,58 @@ class teslaCloudEVapi(object):
             return(self.carInfo['charge_state']['timestamp'])
         else:
             return(None)
+
+    def teslaEV_charge_current_request_max(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'charge_current_request_max' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['charge_current_request_max'],1)) 
+        else:
+            return(None)
+    def teslaEV_charge_current_request(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'charge_current_request' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['charge_current_request'],1)) 
+        else:
+            return(None)
+    def teslaEV_charger_actual_current(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'charger_actual_current' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['charger_actual_current'],1)) 
+        else:
+            return(None)
+    def teslaEV_charge_amps(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'charge_amps' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['charge_amps'],1)) 
+        else:
+            return(None)            
+    def teslaEV_time_to_full_charge(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'time_to_full_charge' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['time_to_full_charge'],0)) 
+        else:
+            return(None)            
+
+    def teslaEV_charge_energy_added(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'charge_energy_added' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['charge_energy_added'],1)) 
+        else:
+            return(None)            
+
+    def teslaEV_charge_miles_added_rated(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'time_to_full_charge' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['charge_miles_added_rated'],1)) 
+        else:
+            return(None)            
+
+    def teslaEV_charger_voltage(self, id):
+        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
+        if 'charger_voltage' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['charger_voltage'],0)) 
+        else:
+            return(None)            
 
     def teslaEV_GetTimeSinceLastChargeUpdate(self, id):
         timeNow = int(time.time())
