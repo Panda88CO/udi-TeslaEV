@@ -129,9 +129,8 @@ class teslaEV_ChargeNode(udi_interface.Node):
                 self.setDriver('GV9', self.TEV.teslaEV_GetBatteryMaxCharge(self.EVid), True, True, 51)
             else:
                 self.setDriver('GV9', 99, True, True, 25)
-
             logging.debug('GV10: {}'.format(self.TEV.teslaEV_charger_voltage(self.EVid)))
-            self.setDriver('GV10',self.TEV.teslaEV_ChateslaEV_charger_voltagergingRequested(self.EVid), True, True)
+            self.setDriver('GV10',self.TEV.teslaEV_charger_voltage(self.EVid), True, True)
             logging.debug('GV11: {}'.format(self.TEV.teslaEV_charge_current_request(self.EVid)))
             self.setDriver('GV11', self.TEV.teslaEV_charge_current_request(self.EVid), True, True)
             logging.debug('GV12: {}'.format(self.TEV.teslaEV_charger_actual_current(self.EVid)))
