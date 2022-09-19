@@ -420,13 +420,13 @@ class teslaCloudEVapi(object):
     def teslaEV_SetChargeLimit (self, id, limit):
         logging.debug('teslaEV_SetChargeLimit {} for {}'.format(limit, id))
        
-        if float(limit) > 100 or float(limit) < 0:
+        if int(limit) > 100 or int(limit) < 0:
             logging.error('Invalid seat heat level passed (0-100%) : {}'.format(limit))
             return(False)
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
-                payload = { 'percent':limit}    
+                payload = { 'percent':int(limit)}    
                 s.auth = OAuth2BearerToken(S['access_token'])
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', headers=self.Header, json=payload ) 
                 temp = r.json()
