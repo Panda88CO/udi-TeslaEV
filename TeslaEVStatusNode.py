@@ -128,8 +128,8 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('StatusNode updateISYdrivers {}'.format(self.TEV.teslaEV_GetStatusInfo(self.EVid)))
             logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.EVid)))
             self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid), True, True)
-            logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
-            self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid)), True, True)
+            logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNbr(self.EVid)))
+            self.setDriver('GV2', self.TEV.teslaEV_HomeLinkNbr(self.EVid), True, True)
             logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
             self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
             logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
@@ -155,13 +155,12 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.setDriver('GV7', temp['FrontRight'], True, True)
             self.setDriver('GV8', temp['RearLeft'], True, True)
             self.setDriver('GV9', temp['RearRight'], True, True)
-            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-            if self.TEV.teslaEV_GetSunRoofPercent(self.EVid) != None:
-                logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
-                self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
-            elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
-                logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-                self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
+            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
+            #elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
+            #    logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+            #    self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
 
             logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
             self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
@@ -287,7 +286,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'ST', 'value': 0, 'uom': 2},
             
             {'driver': 'GV1', 'value': 99, 'uom': 25},  #center_display_state
-            {'driver': 'GV2', 'value': 99, 'uom': 25},  #homelink_nearby
+            {'driver': 'GV2', 'value': 99, 'uom': 0},  # nbr homelink devices
             {'driver': 'GV3', 'value': 99, 'uom': 25},  #locked
             {'driver': 'GV4', 'value': 0, 'uom': 116},  #odometer
             {'driver': 'GV5', 'value': 99, 'uom': 25},  #state (on line)

@@ -136,7 +136,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
             logging.debug('GV12: {}'.format(self.TEV.teslaEV_charger_actual_current(self.EVid)))
             self.setDriver('GV12', self.TEV.teslaEV_charger_actual_current(self.EVid), True, True)
             logging.debug('GV13: {}'.format(self.TEV.teslaEV_charge_amps(self.EVid)))
-            self.setDriver('GV13', self.cond2ISY(self.TEV.teslaEV_charge_amps(self.EVid)), True, True)
+            self.setDriver('GV13', self.TEV.teslaEV_charge_amps(self.EVid), True, True)
             logging.debug('GV14: {}'.format(self.TEV.teslaEV_time_to_full_charge(self.EVid)))
             self.setDriver('GV14', self.TEV.teslaEV_time_to_full_charge(self.EVid), True, True)
             logging.debug('GV15: {}'.format(self.TEV.teslaEV_charge_energy_added(self.EVid)))

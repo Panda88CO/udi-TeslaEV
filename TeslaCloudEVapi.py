@@ -121,9 +121,8 @@ class teslaCloudEVapi(object):
                                 onlineInfo = r.json()
                                 attempts = attempts + 1
                             r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)     
-
+               
                 carInfo = r.json()
-
                 if 'response' in carInfo:
                     #self.process_EV_data(carInfo['response'])
                     self.carInfo = self.process_EV_data(carInfo['response'])
@@ -140,7 +139,9 @@ class teslaCloudEVapi(object):
         logging.debug('process_EV_data')
         if 'version' in carInfo:
             if carInfo['version'] == 9: # latest release
-                temp = carInfo['legacy']
+
+
+                temp = carInfo['data']
         else:
             temp = carInfo
         return(temp)
@@ -264,7 +265,7 @@ class teslaCloudEVapi(object):
     def teslaEV_time_to_full_charge(self, id):
         #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
         if 'time_to_full_charge' in self.carInfo['charge_state']:
-            return(round(self.carInfo['charge_state']['time_to_full_charge'],0)) 
+            return(round(self.carInfo['charge_state']['time_to_full_charge']*60,0)) 
         else:
             return(None)            
 
@@ -367,7 +368,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_ChargePort(self, id, ctrl):
-        logging.debug('teslaEV_ChargePort for {}'.format(id))
+        logging.debug('teslaEV_ChargePort{} for {}'.format(ctrl, id))
  
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -382,6 +383,7 @@ class teslaCloudEVapi(object):
                     logging.debug('Unknown teslaEV_ChargePort command passed for vehicle id (open, close) {}: {}'.format(id, ctrl))
                     return(False)
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_ChargePort for vehicle id {}: {}'.format(id, e))
@@ -391,7 +393,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_Charging(self, id, ctrl):
-        logging.debug('teslaEV_Charging for {}'.format(id))
+        logging.debug('teslaEV_Charging {} for {}'.format(ctrl, id))
  
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -406,6 +408,7 @@ class teslaCloudEVapi(object):
                     logging.debug('Unknown teslaEV_Charging command passed for vehicle id (start, stop) {}: {}'.format(id, ctrl))
                     return(False)
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_AteslaEV_ChargingutoCondition for vehicle id {}: {}'.format(id, e))
@@ -415,7 +418,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_SetChargeLimit (self, id, limit):
-        logging.debug('teslaEV_SetChargeLimit for {}'.format(id))
+        logging.debug('teslaEV_SetChargeLimit {} for {}'.format(limit, id))
        
         if float(limit) > 100 or float(limit) < 0:
             logging.error('Invalid seat heat level passed (0-100%) : {}'.format(limit))
@@ -427,6 +430,7 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', headers=self.Header, json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_SetChargeLimit for vehicle id {}: {}'.format(id, e))
@@ -435,7 +439,7 @@ class teslaCloudEVapi(object):
                 return(False)
 
     def teslaEV_SetChargeLimitAmps (self, id, limit):
-        logging.debug('teslaEV_SetChargeLimitAmps for {}'.format(id))
+        logging.debug('teslaEV_SetChargeLimitAmps {} for {} -'.format(limit, id))
        
         if limit > 300 or limit < 0:
             logging.error('Invalid seat heat level passed (0-300A) : {}'.format(limit))
@@ -470,7 +474,7 @@ class teslaCloudEVapi(object):
                 temp['inside_temp'] = self.carInfo['climate_state']['inside_temp']
             if 'outside_temp' in self.carInfo['climate_state']:
                 temp['outside_temp'] = self.carInfo['climate_state']['outside_temp']
-            if 'idriver_temp_setting' in self.carInfo['climate_state']:
+            if 'driver_temp_setting' in self.carInfo['climate_state']:
                 temp['driver_temp_setting'] = self.carInfo['climate_state']['driver_temp_setting']
             if 'passenger_temp_setting' in self.carInfo['climate_state']:
                 temp['passenger_temp_setting'] = self.carInfo['climate_state']['passenger_temp_setting']
@@ -591,7 +595,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_Windows(self, id, cmd):
-        logging.debug('teslaEV_Windows for {}'.format(id))
+        logging.debug('teslaEV_Windows {} for {}'.format(cmd, id))
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
@@ -604,6 +608,7 @@ class teslaCloudEVapi(object):
                            'command': cmd}        
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/window_control', headers=self.Header,  json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_Windows for vehicle id {}: {}'.format(id, e))
@@ -613,7 +618,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_SunRoof(self, id, cmd):
-        logging.debug('teslaEV_SunRoof for {}'.format(id))
+        logging.debug('teslaEV_SunRoof {} for {}'.format(cmd, id))
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
@@ -624,6 +629,7 @@ class teslaCloudEVapi(object):
                 payload = { 'state': cmd}        
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/sun_roof_control',headers=self.Header,  json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_SunRoof for vehicle id {}: {}'.format(id, e))
@@ -633,7 +639,7 @@ class teslaCloudEVapi(object):
     
 
     def teslaEV_AutoCondition(self, id, ctrl):
-        logging.debug('teslaEV_AutoCondition for {}'.format(id))
+        logging.debug('teslaEV_AutoCondition {} for {}'.format(ctrl, id))
         
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -648,6 +654,7 @@ class teslaCloudEVapi(object):
                     logging.debug('Unknown AutoCondition command passed for vehicle id {}: {}'.format(id, ctrl))
                     return(False)
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_AutoCondition for vehicle id {}: {}'.format(id, e))
@@ -657,7 +664,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_SetCabinTemps(self, id, tempC):
-        logging.debug('teslaEV_AutoCondition for {}'.format(id))
+        logging.debug('teslaEV_AutoCondition {} for {}'.format(tempC, id))
         
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -666,6 +673,7 @@ class teslaCloudEVapi(object):
                 payload = {'driver_temp' : float(tempC), 'passenger_temp':float(tempC) }      
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_temps', headers=self.Header, json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_AutoCondition for vehicle id {}: {}'.format(id, e))
@@ -675,7 +683,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_DefrostMax(self, id, ctrl):
-        logging.debug('teslaEV_DefrostMax for {}'.format(id))
+        logging.debug('teslaEV_DefrostMax {}  for {}'.format(ctrl, id))
  
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -691,6 +699,7 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_preconditioning_max', headers=self.Header, json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_AutoCondition for vehicle id {}: {}'.format(id, e))
@@ -700,7 +709,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_SetSeatHeating (self, id, seat, levelHeat):
-        logging.debug('teslaEV_SetSeatHeating for {}'.format(id))
+        logging.debug('teslaEV_SetSeatHeating {} for {}'.format(levelHeat, id))
         seats = {{'frontLeft':0},{'frontRight':1},{'rearLeft':2},{'rearCenter':4},{'rearRight':5} } 
         rearSeats =  {{'rearLeft':2},{'rearCenter':4},{'rearRight':5} } 
         if int(levelHeat) > 3 or int(levelHeat) < 0:
@@ -720,6 +729,7 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/remote_seat_heater_request', headers=self.Header, json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_SetSeatHeating for vehicle id {}: {}'.format(id, e))
@@ -729,7 +739,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_SteeringWheelHeat(self, id, ctrl):
-        logging.debug('teslaEV_SteeringWheelHeat for {}'.format(id))
+        logging.debug('teslaEV_SteeringWheelHeat {} for {}'.format(ctrl, id))
         if self.steeringWheelHeatDetected:
             S = self.teslaApi.teslaConnect()
             with requests.Session() as s:
@@ -745,6 +755,7 @@ class teslaCloudEVapi(object):
                     s.auth = OAuth2BearerToken(S['access_token'])
                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/remote_steering_wheel_heater_request', headers=self.Header, json=payload ) 
                     temp = r.json()
+                    logging.debug(temp['response']['result'])
                     return(temp['response']['result'])
                 except Exception as e:
                     logging.error('Exception teslaEV_SteeringWheelHeat for vehicle id {}: {}'.format(id, e))
@@ -765,8 +776,8 @@ class teslaCloudEVapi(object):
         temp = {}
         if 'center_display_state' in self.carInfo['vehicle_state']:
             temp['center_display_state'] = self.carInfo['vehicle_state']['center_display_state']
-        if 'homelink_nearby' in self.carInfo['vehicle_state']:    
-            temp['homelink_nearby'] = self.carInfo['vehicle_state']['homelink_nearby']
+        if 'homelink_device_count' in self.carInfo['vehicle_state']:    
+            temp['homelink_device_count'] = self.carInfo['vehicle_state']['homelink_device_count']
         if 'hfd_window' in self.carInfo['vehicle_state']:        
             temp['fd_window'] = self.carInfo['vehicle_state']['fd_window']
         if 'fp_window' in self.carInfo['vehicle_state']:    
@@ -775,9 +786,9 @@ class teslaCloudEVapi(object):
             temp['rd_window'] = self.carInfo['vehicle_state']['rd_window']
         if 'rp_window' in self.carInfo['vehicle_state']:    
             temp['rp_window'] = self.carInfo['vehicle_state']['rp_window']
-        if 'frunk' in self.carInfo['vehicle_state']:    
-            temp['trunk'] = self.carInfo['vehicle_state']['ft']
-        if 'homelink_nearby' in self.carInfo['vehicle_state']:    
+        if 'ft' in self.carInfo['vehicle_state']:    
+            temp['frunk'] = self.carInfo['vehicle_state']['ft']
+        if 'rt' in self.carInfo['vehicle_state']:    
             temp['trunk'] = self.carInfo['vehicle_state']['rt']
         if 'locked' in self.carInfo['vehicle_state']:    
             temp['locked'] = self.carInfo['vehicle_state']['locked']
@@ -785,8 +796,8 @@ class teslaCloudEVapi(object):
             temp['odometer'] = self.carInfo['vehicle_state']['odometer']
         if 'sun_roof_percent_open' in self.carInfo['vehicle_state']:    
             temp['sun_roof_percent_open'] = self.carInfo['vehicle_state']['sun_roof_percent_open']
-        if 'sun_roof_state' in self.carInfo['vehicle_state']:
-            temp['sun_roof_state'] = self.carInfo['vehicle_state']['sun_roof_state']
+        #if 'sun_roof_state' in self.carInfo['vehicle_state']:
+        #    temp['sun_roof_state'] = self.carInfo['vehicle_state']['sun_roof_state']
         if 'state' in self.carInfo['vehicle_state']:    
             temp['state'] = self.carInfo['state']
         if 'timestamp' in  self.carInfo['vehicle_state']: 
@@ -795,15 +806,16 @@ class teslaCloudEVapi(object):
         if 'can_actuate_trunks' in  self.carInfo['vehicle_config']: 
             self.canActuateTrunks = self.carInfo['vehicle_config']['can_actuate_trunks']    
         if 'sun_roof_installed' in  self.carInfo['vehicle_config']: 
-            if self.carInfo['vehicle_config']['sun_roof_installed']  == None:
+            if type(self.carInfo['vehicle_config']['sun_roof_installed']) != int:
                 self.sunroofInstalled = False
             else:   
                 self.sunroofInstalled = (self.carInfo['vehicle_config']['sun_roof_installed']   > 0)
         if 'rear_seat_heaters' in  self.carInfo['vehicle_config']: 
-            if self.carInfo['vehicle_config']['rear_seat_heaters']== None:
+            if type (self.carInfo['vehicle_config']['rear_seat_heaters']) !=  int:
                 self.rearSeatHeat = False
             else:
                 self.rearSeatHeat = (self.carInfo['vehicle_config']['rear_seat_heaters']   > 0)
+            
         if 'steering_wheel_heater' in self.carInfo['vehicle_state']: 
             self.steeringWheeelHeat = self.carInfo['vehicle_state']['steering_wheel_heater']
             self.steeringWheelHeatDetected = True
@@ -832,12 +844,21 @@ class teslaCloudEVapi(object):
         return(int(timeNow - float(self.carInfo['vehicle_state']['timestamp']/1000)))
 
 
-    def teslaEV_HomeLinkNearby(self,id):
+    def teslaEV_HomeLinkNbr(self,id):
         #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
         if 'homelink_nearby' in self.carInfo['vehicle_state']:
             return(self.carInfo['vehicle_state']['homelink_nearby'])
         else:
             return(None)
+
+    def teslaEV_nbrHomeLink(self,id):
+        #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
+        if 'homelink_device_count' in self.carInfo['homelink_device_count']:
+            return(self.carInfo['vehicle_state']['homelink_device_count'])
+        else:
+            return(None)
+
+
 
     def teslaEV_GetLockState(self,id):
         #logging.debug('teslaEV_GetLockState: for {}'.format(id))
@@ -886,12 +907,12 @@ class teslaCloudEVapi(object):
         else:
             return(None)
 
-    def teslaEV_GetSunRoofState(self,id):
-        #logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
-        if 'sun_roof_state' in self.carInfo['vehicle_state'] and self.sunroofInstalled:
-            return(round(self.carInfo['vehicle_state']['sun_roof_state']))
-        else:
-            return(99)
+    #def teslaEV_GetSunRoofState(self,id):
+    #    #logging.debug('teslaEV_GetSunRoofState: for {}'.format(id))
+    #    if 'sun_roof_state' in self.carInfo['vehicle_state'] and self.sunroofInstalled:
+    #        return(round(self.carInfo['vehicle_state']['sun_roof_state']))
+    #    else:
+    #        return(99)
 
     def teslaEV_GetTrunkState(self,id):
         #logging.debug('teslaEV_GetTrunkState: for {}'.format(id))
@@ -970,6 +991,7 @@ class teslaCloudEVapi(object):
                 payload = {}        
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/honk_horn',headers=self.Header, json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_HonkHorn for vehicle id {}: {}'.format(id, e))
@@ -987,6 +1009,7 @@ class teslaCloudEVapi(object):
                 payload = {}        
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/flash_lights', headers=self.Header, json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
@@ -996,7 +1019,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_Doors(self, id, ctrl):
-        logging.debug('teslaEV_Doors for {}'.format(id))
+        logging.debug('teslaEV_Doors {} for {}'.format(ctrl, id))
         
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -1011,6 +1034,7 @@ class teslaCloudEVapi(object):
                     logging.debug('Unknown door control passed: {}'.format(ctrl))
                     return(False)
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(id, e))
@@ -1020,7 +1044,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_TrunkFrunk(self, id, frunkTrunk):
-        logging.debug('teslaEV_Doors for {}'.format(id))
+        logging.debug('teslaEV_Doors {} for {}'.format(frunkTrunk, id))
         
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -1036,6 +1060,7 @@ class teslaCloudEVapi(object):
                 payload = {'which_trunk':cmd}      
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/actuate_trunk',headers=self.Header,  json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_TrunkFrunk for vehicle id {}: {}'.format(id, e))
@@ -1054,6 +1079,7 @@ class teslaCloudEVapi(object):
                            'lon':self.carInfo['drive_state']['longitude']}        
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/trigger_homelink', headers=self.Header, json=payload ) 
                 temp = r.json()
+                logging.debug(temp['response']['result'])
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_HomeLink for vehicle id {}: {}'.format(id, e))

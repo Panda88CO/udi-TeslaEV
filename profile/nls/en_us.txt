@@ -35,7 +35,7 @@ CONSOLE-8 = Dog Mode
 CONSOLE-9 = On
 CONSOLE-99 = Unknown
 
-ST-nlsevstatus-GV2-NAME = HomeLink In Range
+ST-nlsevstatus-GV2-NAME = Nbr Homelink devices reg'd
 BOOLSTATE-0 = False
 BOOLSTATE-1 = True
 BOOLSTATE-99 = Unknown

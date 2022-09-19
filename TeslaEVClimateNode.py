@@ -344,7 +344,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
             {'driver': 'GV12', 'value': 0, 'uom': 4}, #max_avail_temp
             {'driver': 'GV13', 'value': 0, 'uom': 4}, #min_avail_temp   
             {'driver': 'GV14', 'value': 99, 'uom': 25}, #Steering Wheel Heat
-            #{'driver': 'GV15', 'value': 0, 'uom': 25}, #Temp Unit
+            {'driver': 'GV15', 'value': 0, 'uom': 25}, #Temp Unit
             {'driver': 'GV20', 'value': 0, 'uom': 58},  #Last update Epoch            
             ]
 
