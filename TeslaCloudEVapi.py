@@ -430,7 +430,7 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', headers=self.Header, json=payload ) 
                 temp = r.json()
-                logging.debug('teslaEV_SetChargeLimittemp result :'.format(temp['response']['result']))
+                logging.debug('teslaEV_SetChargeLimittemp result :'.format(temp['response']))
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_SetChargeLimit for vehicle id {}: {}'.format(id, e))
