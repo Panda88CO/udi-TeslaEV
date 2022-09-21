@@ -97,8 +97,10 @@ class teslaCloudEVapi(object):
                     r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
                     carInfoCloud = r.json()                  
                     cloudInfo = True
+
                 if cloudInfo:    
                     logging.debug('teslaEV_getLatestCloudInfo (car not online) RETURN: {} '.format(carInfoCloud))
+                    carInfo = carInfoCloud # May need to add a parset to only update relevant data 
                 else:
                    logging.debug('teslaEV_getLatestCloudInfo (car is online) RETURN: {} '.format(carInfo))
 
