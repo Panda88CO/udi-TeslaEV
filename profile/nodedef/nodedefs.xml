@@ -55,7 +55,6 @@
             <cmd id="TRUNK" /> 
             <cmd id="FRUNK" /> 
             <cmd id="HOMELINK" /> 
-            <cmd id="DUNIT" > 
                <p id="" editor="DISTUNIT" init="GV2" /> 
             </cmd >     
          </accepts>
@@ -123,9 +122,6 @@
             <cmd id="STEERINGW" > 
                   <p id="" editor="STEERINGW" init="GV1" /> 
             </cmd >
-            <cmd id="TUNIT" > 
-               <p id="" editor="TEMPUNIT" init="GV15" /> 
-            </cmd >
          </accepts>
       </cmds>
    </nodeDef> 
@@ -150,11 +146,7 @@
          <st id="GV13" editor="AMPS" />
          <st id="GV14" editor="MINU" />
          <st id="GV15" editor="KWH" />
-         <st id="GV16" editor="DISTANCE" /> 
-
-
-
-
+         <st id="GV16" editor="DISTANCE" />
          <st id="GV20" editor="DURATION_S" />   
       </sts>
       <cmds>

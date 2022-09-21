@@ -132,7 +132,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.setDriver('GV2', self.TEV.teslaEV_HomeLinkNbr(self.EVid), True, True)
             logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
             self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
-            logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+            logging.debug('GV4: {} {}'.format(self.TEV.teslaEV_GetOdometer(self.EVid), self.TEV.teslaEV_GetDistUnit()))
             if self.TEV.teslaEV_GetDistUnit() == 1:
                 self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True, uom=116)
             else:
@@ -259,14 +259,14 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.TEV.teslaEV_HomeLink(self.EVid)
 
         self.forceUpdateISYdrivers()
-
+    '''
     def setDistUnit(self,command):
-        logging.debug('setTempUnit')
+        logging.debug('setDistUnit')
         distUnit = int(float(command.get('value')))   
         self.TEV.teslaEV_SetDistUnit( distUnit )
 
         self.forceUpdateISYdrivers()
-       
+    '''   
 
     id = 'evstatus'
     commands = { 'UPDATE': ISYupdate, 
@@ -278,7 +278,6 @@ class teslaEV_StatusNode(udi_interface.Node):
                  'TRUNK' : evOpenTrunk,
                  'FRUNK' : evOpenFrunk,
                  'HOMELINK' : evHomelink,
-                 'DUNIT' : setDistUnit 
                 }
 
 
@@ -297,7 +296,6 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
-            #{'driver': 'GV13', 'value': 1, 'uom': 25}, #Dist Unit
             {'driver': 'GV20', 'value': 0, 'uom': 58},  #Last update Epoch                        
             ]
 

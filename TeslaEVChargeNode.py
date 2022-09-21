@@ -99,11 +99,11 @@ class teslaEV_ChargeNode(udi_interface.Node):
             self.setDriver('GV3', self.cond2ISY(self.TEV.teslaEV_ChargePortLatched(self.EVid)), True, True)
             logging.debug('GV3: {}'.format(self.TEV.teslaEV_ChargePortLatched(self.EVid)))
             self.setDriver('GV3', self.cond2ISY(self.TEV.teslaEV_ChargePortLatched(self.EVid)), True, True)
-            logging.debug('GV4: {} miles'.format(self.TEV.teslaEV_GetBatteryRange(self.EVid)))
-            if self.TEV.teslaEV_GetDistUnit == 1:
-                self.setDriver('GV4', self.TEV.teslaEV_GetBatteryRange(self.EVid), True, True, 116)
+            logging.debug('GV4: {} - {}'.format(self.TEV.teslaEV_GetBatteryRange(self.EVid, self.TEV.teslaEV_GetDistUnit())))
+            if self.TEV.teslaEV_GetDistUnit() == 1:
+                self.setDriver('GV4', float(self.TEV.teslaEV_GetBatteryRange(self.EVid),1), True, True, 116)
             else:
-                self.setDriver('GV4', self.TEV.teslaEV_GetBatteryRange(self.EVid)*1.6, True, True, 83)
+                self.setDriver('GV4', float(self.TEV.teslaEV_GetBatteryRange(self.EVid)*1.6,1), True, True, 83)
 
             if self.TEV.teslaEV_GetBatteryLevel(self.EVid) != None:
                 logging.debug('BATLVL: {}'.format(self.TEV.teslaEV_GetBatteryLevel(self.EVid)))

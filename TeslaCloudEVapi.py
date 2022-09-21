@@ -77,13 +77,31 @@ class teslaCloudEVapi(object):
     
     def teslaEV_getLatestCloudInfo(self, EVid):
         logging.debug('teslaEV_getLatestCloudInfo: {}'.format(EVid))
+        cloudInfo = False
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
-                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)          
+                #logging.debug('OAuth2BearerToken 1: {} '.format(r))
                 carInfo = r.json()
-                logging.debug('teslaEV_getLatestCloudInfo RETURN: {}'.format(carInfo))
+                if r.ok:
+                    if 'state ' in carInfo['response']: 
+                        if carInfo['response']['state'] != 'online':
+                            r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
+                            carInfoCloud = r.json()
+                            cloudInfo = True 
+                        else:
+                            cloudInfo = False 
+                else:
+                    r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
+                    carInfoCloud = r.json()                  
+                    cloudInfo = True
+                if cloudInfo:    
+                    logging.debug('teslaEV_getLatestCloudInfo (car not online) RETURN: {} '.format(carInfoCloud))
+                else:
+                   logging.debug('teslaEV_getLatestCloudInfo (car is online) RETURN: {} '.format(carInfo))
+
                 if 'response' in carInfo:
                     self.carInfo = self.process_EV_data(carInfo['response'])
                 logging.debug('carinfo : {}'.format(self.carInfo))
@@ -104,10 +122,10 @@ class teslaCloudEVapi(object):
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)          
-                logging.debug('OAuth2BearerToken 1: {} '.format(r))
+                #logging.debug('OAuth2BearerToken 1: {} '.format(r))
                 attempts = 0
                 carInfo = r.json()
-                logging.debug('OAuth2BearerToken 2: {} - {} '.format(r, carInfo))
+                #logging.debug('OAuth2BearerToken 2: {} - {} '.format(r, carInfo))
                 if not r.ok:
                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
                     if r.ok:
@@ -428,9 +446,11 @@ class teslaCloudEVapi(object):
             try:
                 payload = { 'percent':int(limit)}    
                 s.auth = OAuth2BearerToken(S['access_token'])
+                logging.debug('POST: {} {}'.format(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', payload ))
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(id) +'/command/set_charge_limit', headers=self.Header, json=payload ) 
+                logging.debug('teslaEV_SetChargeLimit r :'.format(r))
                 temp = r.json()
-                logging.debug('teslaEV_SetChargeLimittemp response :'.format(temp['response']))
+                logging.debug('teslaEV_SetChargeLimit temp :'.format(temp))
                 return(temp['response']['result'])
             except Exception as e:
                 logging.error('Exception teslaEV_SetChargeLimit for vehicle id {}: {}'.format(id, e))
