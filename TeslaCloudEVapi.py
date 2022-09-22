@@ -204,6 +204,13 @@ class teslaCloudEVapi(object):
         return(self.distUnit)
 
 
+    def teslaEV_GetTimeSinceLastCarUpdate(self, id):
+        logging.debug('teslaEV_GetTimeSinceLastCarUpdate')
+        timeNow = int(time.time())
+        timeMin = min( self.teslaEV_GetTimeSinceLastClimateUpdate(),self.teslaEV_GetTimeSinceLastChargeUpdate(), self.teslaEV_GetTimeSinceLastStatusUpdate() )
+        logging.debug('Time Now {} Last UPdate {}'.format(timeNow, timeMin/1000 ))
+        return(int(timeNow - float(timeMin/1000)))
+
 ####################
 # Charge Data
 ####################

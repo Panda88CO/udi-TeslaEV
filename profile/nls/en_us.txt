@@ -57,7 +57,8 @@ OPENCLOSE-0 = Closed
 OPENCLOSE-1 = Open
 OPENCLOSE-99 = Unknown
 
-ST-nlsevstatus-GV20-NAME =  seconds since last update
+ST-nlsevstatus-GV19-NAME =  seconds since last car update
+ST-nlsevstatus-GV20-NAME =  seconds since last status update
 
 CMD-nlsevstatus-UPDATE-NAME = Update EV Status
 CMD-nlsevstatus-WAKEUP-NAME = Wake Up
@@ -110,8 +111,8 @@ ONOFF-0 = Off
 ONOFF-1 = On
 ONOFF-99 = Unknown
 
-
-ST-nlsevclimate-GV20-NAME = seconds since last update
+ST-nlsevclimate-GV19-NAME = seconds since car last update
+ST-nlsevclimate-GV20-NAME = seconds since climate last update
 
 CMD-nlsevclimate-UPDATE-NAME = Update EV Climate Data
 CMD-nlsevclimate-SUNROOF-NAME = Sunroof Control
@@ -179,8 +180,8 @@ ST-nlsevcharge-GV14-NAME = time_to_full_charge
 ST-nlsevcharge-GV15-NAME = charge_energy_added
 ST-nlsevcharge-GV16-NAME = charge_miles_added_rated
 
-
-ST-nlsevcharge-GV20-NAME =  seconds since last update
+ST-nlsevcharge-GV19-NAME =  seconds since car last update
+ST-nlsevcharge-GV20-NAME =  seconds since charge last update
 
 CMD-nlsevcharge-UPDATE-NAME = Update System Data
 CMD-nlsevcharge-CHARGEPORT-NAME = Charge Port Control 

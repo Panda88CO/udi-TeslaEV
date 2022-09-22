@@ -7,8 +7,8 @@
      <range  uom="25" subset="0-1" nls="API" />
   </editor>
 
-  <editor id = "DURATION_S" > 
-     <range  uom="58"  min="0" max="4102444800" />
+  <editor id = "DURATION_H" > 
+     <range  uom="20"  min="0" max="1000" />
   </editor> 
 
   <editor id = "NBREVS" > 

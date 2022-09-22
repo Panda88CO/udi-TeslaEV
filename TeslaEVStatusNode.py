@@ -168,8 +168,11 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
             self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
+            logging.debug('GV19: {}'.format(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)))
+            self.setDriver('GV19', float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60, 2), True, True, 20)            
+
             logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)))
-            self.setDriver('GV20', self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid), True, True, 58)
+            self.setDriver('GV20', float(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60, 2), True, True, 20)
        
             #else:
             #    logging.info('System not ready yet')
@@ -296,7 +299,8 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
-            {'driver': 'GV20', 'value': 0, 'uom': 58},  #Last update Epoch                        
+            {'driver': 'GV19', 'value': 0, 'uom': 20},  #Last combined update Hours           
+            {'driver': 'GV20', 'value': 0, 'uom': 20},  #Last update hours                        
             ]
 
 
