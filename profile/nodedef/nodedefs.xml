@@ -55,8 +55,6 @@
             <cmd id="TRUNK" /> 
             <cmd id="FRUNK" /> 
             <cmd id="HOMELINK" /> 
-               <p id="" editor="DISTUNIT" init="GV2" /> 
-            </cmd >     
          </accepts>
       </cmds>
    </nodeDef> 

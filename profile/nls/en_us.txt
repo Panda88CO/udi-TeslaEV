@@ -18,7 +18,6 @@ T_UNIT-1 = Farenheit
 T_UNIT-2 = Kelvin
 
 
-
 ND-evstatus-NAME = EV Status
 ND-evstatus-ICON = EnergyMonitor
 ST-evstatus-ST-NAME = Controller Connected
@@ -73,7 +72,7 @@ SUNROOFCTRL-1 = Vent
 CMD-nlsevstatus-TRUNK-NAME = Actuate Trunk
 CMD-nlsevstatus-FRUNK-NAME = Actuate Frunk
 CMD-nlsevstatus-HOMELINK-NAME = Toggle HomeLink
-CMD-nlsevstatus-DUNIT-NAME = Set Unit of Dist
+
 
 
 
@@ -139,7 +138,6 @@ HEAT-3 = Maximum Heat
 CMD-nlsevclimate-STEERINGW-NAME = Steering Wheel Heat
 STEERINGW-0 = Disabled
 STEERINGW-1 = Enabled
-CMD-nlsevclimate-TUNIT-NAME = Set Unit of Temp
 
 
 ND-evcharge-NAME = EV charging Data
