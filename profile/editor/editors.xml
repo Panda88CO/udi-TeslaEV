@@ -6,8 +6,9 @@
   <editor id = "API" > 
      <range  uom="25" subset="0-1" nls="API" />
   </editor>
-  <editor id = "DURATION_S" > 
-     <range  uom="58"  min="0" max="4102444800" />
+
+  <editor id = "DURATION_H" > 
+     <range  uom="20"  min="0" max="1000" />
   </editor> 
 
   <editor id = "NBREVS" > 
@@ -18,6 +19,14 @@
      <range  uom="25" subset="0-9,99" nls="CONSOLE" />
   </editor>
   
+  <editor id = "MINU" > 
+     <range  uom="44"in="0" max="1440"  />
+  </editor>
+  <editor id = "NUMBER" > 
+     <range  uom="0"in="0" max="10"  />
+  </editor>
+  
+
   <editor id = "BOOLSTATE" > 
      <range  uom="25" subset="0-1,99" nls="BOOLSTATE"/>
   </editor> 
@@ -27,6 +36,11 @@
       <range  uom="116" min="0" max="999999" prec="1" />
   </editor>
   
+   <editor id = "DISTANCE" > 
+      <range  uom="83" min="0" max="800" prec="0" />
+      <range  uom="116" min="0" max="500" prec="0" />
+  </editor>
+
   <editor id = "WINDOW" > 
      <range  uom="25" subset="0-1, 99" nls="WINDOW" />
   </editor>
@@ -57,6 +71,7 @@
   <editor id = "TEMP" > 
     <range uom="4" min="-50" max="75" step="0.5" prec="1" />
     <range uom="17" min="-50" max="150" step="1" prec="1" />
+    <range uom="26" min="-223" max="348" step="0.5" prec="1" />
     <range  uom="25" subset="0-1,99" nls="UNKNOWN" />
   </editor>
 
@@ -106,6 +121,10 @@
      <range  uom="1" min="0" max="300" prec="1" />
      <range  uom="25" subset="0-1,99" nls="UNKNOWN"  />
   </editor>
+    <editor id = "VOLT" > 
+     <range  uom="72" min="0" max="800" prec="1" />
+     <range  uom="25" subset="0-1,99" nls="UNKNOWN"  />
+  </editor>
 
   <editor id = "CHGSTATE" > 
      <range  uom="25" subset="0-5,99" nls="CHGSTATE"  />  
@@ -137,11 +156,11 @@
      <range  uom="25" subset="0-2,99" nls="CPLSTATE"  />  
   </editor>
 
-  <editor id = "TEMPUNIT" > 
-     <range  uom="25" subset="0-1" nls="TEMPUNIT"  />  
+  <editor id = "T_UNIT" > 
+     <range  uom="25" subset="0-2" nls="TEMPUNIT"  />  
   </editor>
 
-   <editor id = "DISTUNIT" > 
+   <editor id = "D_UNIT" > 
      <range  uom="25" subset="0-1" nls="DISTUNIT"  />  
   </editor>
 

@@ -20,6 +20,7 @@ class teslaEV_StatusNode(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name, id, TEV):
         super(teslaEV_StatusNode, self).__init__(polyglot, primary, address, name)
         logging.info('_init_ Tesla EV  Status Node')
+        self.n_queue = []
         self.ISYforced = False
         self.EVid = id
         self.TEV = TEV
@@ -29,11 +30,10 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.statusNodeReady = False
         self.climateNodeReady = False
         self.chargeNodeReady = False
-        self.distUnit = 1
 
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        self.n_queue = []
+        
 
 
     def node_queue(self, data):
@@ -45,20 +45,16 @@ class teslaEV_StatusNode(udi_interface.Node):
             #logging.debug('wait_for_node_done')
         self.n_queue.pop()
     
-    def setDistUnit(self, distUnit):
-        self.distUnit = distUnit
 
     def start(self):       
         logging.info('Start Tesla EV Status Node for {}'.format(self.EVid)) 
         tmpStr = re.findall('[0-9]+', self.address)
         self.nbrStr = tmpStr.pop()
-
-       
+        self.setDriver('ST', 1, True, True)
+        self.forceUpdateISYdrivers()
         self.createSubNodes()
         self.statusNodeReady = True
         
-
-
     def createSubNodes(self):
         logging.debug('Creating sub nodes for {}'.format(self.EVid))
         nodeAdr = 'climate'+self.nbrStr
@@ -133,14 +129,17 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.EVid)))
             self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid), True, True)
             logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
-            self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid)), True, True)
+            self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid), True, True))
+            logging.debug('GV0: {} '.format(self.TEV.teslaEV_HomeLinkNbr(self.EVid)))
+            self.setDriver('GV0', self.TEV.teslaEV_HomeLinkNbr(self.EVid), True, True)
             logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
             self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
-            logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
-            if self.distUnit == 1:
+            logging.debug('GV4: {} {}'.format(self.TEV.teslaEV_GetOdometer(self.EVid), self.TEV.teslaEV_GetDistUnit()))
+            if self.TEV.teslaEV_GetDistUnit() == 1:
                 self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True, uom=116)
             else:
                 self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid) , True, True, uom=83 )
+
             logging.debug('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
             self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)), True, True)
             logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
@@ -158,13 +157,12 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.setDriver('GV7', temp['FrontRight'], True, True)
             self.setDriver('GV8', temp['RearLeft'], True, True)
             self.setDriver('GV9', temp['RearRight'], True, True)
-            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-            if self.TEV.teslaEV_GetSunRoofPercent(self.EVid) != None:
-                logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
-                self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
-            elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
-                logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-                self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
+            logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
+            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
+            #elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
+            #    logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+            #    self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
 
             logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
             self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
@@ -172,14 +170,17 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
             self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
+            logging.debug('GV19: {}'.format(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)))
+            self.setDriver('GV19', float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60, 2), True, True, 20)            
+
             logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)))
-            self.setDriver('GV20', self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid), True, True, 58)
+            self.setDriver('GV20', float(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60, 2), True, True, 20)
        
             #else:
             #    logging.info('System not ready yet')
 
         except Exception as e:
-            logging.error('updateISYdriver Status node failed:{}'.format(e))
+            logging.error('updateISYdriver Status node failed: {}'.format(e))
 
     def ISYupdate (self, command):
         logging.info('ISY-update called')
@@ -263,14 +264,14 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.TEV.teslaEV_HomeLink(self.EVid)
 
         self.forceUpdateISYdrivers()
-
+    '''
     def setDistUnit(self,command):
-        logging.debug('setTempUnit')
-        self.distUnit = int(float(command.get('value')))   
-        #self.setDriver('GV13', self.distUnit, True, True)  
+        logging.debug('setDistUnit')
+        distUnit = int(float(command.get('value')))   
+        self.TEV.teslaEV_SetDistUnit( distUnit )
 
         self.forceUpdateISYdrivers()
-       
+    '''   
 
     id = 'evstatus'
     commands = { 'UPDATE': ISYupdate, 
@@ -282,7 +283,6 @@ class teslaEV_StatusNode(udi_interface.Node):
                  'TRUNK' : evOpenTrunk,
                  'FRUNK' : evOpenFrunk,
                  'HOMELINK' : evHomelink,
-                 'DUNIT' : setDistUnit 
                 }
 
 
@@ -290,7 +290,8 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'ST', 'value': 0, 'uom': 2},
             
             {'driver': 'GV1', 'value': 99, 'uom': 25},  #center_display_state
-            {'driver': 'GV2', 'value': 99, 'uom': 25},  #homelink_nearby
+            {'driver': 'GV2', 'value': 99, 'uom': 25},  # Homelink Nearby
+            {'driver': 'GV0', 'value': 99, 'uom': 0},  # nbr homelink devices
             {'driver': 'GV3', 'value': 99, 'uom': 25},  #locked
             {'driver': 'GV4', 'value': 0, 'uom': 116},  #odometer
             {'driver': 'GV5', 'value': 99, 'uom': 25},  #state (on line)
@@ -301,8 +302,8 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
-            {'driver': 'GV13', 'value': 1, 'uom': 25}, #Dist Unit
-            {'driver': 'GV20', 'value': 0, 'uom': 58},  #Last update Epoch                        
+            {'driver': 'GV19', 'value': 0, 'uom': 20},  #Last combined update Hours           
+            {'driver': 'GV20', 'value': 0, 'uom': 20},  #Last update hours                        
             ]
 
 

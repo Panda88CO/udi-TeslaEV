@@ -6,18 +6,18 @@
     "install": "install.sh",
     "description": "Nodeserver to allow integration of Tesla EV Control. ",
     "notice": "Uses APIs from https://tesla-api.timdorr.com/ - not official Tesla APIs.",
-    "shortPoll": "60",
-    "longPoll": "180",
-    "profile_version": "0.1.14",
+    "shortPoll": "300",
+    "longPoll": "1440",
+    "profile_version": "0.1.24",
     "logLevel":"INFO",
 	"customParams": {
-		"REFRESH_TOKEN": ""
+		"REFRESH_TOKEN": "Refresh Token","DIST_UNIT":"M", "TEMP_UNIT":"C"
 	},
     "credits": [
         {
             "title": "A NodeServer to integrate control of Tesla EVs",
             "author": "Panda88CO",
-            "version": "0.1.25",
+            "version": "0.1.54",
             "date": "August28,  2022",
             "source": "https://github.com/Panda88CO/udi-TeslaEV",
             "license": "https://github.com/Panda88CO/udi-TeslaEV/blob/main/license"
