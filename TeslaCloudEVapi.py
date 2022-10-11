@@ -807,6 +807,8 @@ class teslaCloudEVapi(object):
             temp['center_display_state'] = self.carInfo['vehicle_state']['center_display_state']
         if 'homelink_device_count' in self.carInfo['vehicle_state']:    
             temp['homelink_device_count'] = self.carInfo['vehicle_state']['homelink_device_count']
+        if 'homelink_nearby' in self.carInfo['vehicle_state']:    
+            temp['homelink_nearby'] = self.carInfo['vehicle_state']['homelink_nearby']
         if 'hfd_window' in self.carInfo['vehicle_state']:        
             temp['fd_window'] = self.carInfo['vehicle_state']['fd_window']
         if 'fp_window' in self.carInfo['vehicle_state']:    
@@ -873,7 +875,7 @@ class teslaCloudEVapi(object):
         return(int(timeNow - float(self.carInfo['vehicle_state']['timestamp']/1000)))
 
 
-    def teslaEV_HomeLinkNbr(self,id):
+    def teslaEV_HomeLinkNearby(self,id):
         #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
         if 'homelink_nearby' in self.carInfo['vehicle_state']:
             return(self.carInfo['vehicle_state']['homelink_nearby'])
@@ -881,7 +883,7 @@ class teslaCloudEVapi(object):
             return(None)
 
     def teslaEV_nbrHomeLink(self,id):
-        #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(id))
+        #logging.debug('teslaEV_nbrHomeLink: for {}'.format(id))
         if 'homelink_device_count' in self.carInfo['homelink_device_count']:
             return(self.carInfo['vehicle_state']['homelink_device_count'])
         else:

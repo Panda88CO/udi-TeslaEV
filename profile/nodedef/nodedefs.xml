@@ -25,7 +25,8 @@
       <sts>
          <st id="ST" editor="NODE_ST" />
          <st id="GV1" editor="CONSOLE" />
-         <st id="GV2" editor="NUMBER" />
+         <st id="GV2" editor="BOOLSTATE" />
+         <st id="GV0" editor="NUMBER" />
          <st id="GV3" editor="BOOLSTATE" />
          <st id="GV4" editor="ODOMETER" />
          <st id="GV5" editor="BOOLSTATE" />

@@ -128,8 +128,10 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('StatusNode updateISYdrivers {}'.format(self.TEV.teslaEV_GetStatusInfo(self.EVid)))
             logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.EVid)))
             self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid), True, True)
-            logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNbr(self.EVid)))
-            self.setDriver('GV2', self.TEV.teslaEV_HomeLinkNbr(self.EVid), True, True)
+            logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
+            self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid), True, True))
+            logging.debug('GV0: {} '.format(self.TEV.teslaEV_HomeLinkNbr(self.EVid)))
+            self.setDriver('GV0', self.TEV.teslaEV_HomeLinkNbr(self.EVid), True, True)
             logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
             self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
             logging.debug('GV4: {} {}'.format(self.TEV.teslaEV_GetOdometer(self.EVid), self.TEV.teslaEV_GetDistUnit()))
@@ -288,7 +290,8 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'ST', 'value': 0, 'uom': 2},
             
             {'driver': 'GV1', 'value': 99, 'uom': 25},  #center_display_state
-            {'driver': 'GV2', 'value': 99, 'uom': 0},  # nbr homelink devices
+            {'driver': 'GV2', 'value': 99, 'uom': 25},  # Homelink Nearby
+            {'driver': 'GV0', 'value': 99, 'uom': 0},  # nbr homelink devices
             {'driver': 'GV3', 'value': 99, 'uom': 25},  #locked
             {'driver': 'GV4', 'value': 0, 'uom': 116},  #odometer
             {'driver': 'GV5', 'value': 99, 'uom': 25},  #state (on line)
