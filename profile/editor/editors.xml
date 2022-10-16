@@ -23,7 +23,7 @@
      <range  uom="44"in="0" max="1440"  />
   </editor>
   <editor id = "NUMBER" > 
-     <range  uom="0"in="0" max="10"  />
+     <range  uom="25" subset="0-3,99" nls="NUMBER"/>
   </editor>
   
 
