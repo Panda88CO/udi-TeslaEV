@@ -137,7 +137,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
             self.setDriver('GV20', float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60, 2), True, True, 20)
    
         except Exception as e:
-            logging.error('updateISYdriversclimate node  failed: {}'.format(e))
+            logging.error('updateISYdrivupdateISYdriversrsclimate node  failed: {}'.format(e))
 
 
     def ISYupdate (self, command):
