@@ -170,11 +170,11 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
             self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
-            logging.debug('GV19: {}'.format(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)))
-            self.setDriver('GV19', float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60, 2), True, True, 20)            
+            logging.debug('GV19: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2)))
+            self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2), True, True, 20)            
 
-            logging.debug('GV20: {}'.format(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)))
-            self.setDriver('GV20', float(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60, 2), True, True, 20)
+            logging.debug('GV20: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60), 2)))
+            self.setDriver('GV20', round(float(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60), 2), True, True, 20)
        
             #else:
             #    logging.info('System not ready yet')
