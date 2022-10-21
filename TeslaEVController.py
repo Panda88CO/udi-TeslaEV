@@ -10,7 +10,7 @@ try:
     Custom = udi_interface.Custom
 except ImportError:
     import logging
-    logging.basicConfig(level=30)
+    logging.basicConfig(level=20)
 
 
 from TeslaEVStatusNode import teslaEV_StatusNode
@@ -188,8 +188,10 @@ class TeslaEVController(udi_interface.Node):
 
 
 
-    def handleLevelChange(self, level):
-        logging.info('New log level: {}'.format(level))
+    def handleLevelChange(self, lev):
+        logging.info('New log level: {}'.format(lev))
+        logging.basicConfig(level=lev)
+
 
     def handleParams (self, customParams ):
         logging.debug('handleParams')
@@ -360,7 +362,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.4')
+        polyglot.start('0.2.5')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
