@@ -207,7 +207,7 @@ class teslaCloudEVapi(object):
     def teslaEV_GetTimeSinceLastCarUpdate(self, id):
         logging.debug('teslaEV_GetTimeSinceLastCarUpdate')
         timeNow = int(time.time())
-        timeMinimum = min( self.teslaEV_GetTimeSinceLastClimateUpdate(id),self.teslaEV_GetTimeSinceLastChargeUpdate(), self.teslaEV_GetTimeSinceLastStatusUpdate() )
+        timeMinimum = min( self.teslaEV_GetTimeSinceLastClimateUpdate(id),self.teslaEV_GetTimeSinceLastChargeUpdate(id), self.teslaEV_GetTimeSinceLastStatusUpdate() )
         logging.debug('Time Now {} Last UPdate {}'.format(timeNow, timeMinimum ))
         return(int(timeNow - float(timeMinimum)))
 
@@ -883,8 +883,8 @@ class teslaCloudEVapi(object):
             return(None)
 
     def teslaEV_nbrHomeLink(self,id):
-        #logging.debug('teslaEV_nbrHomeLink: for {}'.format(id))
-        if 'homelink_device_count' in self.carInfo['homelink_device_count']:
+        logging.debug('teslaEV_nbrHomeLink: for {}'.format(id))
+        if 'homelink_device_count' in self.carInfo['vehicle_state']:
             return(self.carInfo['vehicle_state']['homelink_device_count'])
         else:
             return(None)
