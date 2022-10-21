@@ -190,7 +190,7 @@ class TeslaEVController(udi_interface.Node):
 
     def handleLevelChange(self, lev):
         logging.info('New log level: {}'.format(lev))
-        logging.basicConfig(level=lev)
+        logging.setLevel(lev)
 
 
     def handleParams (self, customParams ):
