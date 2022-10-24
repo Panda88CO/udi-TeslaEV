@@ -229,8 +229,6 @@ class teslaCloudEVapi(object):
             temp['battery_level'] = self.carInfo['charge_state']['battery_level']
         if 'charge_current_request_max' in  self.carInfo['charge_state']: 
             temp['charge_current_request_max'] = self.carInfo['charge_state']['charge_current_request_max']
-        if 'est_battery_range' in  self.carInfo['charge_state']: 
-            temp['est_battery_range'] = self.carInfo['charge_state']['est_battery_range']
         if 'charging_state' in  self.carInfo['charge_state']: 
             temp['charging_state'] = self.carInfo['charge_state']['charging_state']
         if 'charge_enable_request' in  self.carInfo['charge_state']: 
