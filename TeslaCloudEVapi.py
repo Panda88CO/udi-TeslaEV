@@ -887,8 +887,6 @@ class teslaCloudEVapi(object):
         else:
             return(None)
 
-
-
     def teslaEV_GetLockState(self,id):
         #logging.debug('teslaEV_GetLockState: for {}'.format(id))
         if 'locked' in self.carInfo['vehicle_state']:
