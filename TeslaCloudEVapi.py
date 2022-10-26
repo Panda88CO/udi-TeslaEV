@@ -223,8 +223,8 @@ class teslaCloudEVapi(object):
             temp['charge_port_latch'] =  self.carInfo['charge_state']['charge_port_latch']
         if 'charge_port_door_open' in  self.carInfo['charge_state']: 
             temp['charge_port_door_open'] =  self.carInfo['charge_state']['charge_port_door_open']
-        if 'est_battery_range' in  self.carInfo['charge_state']: 
-            temp['est_battery_range'] = self.carInfo['charge_state']['est_battery_range']            
+        if 'battery_range' in  self.carInfo['charge_state']: 
+            temp['battery_range'] = self.carInfo['charge_state']['battery_range']            
         if 'battery_level' in  self.carInfo['charge_state']: 
             temp['battery_level'] = self.carInfo['charge_state']['battery_level']
         if 'charge_current_request_max' in  self.carInfo['charge_state']: 
@@ -344,8 +344,8 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetBatteryRange(self, id):
         #logging.debug('teslaEV_GetBatteryLevel for {}'.format(id))
-        if 'est_battery_range' in self.carInfo['charge_state']:
-            return(round(self.carInfo['charge_state']['est_battery_range'],0)) 
+        if 'battery_range' in self.carInfo['charge_state']:
+            return(round(self.carInfo['charge_state']['battery_range'],0)) 
         else:
             return(None)
 
