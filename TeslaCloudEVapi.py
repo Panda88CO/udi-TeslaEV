@@ -85,41 +85,54 @@ class teslaCloudEVapi(object):
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])            
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)          
+                
                 #logging.debug('OAuth2BearerToken 1: {} '.format(r))
                 if r.ok:
                     carInfo = r.json()
+                    #ogging.debug( 'carInfo1 : {}'.format(carInfo))
                     if 'response' in carInfo:
-                        if 'state ' in carInfo['response']: 
+                        #logging.debug('response : {}'.format(carInfo['response']))
+                        #logging.debug('state: {}'.format('state' in carInfo['response']))
+                        #logging.debug('state: {}'.format(carInfo['response']['state']))
+
+                        if 'state' in carInfo['response']: 
                             if carInfo['response']['state'] == 'online':
                                 self.carState = 'Online'
-                        elif 'response' == None:
+                                #logging.debug( 'carState1 : {}'.format(self.carState))
+                        elif carInfo['response'] == None:
                             self.carState = 'Sleeping'
                             r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
                             if r.ok:
                                 carInfoCloud = r.json()
+                                #logging.debug( 'carInfoCloud1 : {}'.format(carInfoCloud))
                                 if 'response' in carInfoCloud:
                                     if carInfoCloud['response'] != None:
                                         cloudInfo = True 
                                         self.carState = 'Sleeping'
+                                        #logging.debug( 'carState2 : {}'.format(self.carState))
                                     else:
                                         self.carState = 'Offline'
+                                        #logging.debug( 'carState3 : {}'.format(self.carState))
                         else:
                             self.carState = 'Unknown'
+                            #logging.debug( 'carState4 : {}'.format(self.carState))
                             cloudInfo = False
                     else:# car must be offline 
                         self.carState = 'Offline'
+                        #logging.debug( 'carState5 : {}'.format(self.carState))
                         cloudInfo = False
                 else:
                     r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/latest_vehicle_data', headers=self.Header)          
                     if r.ok:
                         carInfoCloud = r.json()      
+                        #logging.debug( 'carInfoCloud2 : {}'.format(carInfoCloud))
                         if 'response' in carInfoCloud:
                             if carInfoCloud['response'] != None:
                                 cloudInfo = True
                                 self.carState = 'Sleeping'
                             else:
                                 self.carState = 'Unknown'
-
+                            #logging.debug( 'carState6 : {}'.format(self.carState))
                 if cloudInfo:                     
                     carInfo = carInfoCloud # May need to add a parse to only update relevant data 
 
@@ -156,7 +169,7 @@ class teslaCloudEVapi(object):
                     if r.ok:
                         onlineInfo = r.json()
                         logging.debug('teslaEV_UpdateCloudInfo RETRUN: {}'.format(onlineInfo))
-                        if 'state ' in onlineInfo['response']: 
+                        if 'state' in onlineInfo['response']: 
                             attempts = 0
                             while onlineInfo['response']['state'] != 'online' and attempts < 3:
                                 time.sleep(10)

@@ -64,7 +64,7 @@ ST-nlsevstatus-GV13-NAME = Car State
 CARSTATE-0 = Offline
 CARSTATE-1 = Online
 CARSTATE-2 = Sleeping
-CARSTATE-0 = Unknown 
+CARSTATE-99 = Unknown 
 
 ST-nlsevstatus-GV19-NAME =  Hours since last car update
 ST-nlsevstatus-GV20-NAME =  Hours since last status update
