@@ -89,6 +89,22 @@ class teslaEV_StatusNode(udi_interface.Node):
         else:
             return(99)
 
+
+    def state2ISY(self, state):
+        if state.lower() == 'offline':
+            return(0)
+        elif state.lower() == 'online':
+            return(1)
+        elif state.lower() == 'sleeping':
+            return(2) 
+        elif state.lower() == 'unknown':
+            return(99)
+        else:          
+            logging.error('Unknown state passed {}'.format(state))
+            return(99)
+
+
+
     def online2ISY(self, state):
         if state.lower() == 'online':
             return(1)
@@ -169,6 +185,8 @@ class teslaEV_StatusNode(udi_interface.Node):
 
             logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
             self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
+            logging.debug('GV13: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
+            self.setDriver('GV13', self.state2ISY(self.TEV.teslaEV_GetCarState(self.EVid)), True, True)
 
             logging.debug('GV19: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2)))
             self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2), True, True, 20)            
@@ -302,6 +320,7 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV10', 'value': 0, 'uom': 51}, #sun_roof_percent_open
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
+            {'driver': 'GV13', 'value': 99, 'uom': 25}, #car State
             {'driver': 'GV19', 'value': 0, 'uom': 20},  #Last combined update Hours           
             {'driver': 'GV20', 'value': 0, 'uom': 20},  #Last update hours                        
             ]

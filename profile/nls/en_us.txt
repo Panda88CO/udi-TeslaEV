@@ -48,17 +48,23 @@ ST-nlsevstatus-GV6-NAME = Front Driver Window
 ST-nlsevstatus-GV7-NAME = Front Passenger Window
 ST-nlsevstatus-GV8-NAME = Rear Driver Window 
 ST-nlsevstatus-GV9-NAME = Rear Passenger Window
-
-
 WINDOW-0 = Closed
 WINDOW-1 = Open
 WINDOW-99 = Unknown
+
 ST-nlsevstatus-GV10-NAME = Sunroof Percent Open
+
 ST-nlsevstatus-GV11-NAME = Trunk State
 ST-nlsevstatus-GV12-NAME = Frunk State
 OPENCLOSE-0 = Closed
 OPENCLOSE-1 = Open
 OPENCLOSE-99 = Unknown
+
+ST-nlsevstatus-GV13-NAME = Car State
+CARSTATE-0 = Offline
+CARSTATE-1 = Online
+CARSTATE-2 = Sleeping
+CARSTATE-0 = Unknown 
 
 ST-nlsevstatus-GV19-NAME =  Hours since last car update
 ST-nlsevstatus-GV20-NAME =  Hours since last status update
