@@ -287,7 +287,12 @@ class TeslaEVController(udi_interface.Node):
         self.heartbeat()    
         if self.TEV.isConnectedToEV():
             for vehicle in range(0,len(self.vehicleList)):
-                 self.TEV.teslaEV_getLatestCloudInfo(self.vehicleList[vehicle])
+                if self.TEV.teslaEV_EV_online_status(vehicle) == 'online':
+                    
+                    logging.info('shortPoll updated info for {} as it is online'.format(vehicle))
+                    self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
+                else:
+                    logging.info('shortPoll did not update info for {} as it is not online'.format(vehicle))
             try:
                 nodes = self.poly.getNodes()
                 for node in nodes:
@@ -306,7 +311,8 @@ class TeslaEVController(udi_interface.Node):
         
         if self.TEV.isConnectedToEV():
             for vehicle in range(0,len(self.vehicleList)):
-                 self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
+                logging.info('long poll will try a forced update of data for {}'.format(vehicle))
+                self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
             try:
                 nodes = self.poly.getNodes()
                 for node in nodes:
