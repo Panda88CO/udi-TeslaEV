@@ -158,8 +158,8 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_UpdateCloudInfo(self, EVid):
-            #if self.connectionEstablished:
         logging.debug('teslaEV_UpdateCloudInfo: {}'.format(EVid))
+        logging.debug('car {} Online = {}'.format(self.teslaEV_car_online_status()))
         self.carInfo[EVid] = None
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -270,6 +270,27 @@ class teslaCloudEVapi(object):
                 self.teslaApi.tesla_refresh_token( )
                 self.carState = 'Offline'
                 return(None)
+
+    def teslaEV_car_online_status(self, EVid):
+        logging.debug('teslaEV_car_online_status: {}'.format(EVid))
+        logging.debug('car {} Online = {}'.format(self.teslaEV_car_online_status()))
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid), headers=self.Header)          
+                if r.ok:
+                    carData = r.json()
+                    carStatus = self.process_EV_data(carData)
+                    if carStatus != None:
+                        if 'state' in carStatus:
+                            logging.debug('Car {} Online {}'.format(EVid,carStatus['state'] ))
+                            return( carStatus['state'] )
+                    else:
+                        return('Unknown')
+
+            except Exception as e:
+                logging.error('ExceptionteslaEV_car_online_status :'.format(e))
 
     def process_EV_data(self, carData):
         logging.debug('process_EV_data')
