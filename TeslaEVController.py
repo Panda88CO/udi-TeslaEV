@@ -167,9 +167,7 @@ class TeslaEVController(udi_interface.Node):
             self.setDriver('GV0', 1, True, True)
             for vehicle in range(0,len(self.vehicleList)):
                 vehicleId = self.vehicleList[vehicle]
-                #logging.debug('vehicleId {}'.format(vehicleId))
-                self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
-                #logging.debug('self.TEV.teslaEV_UpdateCloudInfo')
+                self.TEV.teslaEV_EV_basic_data(vehicleId)
                 vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
                 logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
                 nodeName = vehicleInfo['display_name']

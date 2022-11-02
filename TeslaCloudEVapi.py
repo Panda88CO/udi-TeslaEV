@@ -167,6 +167,7 @@ class teslaCloudEVapi(object):
                 else:
                     logging.debug('Trying to wake-up car')
                     r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
+                    logging.debug('wakeing car: {}'.format(r))
                     if r.ok:
                         carRaw = r.json()
                         self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'
@@ -210,6 +211,23 @@ class teslaCloudEVapi(object):
 
     
 
+    def teslaEV_EV_basic_data(self,EVid):
+        logging.debug('teslaEV_EV_basic_data: {}'.format(EVid))
+        #logging.debug('car {} Online = {}'.format(self.teslaEV_EV_online_status()))
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid), headers=self.Header)          
+                if r.ok:
+                    carData = r.json()
+                    logging.debug('carData: {}'.format(carData))
+                    self.carInfo[EVid] = self.process_EV_data(carData)
+
+            except Exception as e:
+                logging.error('Exception teslaEV_car_online_status :'.format(e))
+
+
     def teslaEV_EV_online_status(self, EVid):
         logging.debug('teslaEV_EV_online_status: {}'.format(EVid))
         #logging.debug('car {} Online = {}'.format(self.teslaEV_EV_online_status()))
@@ -231,7 +249,7 @@ class teslaCloudEVapi(object):
                         return('unknown')
 
             except Exception as e:
-                logging.error('ExceptionteslaEV_car_online_status :'.format(e))
+                logging.error('Exception teslaEV_car_online_status :'.format(e))
 
     def process_EV_data(self, carData):
         logging.debug('process_EV_data')
@@ -252,7 +270,6 @@ class teslaCloudEVapi(object):
         return(self.carState)
 
     def teslaEV_GetInfo(self, EVid):
-        logging.debug('teslaEV_GetInfo {}'.format(self.carInfo))
         logging.debug('teslaEV_GetInfo {}: {}'.format(EVid, self.carInfo[EVid]))
         return(self.carInfo[EVid])
 
