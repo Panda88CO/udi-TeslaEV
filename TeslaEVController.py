@@ -291,6 +291,7 @@ class TeslaEVController(udi_interface.Node):
                     self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
                 else:
                     logging.info('shortPoll did not update info for {} as it is not online'.format(vehicle))
+                    # Should use teslaEV_getLatestCloudInfo but it does not seems to work yet
             try:
                 nodes = self.poly.getNodes()
                 for node in nodes:
@@ -368,7 +369,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.17')
+        polyglot.start('0.2.18')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
