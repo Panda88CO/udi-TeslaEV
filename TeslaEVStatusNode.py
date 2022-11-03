@@ -89,7 +89,7 @@ class teslaEV_StatusNode(udi_interface.Node):
         else:
             return(99)
 
-
+    #Sleeping not supported yet - offline and sleeping assumed the same
     def state2ISY(self, state):
         if state.lower() == 'offline':
             return(0)
@@ -104,12 +104,13 @@ class teslaEV_StatusNode(udi_interface.Node):
             return(99)
 
 
-
     def online2ISY(self, state):
         if state.lower() == 'online':
             return(1)
-        else:
+        elif state.lower() == 'offline':
             return(0)
+        else:
+            return(99)
 
     def openClose2ISY(self, state):
         if state == None:
