@@ -28,7 +28,6 @@ class teslaCloudEVapi(object):
             self.connected = False
 
         self.carInfo = {}
-        self.carInfo[EVid]['charge_state']['timestamp']
         self.carStateList = ['online', 'offline', 'unknown' ]
         self.carState = 'unknown'
         self.canActuateTrunks = False
