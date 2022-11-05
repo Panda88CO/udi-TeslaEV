@@ -241,10 +241,10 @@ class teslaCloudEVapi(object):
                     carData = r.json()
                     logging.debug('carData: {}'.format(carData))
                     self.carInfo[EVid] = self.process_EV_data(carData)
-                    logging.debug('teslaEV_EV_basic_data {} data:{}'.format(self.carInfo[EVid].lower(), self.carInfo[EVid]  ))
+                    logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carInfo[EVid]  ))
 
             except Exception as e:
-                logging.error('Exception teslaEV_car_online_status :'.format(e))
+                logging.error('Exception  teslaEV_EV_basic_data(self,EVid):'.format(e))
 
 
     def teslaEV_retrieve_EV_online_status(self, EVid):
@@ -268,7 +268,7 @@ class teslaCloudEVapi(object):
                         return('offline')
 
             except Exception as e:
-                logging.error('Exception teslaEV_car_online_status :'.format(e))
+                logging.error('Exception teslaEV_retrieve_EV_online_status :'.format(e))
 
     def process_EV_data(self, carData):
         logging.debug('process_EV_data')
