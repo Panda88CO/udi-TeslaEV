@@ -285,7 +285,7 @@ class TeslaEVController(udi_interface.Node):
         self.heartbeat()    
         if self.TEV.isConnectedToEV():
             for vehicle in range(0,len(self.vehicleList)):
-                if self.TEV.teslaEV_EV_online_status(vehicle) == 'online':
+                if self.TEV.teslaEV_retrieve_EV_online_status(vehicle) == 'online':
                     
                     logging.info('shortPoll updated info for {} as it is online'.format(vehicle))
                     self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
@@ -369,7 +369,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.18')
+        polyglot.start('0.2.19')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
