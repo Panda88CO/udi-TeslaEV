@@ -286,20 +286,21 @@ class TeslaEVController(udi_interface.Node):
         if self.TEV.isConnectedToEV():
             for vehicle in range(0,len(self.vehicleList)):
                 if self.TEV.teslaEV_retrieve_EV_online_status(vehicle) == 'online':
-                    
-                    logging.info('shortPoll updated info for {} as it is online'.format(vehicle))
-                    self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
+                    try:                    
+                        logging.info('shortPoll updated info for {} as it is online'.format(vehicle))
+                        self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
+
+                        nodes = self.poly.getNodes()
+                        for node in nodes:
+                            #if node != 'controller'    
+                            logging.debug('Controller poll  node {}'.format(node) )
+                            nodes[node].poll()
+                    except Exception as E:
+                        logging.info('Not all nodes ready: {}'.format(E))
                 else:
                     logging.info('shortPoll did not update info for {} as it is not online'.format(vehicle))
                     # Should use teslaEV_getLatestCloudInfo but it does not seems to work yet
-            try:
-                nodes = self.poly.getNodes()
-                for node in nodes:
-                    #if node != 'controller'    
-                    logging.debug('Controller poll  node {}'.format(node) )
-                    nodes[node].poll()
-            except Exception as E:
-                logging.info('Not all nodes ready: {}'.format(E))
+
 
             self.Rtoken  = self.TEV.getRtoken()
             if self.Rtoken  != self.Parameters['REFRESH_TOKEN']:
@@ -309,17 +310,23 @@ class TeslaEVController(udi_interface.Node):
         logging.info('Tesla EV  Controller longPoll - connected = {}'.format(self.TEV.isConnectedToEV()))
         
         if self.TEV.isConnectedToEV():
-            for vehicle in range(0,len(self.vehicleList)):
-                logging.info('long poll will try a forced update of data for {}'.format(vehicle))
-                self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
-            try:
-                nodes = self.poly.getNodes()
-                for node in nodes:
-                    #if node != 'controller'    
-                    logging.debug('Controller poll  node {}'.format(node) )
-                    nodes[node].poll()
-            except Exception as E:
-                logging.info('Not all nodes ready: {}'.format(E))
+            for vehicle in range(0,len(self.vehicleList)):      
+                try:
+                    if self.TEV.teslaEV_retrieve_EV_online_status(vehicle) == 'online':
+                        logging.info('long poll will try a forced update of data for {}'.format(vehicle))
+                        self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
+
+                        
+
+                        nodes = self.poly.getNodes()
+                        for node in nodes:
+                            #if node != 'controller'    
+                            logging.debug('Controller poll  node {}'.format(node) )
+                            nodes[node].poll()
+                    else:
+                        logging.info ('Vehicel {} appears to be off line'.format(vehicle))
+                except Exception as E:
+                    logging.info('Not all nodes ready: {}'.format(E))
 
             self.Rtoken  = self.TEV.getRtoken()
             if self.Rtoken  != self.Parameters['REFRESH_TOKEN']:
@@ -369,7 +376,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.19')
+        polyglot.start('0.2.20')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
