@@ -168,7 +168,7 @@ class TeslaEVController(udi_interface.Node):
             for vehicle in range(0,len(self.vehicleList)):
                 vehicleId = self.vehicleList[vehicle]
                 self.TEV.teslaEV_EV_basic_data(vehicleId)
-                vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
+                vehicleInfo = self.TEV.teslaEV_GetBasicInfo(vehicleId)
                 logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
                 nodeName = vehicleInfo['display_name']
                 
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.31')
+        polyglot.start('0.2.32')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 

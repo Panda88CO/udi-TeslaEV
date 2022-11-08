@@ -28,6 +28,7 @@ class teslaCloudEVapi(object):
             self.connected = False
 
         self.carInfo = {}
+        self.carBasicInfo = {}
 
         self.carStateList = ['online', 'offline', 'unknown' ]
         self.carState = 'unknown'
@@ -255,7 +256,11 @@ class teslaCloudEVapi(object):
                     logging.debug('carData: {}'.format(carData))
                     temp = self.process_EV_data(carData)
                     if temp != None:
-                        self.update_carInfo(temp, EVid)
+                        self.carBasicInfo = temp
+                    if 'state' in temp:
+                        self.carState = temp['state']
+                    else:
+                        self.carState = 'offline'
                     logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carInfo[EVid]  ))
 
             except Exception as e:
@@ -285,7 +290,7 @@ class teslaCloudEVapi(object):
             except Exception as e:
                 logging.error('Exception teslaEV_retrieve_EV_online_status :'.format(e))
 
-
+    #need to decide if this is needed - otherwise simply overwrite existing data in not None
     def update_carInfo(self, updateDict, EVid):
         logging.debug('update_carInfo for {}'.format(EVid))
         logging.debug('updateDict: {}:{}'.format(len(updateDict), updateDict) )
@@ -339,6 +344,11 @@ class teslaCloudEVapi(object):
     def teslaEV_GetInfo(self, EVid):
         logging.debug('teslaEV_GetInfo {}: {}'.format(EVid, self.carInfo[EVid]))
         return(self.carInfo[EVid])
+
+    def teslaEV_GetBasicInfo(self, EVid):
+        logging.debug('teslaEV_GetBasicInfo {}: {}'.format(EVid, self.carBasicInfo[EVid]))
+        return(self.carBasicInfo[EVid])
+
 
 
     def teslaEV_GetLocation(self, EVid):
