@@ -244,6 +244,7 @@ class teslaCloudEVapi(object):
     def teslaEV_EV_basic_data(self,EVid):
         logging.debug('teslaEV_EV_basic_data: {}'.format(EVid))
         #logging.debug('car {} Online = {}'.format(self.teslaEV_retrieve_EV_online_status()))
+        temp = {}
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
@@ -258,7 +259,7 @@ class teslaCloudEVapi(object):
                     logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carInfo[EVid]  ))
 
             except Exception as e:
-                logging.error('Exception  teslaEV_EV_basic_data(self,EVid):'.format(e))
+                logging.error('Exception teslaEV_EV_basic_data:'.format(e))
 
 
     def teslaEV_retrieve_EV_online_status(self, EVid):
@@ -290,29 +291,34 @@ class teslaCloudEVapi(object):
         logging.debug('updateDict: {}'.format(updateDict) )
         logging.debug('carInfo before :{}'.format(self.carInfo[EVid]))
         try:
-            for idx in range(0, len(updateDict)):
-                if 1 == len(updateDict[idx]):
-                    self.carInfo[EVid][idx] = updateDict[idx]
+            if EVid not in self.carInfo:
+                self.carInfo[EVid] = {}
+            for idx1 in range(0, len(updateDict)):
+
+                logging.debug('loop1 {} : {} : {}'.format(idx1, updateDict[idx1], self.carInfo[EVid])  )
+                if 1 == len(updateDict[idx1]):
+                    self.carInfo[EVid][idx1] = updateDict[idx1]
                 else:
-                    if idx not in self.carInfo[EVid]:
-                        self.carInfo[EVid][idx] = {}
-                    for idx1 in range (0, len(updateDict[idx])):
-                        if 1 == len(updateDict[idx][idx1]):
-                            self.carInfo[EVid][idx][idx1] = updateDict[idx][idx1]
+                    if idx1 not in self.carInfo[EVid]:
+                        self.carInfo[EVid][idx1] = {}
+                    for idx2 in range (0, len(updateDict[idx1])):
+                        logging.debug('loop1 {} : {} : {}'.format(idx2, updateDict[idx1][idx2],self.carInfo[idx1] ) )
+                        if 1 == len(updateDict[idx1][idx2]):
+                            self.carInfo[EVid][idx1][idx2] = updateDict[idx1][idx2]
                         else: # should not happen
-                            if idx1 not in self.carInfo[EVid][idx]:
-                                self.carInfo[EVid][idx][idx1] = {}
-                            for idx2 in range(0, len(updateDict[idx][idx1])):
-                                self.carInfo[EVid][idx][idx1][idx2] = updateDict[idx][idx1][idx2]    
+                            if idx2 not in self.carInfo[EVid][idx1]:
+                                self.carInfo[EVid][idx1][idx2] = {}
+                            for idx3 in range(0, len(updateDict[idx1][idx2])):
+                                self.carInfo[EVid][idx1][idx2][idx3] = updateDict[idx1][idx2][idx3]    
             logging.debug('carInfo after :{}'.format(self.carInfo[EVid]))
         except Exception as e:
-            logging.debug('Exception update_carInfo : {}'.format(e))
-            logging.debug('updateDict: {}'.format(updateDict) )
-            logging.debug('carInfo :{}'.format(self.carInfo[EVid]))
+            logging.error('Exception update_carInfo : {}'.format(e))
+            logging.error('updateDict: {}'.format(updateDict) )
+            logging.error('carInfo :{}'.format(self.carInfo[EVid]))
 
 
     def process_EV_data(self, carData):
-        logging.debug('process_EV_data')
+        logging.debug('process_EV_data {}'.format(carData))
         if 'response' in carData:
             if 'version' in carData['response']:
                 if carData['response']['version'] == 9: # latest release
