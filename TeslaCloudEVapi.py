@@ -53,9 +53,19 @@ class teslaCloudEVapi(object):
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles', headers=self.Header)         
                 if r.ok:                
                     list = r.json()
+                    timeStart = int(time.time()*1000)
                     temp = []
                     for id in range(0,len(list['response'])):
-                        temp.append(list['response'][id]['id'])
+                        EVid = list['response'][id]['id']
+                        temp.append(EVid)
+                        #initialize start time in case car is off line
+                        self.carInfo[EVid] ={}
+                        self.carInfo[EVid]['vehicle_state'] = {}
+                        self.carInfo[EVid]['vehicle_state']['timestamp'] = timeStart
+                        self.carInfo[EVid]['climate_state'] = {}
+                        self.carInfo[EVid]['climate_state']['timestamp'] = timeStart
+                        self.carInfo[EVid]['charge_state'] = {}
+                        self.carInfo[EVid]['charge_state']['timestamp'] = timeStart                                                
                         '''
                         r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(list['response'][id]['id_s']), headers=self.Header)
                         if not r.ok:                        
@@ -235,7 +245,7 @@ class teslaCloudEVapi(object):
                     logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carInfo[EVid]  ))
 
             except Exception as e:
-                logging.error('Exception teslaEV_car_online_status :'.format(e))
+                logging.error('Exception  teslaEV_EV_basic_data(self,EVid):'.format(e))
 
 
     def teslaEV_retrieve_EV_online_status(self, EVid):
@@ -259,7 +269,7 @@ class teslaCloudEVapi(object):
                         return('offline')
 
             except Exception as e:
-                logging.error('Exception teslaEV_car_online_status :'.format(e))
+                logging.error('Exception teslaEV_retrieve_EV_online_status :'.format(e))
 
     def process_EV_data(self, carData):
         logging.debug('process_EV_data')
@@ -637,7 +647,7 @@ class teslaCloudEVapi(object):
         if 'steering_wheel_heater' in self.carInfo[EVid]['vehicle_state']: 
             self.steeringWheeelHeat = self.carInfo[EVid]['vehicle_state']['steering_wheel_heater']
             self.steeringWheelHeatDetected = True
-
+        return(temp)
 
     def teslaEV_GetClimateTimestamp(self, EVid):
         if 'timestamp' in self.carInfo[EVid]['climate_state']:
@@ -960,7 +970,7 @@ class teslaCloudEVapi(object):
         if 'steering_wheel_heater' in self.carInfo[EVid]['vehicle_state']: 
             self.steeringWheeelHeat = self.carInfo[EVid]['vehicle_state']['steering_wheel_heater']
             self.steeringWheelHeatDetected = True
-
+        return(temp)
         
 
 

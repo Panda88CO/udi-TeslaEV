@@ -139,6 +139,48 @@ class teslaEV_StatusNode(udi_interface.Node):
     def updateISYdrivers(self):
         try:
             
+            logging.info('updateISYdrivers - Status for {}'.format(self.EVid))
+            EVonline = self.TEV.teslaEV_retrieve_EV_online_status(self.EVid)
+            if EVonline == 'online':
+
+                #if self.TEV.isConnectedToEV():
+                #self.TEV.teslaEV_GetInfo(self.EVid)
+                temp = {}
+                logging.debug('StatusNode updateISYdrivers {}'.format(self.TEV.teslaEV_GetStatusInfo(self.EVid)))
+                logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.EVid)))
+                self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid), True, True)
+                logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
+                self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid)), True, True)
+                logging.debug('GV0: {} '.format(self.TEV.teslaEV_nbrHomeLink(self.EVid)))
+                self.setDriver('GV0', self.TEV.teslaEV_nbrHomeLink(self.EVid), True, True)
+                logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
+                self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
+                logging.debug('GV4: {} {}'.format(self.TEV.teslaEV_GetOdometer(self.EVid), self.TEV.teslaEV_GetDistUnit()))
+                if self.TEV.teslaEV_GetDistUnit() == 1:
+                    self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True, uom=116)
+                else:
+                    self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid) , True, True, uom=83 )
+                logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
+                temp = self.TEV.teslaEV_GetWindoStates(self.EVid)
+                logging.debug('Windows: {} {} {} {}'.format(temp['FrontLeft'], temp['FrontRight'], temp['RearLeft'],temp['RearRight']))
+                if  temp['FrontLeft'] == None:
+                    temp['FrontLeft'] = 99
+                if temp['FrontRight'] == None:    
+                    temp['FrontRight'] = 99
+                if temp['RearLeft'] == None:    
+                    temp['RearLeft'] = 99
+                if temp['RearRight'] == None:    
+                    temp['RearRight'] = 99
+                self.setDriver('GV6', temp['FrontLeft'], True, True)
+                self.setDriver('GV7', temp['FrontRight'], True, True)
+                self.setDriver('GV8', temp['RearLeft'], True, True)
+                self.setDriver('GV9', temp['RearRight'], True, True)
+                logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
+                logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
+                self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
+                #elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
+                #    logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
+                #    self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
             logging.info('updateISYdrivers - Status for {} '.format(self.EVid))
             #if self.TEV.isConnectedToEV():
             #self.TEV.teslaEV_GetInfo(self.EVid)
@@ -182,13 +224,16 @@ class teslaEV_StatusNode(udi_interface.Node):
             #    logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
             #    self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
 
-            logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
-            self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
+                logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
+                self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
 
-            logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
-            self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
-            logging.debug('GV13: {}'.format(self.TEV.teslaEV_GetCarState(self.EVid)))
-            self.setDriver('GV13', self.state2ISY(self.TEV.teslaEV_GetCarState(self.EVid)), True, True)
+                logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
+                self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
+
+            logging.debug('GV5: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+            self.setDriver('GV5', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)), True, True)
+            logging.debug('GV13: {}'.format(EVonline))
+            self.setDriver('GV13', self.state2ISY(EVonline), True, True)
 
             logging.debug('GV19: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2)))
             if self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60 < 0:
