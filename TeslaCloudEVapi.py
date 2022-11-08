@@ -288,11 +288,12 @@ class teslaCloudEVapi(object):
 
     def update_carInfo(self, updateDict, EVid):
         logging.debug('update_carInfo for {}'.format(EVid))
-        logging.debug('updateDict: {}'.format(updateDict) )
-        logging.debug('carInfo before :{}'.format(self.carInfo[EVid]))
+        logging.debug('updateDict: {}:{}'.format(len(updateDict), updateDict) )
+        logging.debug('carInfo before :{}:{}'.format(len(self.carInfo[EVid]), self.carInfo[EVid]))
         try:
             if EVid not in self.carInfo:
                 self.carInfo[EVid] = {}
+
             for idx1 in range(0, len(updateDict)):
 
                 logging.debug('loop1 {} : {} : {}'.format(idx1, updateDict[idx1], self.carInfo[EVid])  )
