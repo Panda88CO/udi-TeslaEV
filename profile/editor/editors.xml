@@ -9,6 +9,7 @@
 
   <editor id = "DURATION_H" > 
      <range  uom="20"  min="0" max="1000" prec="2" />
+      <range  uom="25" subset="99" nls="NODATA"/>
   </editor> 
 
   <editor id = "NBREVS" > 

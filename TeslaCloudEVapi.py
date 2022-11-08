@@ -28,6 +28,7 @@ class teslaCloudEVapi(object):
             self.connected = False
 
         self.carInfo = {}
+
         self.carStateList = ['online', 'offline', 'unknown' ]
         self.carState = 'unknown'
         self.canActuateTrunks = False
@@ -231,7 +232,7 @@ class teslaCloudEVapi(object):
                     carData = r.json()
                     logging.debug('carData: {}'.format(carData))
                     self.carInfo[EVid] = self.process_EV_data(carData)
-                    logging.debug('teslaEV_EV_basic_data {} data:{}'.format(self.carInfo[EVid].lower(), self.carInfo[EVid]  ))
+                    logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carInfo[EVid]  ))
 
             except Exception as e:
                 logging.error('Exception teslaEV_car_online_status :'.format(e))
@@ -421,8 +422,12 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetTimeSinceLastChargeUpdate(self, EVid):
         timeNow = int(time.time())
-        logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[EVid]['charge_state']['timestamp']/1000 ))
-        return(int(timeNow - float(self.carInfo[EVid]['charge_state']['timestamp']/1000)))
+        try:
+            logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[EVid]['charge_state']['timestamp']/1000 ))
+            return(int(timeNow - float(self.carInfo[EVid]['charge_state']['timestamp']/1000)))
+        except Exception as e:
+            logging.error ('teslaEV_GetTimeSinceLastChargeUpdate has no  data :{} '.format(e))
+            return(-1) # return negative number to indicate wrong data
 
     def teslaEV_FastChargerPresent(self, EVid):
         #logging.debug('teslaEV_FastchargerPresent for {}'.format(EVid))
@@ -642,9 +647,12 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetTimeSinceLastClimateUpdate(self, EVid):
         timeNow = int(time.time())
-        logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[EVid]['climate_state']['timestamp']/1000 ))
-
-        return(int(timeNow - float(self.carInfo[EVid]['climate_state']['timestamp']/1000)))
+        try:
+            logging.debug('Time Now {} Last UPdate {}'.format(timeNow, self.carInfo[EVid]['climate_state']['timestamp']/1000 ))
+            return(int(timeNow - float(self.carInfo[EVid]['climate_state']['timestamp']/1000)))
+        except Exception as e:
+            logging.error ('teslaEV_GetTimeSinceLastClimateUpdate has no  data :{} '.format(e))
+            return(-1) # return negative number to indicate wrong data
 
 
     def teslaEV_GetCabinTemp(self, EVid):
@@ -973,9 +981,12 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetTimeSinceLastStatusUpdate(self, EVid):
         timeNow = int(time.time())
-        logging.debug('Time Now {} Last Update {}'.format(timeNow,self.carInfo[EVid]['vehicle_state']['timestamp']/1000 ))
-        return(int(timeNow - float(self.carInfo[EVid]['vehicle_state']['timestamp']/1000)))
-
+        try:
+            logging.debug('Time Now {} Last Update {}'.format(timeNow,self.carInfo[EVid]['vehicle_state']['timestamp']/1000 ))
+            return(int(timeNow - float(self.carInfo[EVid]['vehicle_state']['timestamp']/1000)))
+        except Exception as e:
+            logging.error ('teslaEV_GetTimeSinceLastStatusUpdate has no  data :{} '.format(e))
+            return(-1) # return negative number to indicate wrong data
 
     def teslaEV_HomeLinkNearby(self, EVid):
         #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(EVid))
@@ -998,26 +1009,26 @@ class teslaCloudEVapi(object):
         else:
             return(None)
 
-    def teslaEV_GetWindoStates(self, EVid):
-        #logging.debug('teslaEV_GetWindoStates: for {}'.format(EVid))
+    def teslaEV_GetWindowStates(self, EVid):
+        #logging.debug('teslaEV_GetWindowStates: for {}'.format(EVid))
         temp = {}
-        if 'fd_window' in self.carInfo[EVid]['vehicle_state']:
-            temp['FrontLeft'] = self.carInfo[EVid]['vehicle_state']['fd_window']
-        else:
-            temp['FrontLeft'] = None
-        if 'fp_window' in self.carInfo[EVid]['vehicle_state']:
-            temp['FrontRight'] = self.carInfo[EVid]['vehicle_state']['fp_window']
-        else:
-            temp['FrontRight'] = None
-        if 'rd_window' in self.carInfo[EVid]['vehicle_state']:
-            temp['RearLeft'] = self.carInfo[EVid]['vehicle_state']['rd_window']
-        else:
-            temp['RearLeft'] = None
-        if 'rp_window' in self.carInfo[EVid]['vehicle_state']:
-            temp['RearRight'] = self.carInfo[EVid]['vehicle_state']['rp_window']
-        else:
-            temp['RearRight'] = None
-
+        if 'vehicle_state' in self.carInfo[EVid]:
+            if 'fd_window' in self.carInfo[EVid]['vehicle_state']:
+                temp['FrontLeft'] = self.carInfo[EVid]['vehicle_state']['fd_window']
+            else:
+                temp['FrontLeft'] = None
+            if 'fp_window' in self.carInfo[EVid]['vehicle_state']:
+                temp['FrontRight'] = self.carInfo[EVid]['vehicle_state']['fp_window']
+            else:
+                temp['FrontRight'] = None
+            if 'rd_window' in self.carInfo[EVid]['vehicle_state']:
+                temp['RearLeft'] = self.carInfo[EVid]['vehicle_state']['rd_window']
+            else:
+                temp['RearLeft'] = None
+            if 'rp_window' in self.carInfo[EVid]['vehicle_state']:
+                temp['RearRight'] = self.carInfo[EVid]['vehicle_state']['rp_window']
+            else:
+                temp['RearRight'] = None
         return(temp)
 
     def teslaEV_GetOnlineState(self, EVid):

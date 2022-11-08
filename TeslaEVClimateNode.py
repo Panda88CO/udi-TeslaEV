@@ -131,13 +131,19 @@ class teslaEV_ClimateNode(udi_interface.Node):
             self.setDriver('GV14', self.cond2ISY(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)), True, True) #need to be implemented        
 
             logging.debug('GV19: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2)))
-            self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2), True, True, 20)                                                    
+            if self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60 <0 :
+                self.setDriver('GV19', 99, True, True, 25)                                                    
+            else:
+                self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2), True, True, 20)                                                    
 
             logging.debug('GV20: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2)))
-            self.setDriver('GV20', round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2), True, True, 20)
+            if self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60 < 0:
+                self.setDriver('GV20', 99, True, True, 25)
+            else:
+                self.setDriver('GV20', round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2), True, True, 20)
    
         except Exception as e:
-            logging.error('updateISYdrivupdateISYdriversrsclimate node  failed: {}'.format(e))
+            logging.error('updateISYdrivers climate node failed: {}'.format(e))
 
 
     def ISYupdate (self, command):

@@ -151,10 +151,16 @@ class teslaEV_ChargeNode(udi_interface.Node):
                 self.setDriver('GV16', self.TEV.teslaEV_charge_miles_added_rated(self.EVid)*1.6 , True, True, uom=83 )
 
             logging.debug('GV19: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60),2)))
-            self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60),2), True, True, 20)
+            if self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60 < 0:
+                self.setDriver('GV19', 99, True, True, 25)
+            else:
+                self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60),2), True, True, 20)
 
             logging.debug('GV20: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastChargeUpdate(self.EVid)/60/60),2)))
-            self.setDriver('GV20', round(float(self.TEV.teslaEV_GetTimeSinceLastChargeUpdate(self.EVid)/60/60),2), True, True, 20)
+            if self.TEV.teslaEV_GetTimeSinceLastChargeUpdate(self.EVid)/60/60 < 0:
+                self.setDriver('GV20', 99, True, True, 25)
+            else:
+                self.setDriver('GV20', round(float(self.TEV.teslaEV_GetTimeSinceLastChargeUpdate(self.EVid)/60/60),2), True, True, 20)
 
         except Exception as e:
             logging.error('updateISYdrivers charge node failed: {}'.format(e))
