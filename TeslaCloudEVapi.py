@@ -1039,6 +1039,12 @@ class teslaCloudEVapi(object):
                 temp['RearRight'] = self.carInfo[EVid]['vehicle_state']['rp_window']
             else:
                 temp['RearRight'] = None
+        else:
+            temp['FrontLeft'] = None
+            temp['FrontRight'] = None
+            temp['RearLeft'] = None
+            temp['RearRight'] = None
+
         return(temp)
 
     def teslaEV_GetOnlineState(self, EVid):
