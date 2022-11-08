@@ -289,21 +289,26 @@ class teslaCloudEVapi(object):
         logging.debug('update_carInfo for {}'.format(EVid))
         logging.debug('updateDict: {}'.format(updateDict) )
         logging.debug('carInfo before :{}'.format(self.carInfo[EVid]))
-        for idx in range(0, len(updateDict)):
-            if 1 == len(updateDict[idx]):
-                self.carInfo[EVid][idx] = updateDict[idx]
-            else:
-                if idx not in self.carInfo[EVid]:
-                    self.carInfo[EVid][idx] = {}
-                for idx1 in range (0, len(updateDict[idx])):
-                    if 1 == len(updateDict[idx][idx1]):
-                        self.carInfo[EVid][idx][idx1] = updateDict[idx][idx1]
-                    else: # should not happen
-                        if idx1 not in self.carInfo[EVid][idx]:
-                            self.carInfo[EVid][idx][idx1] = {}
-                        for idx2 in range(0, len(updateDict[idx][idx1])):
-                            self.carInfo[EVid][idx][idx1][idx2] = updateDict[idx][idx1][idx2]    
-        logging.debug('carInfo after :{}'.format(self.carInfo[EVid]))
+        try:
+            for idx in range(0, len(updateDict)):
+                if 1 == len(updateDict[idx]):
+                    self.carInfo[EVid][idx] = updateDict[idx]
+                else:
+                    if idx not in self.carInfo[EVid]:
+                        self.carInfo[EVid][idx] = {}
+                    for idx1 in range (0, len(updateDict[idx])):
+                        if 1 == len(updateDict[idx][idx1]):
+                            self.carInfo[EVid][idx][idx1] = updateDict[idx][idx1]
+                        else: # should not happen
+                            if idx1 not in self.carInfo[EVid][idx]:
+                                self.carInfo[EVid][idx][idx1] = {}
+                            for idx2 in range(0, len(updateDict[idx][idx1])):
+                                self.carInfo[EVid][idx][idx1][idx2] = updateDict[idx][idx1][idx2]    
+            logging.debug('carInfo after :{}'.format(self.carInfo[EVid]))
+        except Exception as e:
+            logging.debug('Exception update_carInfo : {}'.format(e))
+            logging.debug('updateDict: {}'.format(updateDict) )
+            logging.debug('carInfo :{}'.format(self.carInfo[EVid]))
 
 
     def process_EV_data(self, carData):
