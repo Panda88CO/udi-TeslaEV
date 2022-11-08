@@ -149,7 +149,7 @@ class teslaCloudEVapi(object):
                             cloudInfo = False
                         '''
                 if temp != None:
-                    self.carInfo[EVid] = temp 
+                    self.update_carInfo(temp, EVid)
                 logging.debug('carinfo - setting state: {} : {}'.format(self.carState, self.carInfo[EVid]))
                 
 
@@ -159,6 +159,9 @@ class teslaCloudEVapi(object):
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
+
+
+
 
     def teslaEV_UpdateCloudInfo(self, EVid):
         logging.debug('teslaEV_UpdateCloudInfo: {}'.format(EVid))
@@ -225,7 +228,7 @@ class teslaCloudEVapi(object):
                     else:
                         self.carState = 'offline'
                 if temp != None:
-                    self.carInfo[EVid] = temp
+                    self.update_carInfo(temp, EVid)
                 logging.debug('teslaEV_UpdateCloudInfo - state {} END - carinfo[{}]:{}'.format(self.carState, EVid, self.carInfo[EVid] ))
 
             except Exception as e:
@@ -249,7 +252,9 @@ class teslaCloudEVapi(object):
                 if r.ok:
                     carData = r.json()
                     logging.debug('carData: {}'.format(carData))
-                    self.carInfo[EVid] = self.process_EV_data(carData)
+                    temp = self.process_EV_data(carData)
+                    if temp != None:
+                        self.update_carInfo(temp, EVid)
                     logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carInfo[EVid]  ))
 
             except Exception as e:
@@ -278,6 +283,28 @@ class teslaCloudEVapi(object):
 
             except Exception as e:
                 logging.error('Exception teslaEV_retrieve_EV_online_status :'.format(e))
+
+
+    def update_carInfo(self, updateDict, EVid):
+        logging.debug('update_carInfo for {}'.format(EVid))
+        logging.debug('updateDict: {}'.format(updateDict) )
+        logging.debug('carInfo before :{}'.format(self.carInfo[EVid]))
+        for idx in range(0, len(updateDict)):
+            if 1 == len(updateDict[idx]):
+                self.carInfo[EVid][idx] = updateDict[idx]
+            else:
+                if idx not in self.carInfo[EVid]:
+                    self.carInfo[EVid][idx] = {}
+                for idx1 in range (0, len(updateDict[idx])):
+                    if 1 == len(updateDict[idx][idx1]):
+                        self.carInfo[EVid][idx][idx1] = updateDict[idx][idx1]
+                    else: # should not happen
+                        if idx1 not in self.carInfo[EVid][idx]:
+                            self.carInfo[EVid][idx][idx1] = {}
+                        for idx2 in range(0, len(updateDict[idx][idx1])):
+                            self.carInfo[EVid][idx][idx1][idx2] = updateDict[idx][idx1][idx2]    
+        logging.debug('carInfo after :{}'.format(self.carInfo[EVid]))
+
 
     def process_EV_data(self, carData):
         logging.debug('process_EV_data')
