@@ -168,7 +168,6 @@ class TeslaEVController(udi_interface.Node):
             for vehicle in range(0,len(self.vehicleList)):
                 vehicleId = self.vehicleList[vehicle]
                 self.TEV.teslaEV_EV_basic_data(vehicleId)
-                self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
                 vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
                 logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
                 nodeName = vehicleInfo['display_name']
@@ -180,6 +179,8 @@ class TeslaEVController(udi_interface.Node):
                     self.poly.addNode(statusNode )             
                     self.wait_for_node_done()     
                     self.statusNodeReady = True
+                    self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
+
                     
             self.longPoll()
         except Exception as e:
