@@ -213,40 +213,52 @@ class teslaCloudEVapi(object):
                                 self.carState = 'Online'
                             #logging.debug('self.carState = Online')
                 else:
-                    logging.debug('Trying to wake-up car')
-                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
-                    logging.debug('wakeing car: {}'.format(r))
-                    if r.ok:
-                        carRaw = r.json()
-                        #self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'
-                        temp = self.process_EV_data(carRaw) 
-                        #logging.debug('self.carInfo[EVid]0 {}'.format(self.carInfo[EVid]))
-                        #logging.debug('teslaEV_UpdateCloudInfo RETURN: {}'.format(self.carInfo[EVid]))
-                        if 'state' in temp: 
-                            attempts = 0
-                            while temp['state'].lower() != 'online' and attempts < 6:
-                                time.sleep(10)
-                                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
-                                if r.ok:
-                                    carRaw = r.json()
-                                    #self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'
-                                    temp  = self.process_EV_data(carRaw) 
-                                    #logging.debug('self.carInfo[EVid]-1 {}'.format(self.carInfo[EVid]))
-                                attempts = attempts + 1
-                            if self.carInfo[EVid]['state'].lower() == 'online':
-                                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)     
-                                if r.ok:
-                                    self.carState = 'online'
-                                    carRaw = r.json()
-                                    #self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'                             
-                                    temp = self.process_EV_data(carRaw)
-                                    #logging.debug('self.carInfo[EVid]-2 {}'.format(self.carInfo[EVid]))
+                    logging.debug('Trying to wake-up car')                                    
+                    attempts = 0
+                    online = False
+                    while attempts < 5 and not online:
+                        r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
+                        logging.debug('wakeing car: {}'.format(r))
+                        if r.ok:
+                            carRaw = r.json()
+                            #self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'
+                            temp = self.process_EV_data(carRaw) 
+                            #logging.debug('self.carInfo[EVid]0 {}'.format(self.carInfo[EVid]))
+                            #logging.debug('teslaEV_UpdateCloudInfo RETURN: {}'.format(self.carInfo[EVid]))
+                            if 'state' in temp:
+                                online =  temp['state'].lower() == 'online' 
+                                self.carState = 'online'
+                        else:
+                            time.sleep(15) # wait 15 sec and try again
+                        attempts = attempts + 1
+                        '''
+                                attempts = 0
+                                while temp['state'].lower() != 'online' and attempts < 6:
+                                    time.sleep(10)
+                                    r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid)+'/wake_up', headers=self.Header)
+                                    if r.ok:
+                                        carRaw = r.json()
+                                        #self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'
+                                        temp  = self.process_EV_data(carRaw) 
+                                        #logging.debug('self.carInfo[EVid]-1 {}'.format(self.carInfo[EVid]))
+                                    attempts = attempts + 1
+                                if self.carInfo[EVid]['state'].lower() == 'online':
+                                    r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)     
+                                    if r.ok:
+                                        self.carState = 'online'
+                                        carRaw = r.json()
+                                        #self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'                             
+                                        temp = self.process_EV_data(carRaw)
+                                        #logging.debug('self.carInfo[EVid]-2 {}'.format(self.carInfo[EVid]))
+                                else:
+                                    self.carState = 'offline'
+                            elif temp == None:
+                                self.carState = 'offline'        
                             else:
                                 self.carState = 'offline'
-                        elif temp == None:
-                            self.carState = 'offline'        
-                        else:
-                            self.carState = 'offline'
+                        '''
+                    if online:
+                        self.carState = 'online'
                     else:
                         self.carState = 'offline'
                 if temp != None:
