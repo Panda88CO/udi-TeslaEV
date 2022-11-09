@@ -401,7 +401,7 @@ class teslaCloudEVapi(object):
         logging.debug('teslaEV_GetTimeSinceLastCarUpdate')
         timeNow = int(time.time())
         timeMinimum = min( self.teslaEV_GetTimeSinceLastClimateUpdate(EVid),self.teslaEV_GetTimeSinceLastChargeUpdate(EVid), self.teslaEV_GetTimeSinceLastStatusUpdate(EVid) )
-        logging.debug('Time Now {} Last UPdate {}'.format(timeNow, timeMinimum ))
+        logging.debug('Time Now {} Last Update {}'.format(timeNow, timeMinimum ))
         return(float(timeMinimum))
 
 ####################
@@ -511,7 +511,7 @@ class teslaCloudEVapi(object):
     def teslaEV_GetTimeSinceLastChargeUpdate(self, EVid):
         timeNow = int(time.time())
         try:
-            logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[EVid]['charge_state']['timestamp']/1000 ))
+            logging.debug('Time Now {} Last Update {}'.format(timeNow,int(self.carInfo[EVid]['charge_state']['timestamp']/1000 )))
             return(int(timeNow - float(self.carInfo[EVid]['charge_state']['timestamp']/1000)))
         except Exception as e:
             logging.error ('teslaEV_GetTimeSinceLastChargeUpdate has no  data :{} '.format(e))
@@ -736,7 +736,7 @@ class teslaCloudEVapi(object):
     def teslaEV_GetTimeSinceLastClimateUpdate(self, EVid):
         timeNow = int(time.time())
         try:
-            logging.debug('Time Now {} Last UPdate {}'.format(timeNow, self.carInfo[EVid]['climate_state']['timestamp']/1000 ))
+            logging.debug('Time Now {} Last Update {}'.format(timeNow, int(self.carInfo[EVid]['climate_state']['timestamp']/1000 )))
             return(int(timeNow - float(self.carInfo[EVid]['climate_state']['timestamp']/1000)))
         except Exception as e:
             logging.error ('teslaEV_GetTimeSinceLastClimateUpdate has no  data :{} '.format(e))
@@ -1070,7 +1070,7 @@ class teslaCloudEVapi(object):
     def teslaEV_GetTimeSinceLastStatusUpdate(self, EVid):
         timeNow = int(time.time())
         try:
-            logging.debug('Time Now {} Last Update {}'.format(timeNow,self.carInfo[EVid]['vehicle_state']['timestamp']/1000 ))
+            logging.debug('Time Now {} Last Update {}'.format(timeNow,int(self.carInfo[EVid]['vehicle_state']['timestamp']/1000 )))
             return(int(timeNow - float(self.carInfo[EVid]['vehicle_state']['timestamp']/1000)))
         except Exception as e:
             logging.error ('teslaEV_GetTimeSinceLastStatusUpdate has no  data :{} '.format(e))
