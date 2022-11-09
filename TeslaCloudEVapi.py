@@ -110,6 +110,7 @@ class teslaCloudEVapi(object):
                     #logging.debug('OAuth2BearerToken 1: {} '.format(r))
                     if r.ok:
                         carRaw = r.json()
+                        logging.debug('teslaEV_getLatestCloudInfo: {}'.format(carRaw))
                         #self.carInfo[EVid] = self.process_EV_data(carRaw)
                         temp = self.process_EV_data(carRaw)
                         if 'state' in temp: 
@@ -150,7 +151,9 @@ class teslaCloudEVapi(object):
                             cloudInfo = False
                         '''
                 if temp != None:
-                    self.carInfo[EVid].update(temp)
+                    self.carInfo[EVid] = {}
+                    self.carInfo[EVid] = temp 
+                    
                     '''
                     tmp = {}
                     tmp = self.carInfo[EVid]
@@ -187,6 +190,7 @@ class teslaCloudEVapi(object):
                     #logging.debug('OAuth2BearerToken 2: {} - {} '.format(r, self.carInfo[EVid]))
                     if r.ok:
                         carRaw = r.json()
+                        logging.debug('teslaEV_UpdateCloudInfo: {}'.format(carRaw))
                         #self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'
                         temp = self.process_EV_data(carRaw)
                         #logging.debug('self.carInfo[EVid]1 {}'.format(self.carInfo[EVid]))
@@ -235,7 +239,9 @@ class teslaCloudEVapi(object):
                     else:
                         self.carState = 'offline'
                 if temp != None:
-                    self.carInfo[EVid].update(temp)
+                    #self.carInfo[EVid].update(temp)
+                    self.carInfo[EVid] = {}
+                    self.carInfo[EVid] = temp
                     '''
                     tmp = {}
                     tmp = self.carInfo[EVid]
