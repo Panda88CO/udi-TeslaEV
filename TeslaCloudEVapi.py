@@ -150,7 +150,13 @@ class teslaCloudEVapi(object):
                             cloudInfo = False
                         '''
                 if temp != None:
-                    self.update_carInfo(temp, EVid)
+                    self.carInfo[EVid].update(temp)
+                    '''
+                    tmp = {}
+                    tmp = self.carInfo[EVid]
+                    tmp.update(temp)
+                    self.carInfo[EVid] = tmp
+                    '''
                 logging.debug('carinfo - setting state: {} : {}'.format(self.carState, self.carInfo[EVid]))
                 
 
@@ -229,7 +235,13 @@ class teslaCloudEVapi(object):
                     else:
                         self.carState = 'offline'
                 if temp != None:
-                    self.update_carInfo(temp, EVid)
+                    self.carInfo[EVid].update(temp)
+                    '''
+                    tmp = {}
+                    tmp = self.carInfo[EVid]
+                    tmp.update(temp)
+                    self.carInfo[EVid] = tmp
+                    '''
                 logging.debug('teslaEV_UpdateCloudInfo - state {} END - carinfo[{}]:{}'.format(self.carState, EVid, self.carInfo[EVid] ))
 
             except Exception as e:
