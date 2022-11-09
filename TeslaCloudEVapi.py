@@ -265,15 +265,17 @@ class teslaCloudEVapi(object):
                 r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid), headers=self.Header)          
                 if r.ok:
                     carData = r.json()
+                    if EVid not in self.carBasicInfo:
+                        self.carBasicInfo[EVid] = {}
                     logging.debug('carData: {}'.format(carData))
                     temp = self.process_EV_data(carData)
                     if temp != None:
-                        self.carBasicInfo = temp
+                        self.carBasicInfo[EVid] = temp
                     if 'state' in temp:
                         self.carState = temp['state']
                     else:
                         self.carState = 'offline'
-                    logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carInfo[EVid]  ))
+                    logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carBasicInfo[EVid]  ))
 
             except Exception as e:
                 logging.error('Exception teslaEV_EV_basic_data:'.format(e))
