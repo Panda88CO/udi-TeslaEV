@@ -184,7 +184,7 @@ class TeslaEVController(udi_interface.Node):
                     
             self.longPoll()
         except Exception as e:
-            logging.error('Exception Controller start: '+ str(e))
+            logging.error('Exception createNodes: '+ str(e))
             logging.info('Did not obtain data from EV ')
 
 
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.33')
+        polyglot.start('0.2.34')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 

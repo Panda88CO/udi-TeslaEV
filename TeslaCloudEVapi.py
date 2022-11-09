@@ -267,8 +267,9 @@ class teslaCloudEVapi(object):
                     carData = r.json()
                     if EVid not in self.carBasicInfo:
                         self.carBasicInfo[EVid] = {}
-                    logging.debug('carData: {}'.format(carData))
+                    logging.debug('teslaEV_EV_basic_data carData: {}'.format(carData))
                     temp = self.process_EV_data(carData)
+                    logging.debug('after process_EV_data: {}'.format(temp))
                     if temp != None:
                         self.carBasicInfo[EVid] = temp
                     if 'state' in temp:
