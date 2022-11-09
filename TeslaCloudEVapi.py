@@ -1138,16 +1138,12 @@ class teslaCloudEVapi(object):
                     self.rearSeatHeat = False
                 else:
                     self.rearSeatHeat = (self.carInfo[EVid]['vehicle_config']['rear_seat_heaters']   > 0)
-            
-
         return(temp)
         
 
 
     def teslaEV_GetCenterDisplay(self, EVid):
-
         logging.debug('teslaEV_GetCenterDisplay: for {}'.format(EVid))
-        #logging.debug('Car info : {}'.format(self.carInfo[EVid]))
         try:
             return(self.carInfo[EVid]['vehicle_state']['center_display_state'])
         except:
