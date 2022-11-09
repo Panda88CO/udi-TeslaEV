@@ -160,8 +160,8 @@ class teslaEV_StatusNode(udi_interface.Node):
                     self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True, uom=116)
                 else:
                     self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid) , True, True, uom=83 )
-                logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindoStates(self.EVid)))
-                temp = self.TEV.teslaEV_GetWindoStates(self.EVid)
+                logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindowStates(self.EVid)))
+                temp = self.TEV.teslaEV_GetWindowStates(self.EVid)
                 logging.debug('Windows: {} {} {} {}'.format(temp['FrontLeft'], temp['FrontRight'], temp['RearLeft'],temp['RearRight']))
                 if  temp['FrontLeft'] == None:
                     temp['FrontLeft'] = 99
