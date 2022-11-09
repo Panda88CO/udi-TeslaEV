@@ -19,7 +19,7 @@ NODATA-99 = No start time
 
 ND-evstatus-NAME = EV Status
 ND-evstatus-ICON = EnergyMonitor
-ST-nlsevstatus-ST-NAME = Controller Connected
+ST-nlsevstatus-ST-NAME = Node Connected
 ST-nlsevstatus-GV1-NAME = Console Display State
 CONSOLE-0 = Off
 CONSOLE-1 = TBD
