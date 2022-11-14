@@ -38,9 +38,11 @@ class teslaEV_ChargeNode(udi_interface.Node):
     
     def poll(self):
         
-        logging.debug('Charge node {}'.format(self.EVid) )
-        if self.nodeReady:
+        logging.debug('Climate node {}'.format(self.EVid))
+        self.online = self.TEV.teslaEV_EV_online_status(self.EVid) == 'online'
+        if self.nodeReady:            
             self.updateISYdrivers()
+
     
     def chargeNodeReady (self):
         return(self.nodeReady )
@@ -88,7 +90,7 @@ class teslaEV_ChargeNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         try:
-            if self.TEV.teslaEV_retrieve_EV_online_status(self.EVid) == 'online':
+            if self.online:
                 logging.info('ChargeNode updateISYdrivers {}'.format(self.EVid))
                 logging.debug('ChargeNode updateISYdrivers {}'.format(self.TEV.teslaEV_GetChargingInfo(self.EVid)))
                 #if self.TEV.isConnectedToEV():

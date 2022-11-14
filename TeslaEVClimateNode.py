@@ -22,6 +22,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         self.address = address 
         self.name = name
         self.nodeReady = False
+        self.online = False
         #self.node = self.poly.getNode(address)
         self.poly.subscribe(polyglot.START, self.start, address)
         #self.tempUnit = 0
@@ -42,10 +43,10 @@ class teslaEV_ClimateNode(udi_interface.Node):
 
 
 
-    def poll(self):
-        
-        logging.debug('Climate node {}'.format(self.EVid) )
-        if self.nodeReady:
+    def poll(self):        
+        logging.debug('Climate node {} - {}'.format(self.EVid, online) )
+        self.online = self.TEV.teslaEV_EV_online_status(self.EVid) == 'online'
+        if self.nodeReady:            
             self.updateISYdrivers()
 
     def bool2ISY(self, bool):
@@ -88,7 +89,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         try:
-            if self.TEV.teslaEV_retrieve_EV_online_status(self.EVid) == 'online':
+            if self.online:
                 logging.info('Climate updateISYdrivers {}'.format(self.EVid))
                 logging.debug('Climate updateISYdrivers {}'.format(self.TEV.teslaEV_GetClimateInfo(self.EVid)))
 

@@ -31,7 +31,8 @@ class teslaCloudEVapi(object):
         self.carBasicInfo = {}
 
         self.carStateList = ['online', 'offline', 'unknown' ]
-        self.carState = 'unknown'
+        #self.carState = 'unknown'
+        self.carState = {}
         self.canActuateTrunks = False
         self.sunroofInstalled = False
         self.readSeatHeat = False
@@ -118,12 +119,12 @@ class teslaCloudEVapi(object):
                         temp = self.process_EV_data(carRaw)
                         if 'state' in temp: 
                             if temp['state'].lower() == 'online':
-                                self.carState = 'online'
+                                self.carState[EVid] = 'online'
                             else:
-                                self.carState = 'offline'
-                                #logging.debug( 'carState1 : {}'.format(self.carState))
+                                self.carState[EVid] = 'offline'
+                                #logging.debug( 'carState1 : {}'.format(self.carState[EVid]))
                         elif temp == None:
-                            self.carState = 'offline'
+                            self.carState[EVid] = 'offline'
                 elif EV_online_state == 'offline':
                         logging.info('Car appear to be sleeping - trying to retrieve cached data')
                         logging.info('lastest_vehicle_info (cached data) does not seem to be supported with car offline')
@@ -137,20 +138,20 @@ class teslaCloudEVapi(object):
                             #logging.debug( 'carInfoCloud1 : {}'.format(carInfoCloud))
                             if self.carInfo[EVid] != None:
 
-                                self.carState = 'Sleeping'
+                                self.carState[EVid] = 'Sleeping'
                             elif 'state' in self.carInfo[EVid] :
                                 if self.carInfo[EVid]['state'].lower() == 'online':
                                     logging.debug('Appears calling for cached data wakes the car')
-                                    self.carState = 'Online'
+                                    self.carState[EVid] = 'Online'
                                 else:
-                                    self.carState = 'Sleeping'
-                                #logging.debug( 'carState2 : {}'.format(self.carState))
+                                    self.carState[EVid] = 'Sleeping'
+                                #logging.debug( 'carState2 : {}'.format(self.carState[EVid]))
                             else:
-                                self.carState = 'Offline'
-                                    #logging.debug( 'carState3 : {}'.format(self.carState))
+                                self.carState[EVid] = 'Offline'
+                                    #logging.debug( 'carState3 : {}'.format(self.carState[EVid]))
                         else:
-                            self.carState = 'Unknown'
-                            #logging.debug( 'carState4 : {}'.format(self.carState))
+                            self.carState[EVid] = 'Unknown'
+                            #logging.debug( 'carState4 : {}'.format(self.carState[EVid]))
                             cloudInfo = False
                         '''
                 if temp != None:
@@ -158,9 +159,9 @@ class teslaCloudEVapi(object):
                     self.carInfo[EVid] = temp 
                     if self.teslaEV_GetTimeLastCarUpdate(EVid) == prevTimeStamp:
                         if prevTimeStamp == -1:
-                            self.carState == 'offline'
-                        elif self.carState == 'online':
-                            self.carState = 'Sleeping'
+                            self.carState[EVid] == 'offline'
+                        elif self.carState[EVid] == 'online':
+                            self.carState[EVid] = 'Sleeping'
       
                     
                     '''
@@ -169,7 +170,7 @@ class teslaCloudEVapi(object):
                     tmp.update(temp)
                     self.carInfo[EVid] = tmp
                     '''
-                logging.debug('carinfo - setting state: {} : {}'.format(self.carState, self.carInfo[EVid]))
+                logging.debug('carinfo - setting state: {} : {}'.format(self.carState[EVid], self.carInfo[EVid]))
                 
 
             except Exception as e:
@@ -208,10 +209,10 @@ class teslaCloudEVapi(object):
                         if 'state' in temp: 
                             #logging.debug('if state in self.carInfo[EVid]: ')
                             if temp['state'].lower() == 'online':
-                                self.carState = 'Online'
+                                self.carState[EVid] = 'Online'
                             else:
-                                self.carState = 'Online'
-                            #logging.debug('self.carState = Online')
+                                self.carState[EVid] = 'Online'
+                            #logging.debug('self.carState[EVid] = Online')
                 else:
                     logging.debug('Trying to wake-up car')                                    
                     attempts = 0
@@ -227,7 +228,7 @@ class teslaCloudEVapi(object):
                             #logging.debug('teslaEV_UpdateCloudInfo RETURN: {}'.format(self.carInfo[EVid]))
                             if 'state' in temp:
                                 online =  temp['state'].lower() == 'online' 
-                                self.carState = 'online'
+                                self.carState[EVid] = 'online'
                         else:
                             time.sleep(15) # wait 15 sec and try again
                         attempts = attempts + 1
@@ -245,45 +246,45 @@ class teslaCloudEVapi(object):
                                 if self.carInfo[EVid]['state'].lower() == 'online':
                                     r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)     
                                     if r.ok:
-                                        self.carState = 'online'
+                                        self.carState[EVid] = 'online'
                                         carRaw = r.json()
                                         #self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'                             
                                         temp = self.process_EV_data(carRaw)
                                         #logging.debug('self.carInfo[EVid]-2 {}'.format(self.carInfo[EVid]))
                                 else:
-                                    self.carState = 'offline'
+                                    self.carState[EVid] = 'offline'
                             elif temp == None:
-                                self.carState = 'offline'        
+                                self.carState[EVid] = 'offline'        
                             else:
-                                self.carState = 'offline'
+                                self.carState[EVid] = 'offline'
                         '''
                     if online:
-                        self.carState = 'online'
+                        self.carState[EVid] = 'online'
                     else:
-                        self.carState = 'offline'
+                        self.carState[EVid] = 'offline'
                 if temp != None:
                     #self.carInfo[EVid].update(temp)
                     self.carInfo[EVid] = {}
                     self.carInfo[EVid] = temp
                     if self.teslaEV_GetTimeLastCarUpdate(EVid) == prevTimeStamp:
                         if prevTimeStamp == -1:
-                            self.carState == 'offline'
-                        elif self.carState == 'online':
-                            self.carState = 'Sleeping'
+                            self.carState[EVid] == 'offline'
+                        elif self.carState[EVid] == 'online':
+                            self.carState[EVid] = 'Sleeping'
                     '''
                     tmp = {}
                     tmp = self.carInfo[EVid]
                     tmp.update(temp)
                     self.carInfo[EVid] = tmp
                     '''
-                logging.debug('teslaEV_UpdateCloudInfo - state {} END - carinfo[{}]:{}'.format(self.carState, EVid, self.carInfo[EVid] ))
+                logging.debug('teslaEV_UpdateCloudInfo - state {} END - carinfo[{}]:{}'.format(self.carState[EVid], EVid, self.carInfo[EVid] ))
 
             except Exception as e:
                 logging.debug('Exception teslaEV_UpdateCloudInfo: {}'.format(e))
                 logging.error('Error getting data from vehicle id: {}'.format(EVid))
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
-                self.carState = 'Offline'
+                self.carState[EVid] = 'Offline'
                 return(None)
 
     
@@ -307,9 +308,9 @@ class teslaCloudEVapi(object):
                     if temp != None:
                         self.carBasicInfo[EVid] = temp
                     if 'state' in temp:
-                        self.carState = temp['state']
+                        self.carState[EVid] = temp['state']
                     else:
-                        self.carState = 'offline'
+                        self.carState[EVid] = 'offline'
                     logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carBasicInfo[EVid]  ))
 
             except Exception as e:
@@ -333,11 +334,23 @@ class teslaCloudEVapi(object):
                         if 'state' in carStatus:
                             logging.debug('Car {} Online {}'.format(EVid, carStatus['state'].lower() ))
                             return( carStatus['state'].lower() )
+                        else:
+                            return('offline')  
                     else:
                         return('offline')
 
             except Exception as e:
                 logging.error('Exception teslaEV_retrieve_EV_online_status :'.format(e))
+
+
+    def teslaEV_EV_online_status(self, EVid):
+        logging.debug('teslaEV_retrieve_EV_online_status: {}'.format(EVid))
+        try:
+            return(self.carState[EVid])
+        except:
+            logging.error('carState not defined for {}'.format(EVid))
+            return('unknown')
+
 
     #need to decide if this is needed - otherwise simply overwrite existing data in not None
     def update_carInfo(self, updateDict, EVid):
@@ -387,8 +400,8 @@ class teslaCloudEVapi(object):
             
 
     def teslaEV_GetCarState(self, EVid):
-        logging.debug('teslaEV_GetCarState: {}'.format(self.carState))
-        return(self.carState)
+        logging.debug('teslaEV_GetCarState: {}'.format(self.carState[EVid]))
+        return(self.carState[EVid])
 
     def teslaEV_GetInfo(self, EVid):
         logging.debug('teslaEV_GetInfo {}: {}'.format(EVid, self.carInfo[EVid]))
@@ -760,40 +773,44 @@ class teslaCloudEVapi(object):
     def teslaEV_GetClimateInfo(self, EVid):
         logging.debug('teslaEV_GetClimateInfo: for {}'.format(EVid))
         temp = {}
-        if 'climate_state' in self.carInfo[EVid]:
-            if 'inside_temp' in self.carInfo[EVid]['climate_state']:
-                temp['inside_temp'] = self.carInfo[EVid]['climate_state']['inside_temp']
-            if 'outside_temp' in self.carInfo[EVid]['climate_state']:
-                temp['outside_temp'] = self.carInfo[EVid]['climate_state']['outside_temp']
-            if 'driver_temp_setting' in self.carInfo[EVid]['climate_state']:
-                temp['driver_temp_setting'] = self.carInfo[EVid]['climate_state']['driver_temp_setting']
-            if 'passenger_temp_setting' in self.carInfo[EVid]['climate_state']:
-                temp['passenger_temp_setting'] = self.carInfo[EVid]['climate_state']['passenger_temp_setting']
-            if 'seat_heater_left' in self.carInfo[EVid]['climate_state']:
-                temp['seat_heater_left'] = self.carInfo[EVid]['climate_state']['seat_heater_left']
-            if 'seat_heater_right' in self.carInfo[EVid]['climate_state']:
-                temp['seat_heater_right'] = self.carInfo[EVid]['climate_state']['seat_heater_right']
-            if 'seat_heater_rear_center' in self.carInfo[EVid]['climate_state']:
-                temp['seat_heater_rear_center'] = self.carInfo[EVid]['climate_state']['seat_heater_rear_center']
-            if 'seat_heater_rear_left' in self.carInfo[EVid]['climate_state']:
-                temp['seat_heater_rear_left'] = self.carInfo[EVid]['climate_state']['seat_heater_rear_left']
-            if 'seat_heater_rear_right' in self.carInfo[EVid]['climate_state']:
-                temp['seat_heater_rear_right'] = self.carInfo[EVid]['climate_state']['seat_heater_rear_right']
-            if 'is_auto_conditioning_on' in self.carInfo[EVid]['climate_state']:
-                temp['is_auto_conditioning_on'] = self.carInfo[EVid]['climate_state']['is_auto_conditioning_on']
-            if 'is_preconditioning' in self.carInfo[EVid]['climate_state']:
-                temp['is_preconditioning'] = self.carInfo[EVid]['climate_state']['is_preconditioning']
-            if 'max_avail_temp' in self.carInfo[EVid]['climate_state']:
-                temp['max_avail_temp'] = self.carInfo[EVid]['climate_state']['max_avail_temp']
-            if 'min_avail_temp' in self.carInfo[EVid]['climate_state']:
-                temp['min_avail_temp'] = self.carInfo[EVid]['climate_state']['min_avail_temp']
-            if 'timestamp' in  self.carInfo[EVid]['climate_state']: 
-                temp['timestamp'] = int(self.carInfo[EVid]['climate_state']['timestamp'] /1000) # Tesla reports in miliseconds
-        if 'steering_wheel_heater' in self.carInfo[EVid]['vehicle_state']: 
-            self.steeringWheeelHeat = self.carInfo[EVid]['vehicle_state']['steering_wheel_heater']
-            self.steeringWheelHeatDetected = True
-        return(temp)
-
+        try:
+            if 'climate_state' in self.carInfo[EVid]:
+                if 'inside_temp' in self.carInfo[EVid]['climate_state']:
+                    temp['inside_temp'] = self.carInfo[EVid]['climate_state']['inside_temp']
+                if 'outside_temp' in self.carInfo[EVid]['climate_state']:
+                    temp['outside_temp'] = self.carInfo[EVid]['climate_state']['outside_temp']
+                if 'driver_temp_setting' in self.carInfo[EVid]['climate_state']:
+                    temp['driver_temp_setting'] = self.carInfo[EVid]['climate_state']['driver_temp_setting']
+                if 'passenger_temp_setting' in self.carInfo[EVid]['climate_state']:
+                    temp['passenger_temp_setting'] = self.carInfo[EVid]['climate_state']['passenger_temp_setting']
+                if 'seat_heater_left' in self.carInfo[EVid]['climate_state']:
+                    temp['seat_heater_left'] = self.carInfo[EVid]['climate_state']['seat_heater_left']
+                if 'seat_heater_right' in self.carInfo[EVid]['climate_state']:
+                    temp['seat_heater_right'] = self.carInfo[EVid]['climate_state']['seat_heater_right']
+                if 'seat_heater_rear_center' in self.carInfo[EVid]['climate_state']:
+                    temp['seat_heater_rear_center'] = self.carInfo[EVid]['climate_state']['seat_heater_rear_center']
+                if 'seat_heater_rear_left' in self.carInfo[EVid]['climate_state']:
+                    temp['seat_heater_rear_left'] = self.carInfo[EVid]['climate_state']['seat_heater_rear_left']
+                if 'seat_heater_rear_right' in self.carInfo[EVid]['climate_state']:
+                    temp['seat_heater_rear_right'] = self.carInfo[EVid]['climate_state']['seat_heater_rear_right']
+                if 'is_auto_conditioning_on' in self.carInfo[EVid]['climate_state']:
+                    temp['is_auto_conditioning_on'] = self.carInfo[EVid]['climate_state']['is_auto_conditioning_on']
+                if 'is_preconditioning' in self.carInfo[EVid]['climate_state']:
+                    temp['is_preconditioning'] = self.carInfo[EVid]['climate_state']['is_preconditioning']
+                if 'max_avail_temp' in self.carInfo[EVid]['climate_state']:
+                    temp['max_avail_temp'] = self.carInfo[EVid]['climate_state']['max_avail_temp']
+                if 'min_avail_temp' in self.carInfo[EVid]['climate_state']:
+                    temp['min_avail_temp'] = self.carInfo[EVid]['climate_state']['min_avail_temp']
+                if 'timestamp' in  self.carInfo[EVid]['climate_state']: 
+                    temp['timestamp'] = int(self.carInfo[EVid]['climate_state']['timestamp'] /1000) # Tesla reports in miliseconds
+        
+            if 'steering_wheel_heater' in self.carInfo[EVid]['vehicle_state']: 
+                self.steeringWheeelHeat = self.carInfo[EVid]['vehicle_state']['steering_wheel_heater']
+                self.steeringWheelHeatDetected = True
+            return(temp)
+        except Exception as e:
+            logging.error('Exception -teslaEV_GetClimateInfo: {}'.format(e) )
+            
     def teslaEV_GetClimateTimestamp(self, EVid):
         try:
             return(self.carInfo[EVid]['climate_state']['timestamp'])
@@ -1231,7 +1248,7 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetOnlineState(self, EVid):
         logging.debug('teslaEV_GetOnlineState: for {}'.format(EVid))
-        return(self.carState)
+        return(self.carState[EVid])
 
     def teslaEV_GetOdometer(self, EVid):
         logging.debug('teslaEV_GetOdometer: for {}'.format(EVid))
