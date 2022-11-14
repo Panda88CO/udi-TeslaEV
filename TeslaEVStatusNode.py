@@ -140,6 +140,11 @@ class teslaEV_StatusNode(udi_interface.Node):
         self.updateISYdrivers()
 
 
+    def updateDriver(self, Key, Value, force = True, update = True):
+        if Value != None:
+            logging.debug('{} : {}'.format(Key, Value))
+            self.setDriver(Key, Value, force, update)
+
     def updateISYdrivers(self):
         try:
             
@@ -150,20 +155,21 @@ class teslaEV_StatusNode(udi_interface.Node):
                 #self.TEV.teslaEV_GetInfo(self.EVid)
                 temp = {}
                 logging.debug('StatusNode updateISYdrivers {}'.format(self.TEV.teslaEV_GetStatusInfo(self.EVid)))
-                logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCenterDisplay(self.EVid)))
-                self.setDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid), True, True)
-                logging.debug('GV2: {} '.format(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
-                self.setDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid)), True, True)
-                logging.debug('GV0: {} '.format(self.TEV.teslaEV_nbrHomeLink(self.EVid)))
-                self.setDriver('GV0', self.TEV.teslaEV_nbrHomeLink(self.EVid), True, True)
-                logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLockState(self.EVid)))
-                self.setDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)), True, True)
-                logging.debug('GV4: {} {}'.format(self.TEV.teslaEV_GetOdometer(self.EVid), self.TEV.teslaEV_GetDistUnit()))
-                if self.TEV.teslaEV_GetDistUnit() == 1:
-                    self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True, uom=116)
-                else:
-                    self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid) , True, True, uom=83 )
+                
+                self.updateDriver('GV1', self.TEV.teslaEV_GetCenterDisplay(self.EVid))                
+                self.updateDriver('GV2', self.bool2ISY(self.TEV.teslaEV_HomeLinkNearby(self.EVid)))
+                self.updateDriver('GV0', self.TEV.teslaEV_nbrHomeLink(self.EVid))
+                self.updateDriver('GV3', self.bool2ISY(self.TEV.teslaEV_GetLockState(self.EVid)))
+                
+                value = self.TEV.teslaEV_GetOdometer(self.EVid)
+                logging.debug('GV4: {} {}'.format(value, self.TEV.teslaEV_GetDistUnit()))
+                if value != None:
+                    if self.TEV.teslaEV_GetDistUnit() == 1:
+                        self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid), True, True, uom=116)
+                    else:
+                        self.setDriver('GV4', self.TEV.teslaEV_GetOdometer(self.EVid) , True, True, uom=83 )
                 logging.debug('GV6-9: {}'.format(self.TEV.teslaEV_GetWindowStates(self.EVid)))
+
                 temp = self.TEV.teslaEV_GetWindowStates(self.EVid)
                 logging.debug('Windows: {} {} {} {}'.format(temp['FrontLeft'], temp['FrontRight'], temp['RearLeft'],temp['RearRight']))
                 if  temp['FrontLeft'] == None:
@@ -174,41 +180,37 @@ class teslaEV_StatusNode(udi_interface.Node):
                     temp['RearLeft'] = 99
                 if temp['RearRight'] == None:    
                     temp['RearRight'] = 99
-                self.setDriver('GV6', temp['FrontLeft'], True, True)
-                self.setDriver('GV7', temp['FrontRight'], True, True)
-                self.setDriver('GV8', temp['RearLeft'], True, True)
-                self.setDriver('GV9', temp['RearRight'], True, True)
-                logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
-                logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
-                self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
+
+                self.updateDriver('GV6', temp['FrontLeft'], True, True)
+                self.updateDriver('GV7', temp['FrontRight'], True, True)
+                self.updateDriver('GV8', temp['RearLeft'], True, True)
+                self.updateDriver('GV9', temp['RearRight'], True, True)
+
+                self.updateDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True)
                 #elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
                 #    logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-                #    self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
+                #    self.updateDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
+
+                self.updateDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
+                self.updateDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
 
+            self.updateDriver('GV13', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+            self.updateDriver('GV5', self.state2ISY(self.online), True, True)
 
-                logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
-                self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)
-
-                logging.debug('GV12: {}'.format(self.TEV.teslaEV_GetFrunkState(self.EVid)))
-                self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
-
-            logging.debug('GV13: {}'.format(self.TEV.teslaEV_GetOnlineState(self.EVid)))
-            self.setDriver('GV13', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)), True, True)
-            logging.debug('GV5: {}'.format(self.online))
-            self.setDriver('GV5', self.state2ISY(self.online), True, True)
-
-            logging.debug('GV19: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2)))
+            value = round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2)
+            logging.debug('GV19: {}'.format(value))
             if self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60 < 0:
                 self.setDriver('GV19', 99, True, True, 25) 
             else:
-                self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2), True, True, 20)            
+                self.setDriver('GV19', value, True, True, 20)            
 
-            logging.debug('GV20: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60), 2)))
+            value = round(float(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60), 2)
+            logging.debug('GV20: {}'.format(value))
             if self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60 < 0:
                 self.setDriver('GV20', 99, True, True, 25)
             else:
-                self.setDriver('GV20', round(float(self.TEV.teslaEV_GetTimeSinceLastStatusUpdate(self.EVid)/60/60), 2), True, True, 20)
+                self.setDriver('GV20', value, True, True, 20)
 
         except Exception as e:
             logging.error(' updateISYdriver Status node failed: {} '.format(e))
@@ -265,10 +267,10 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.error('Wrong command for evSunroof: {}'.format(sunroofCtrl))         
         if self.TEV.teslaEV_GetSunRoofPercent(self.EVid) != None:
             logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
-            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
+            self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, uom=51)
         elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
             logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-            self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
+            self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, uom=25)
 
         self.forceUpdateISYdrivers()
 
