@@ -123,8 +123,8 @@ class teslaEV_StatusNode(udi_interface.Node):
     def ready(self):
         return(self.chargeNodeReady and self.climateNodeReady)
 
-    def poll(self, online):       
-        logging.info('Status Node Poll for {} - {}'.format(self.EVid, online))        
+    def poll(self):       
+        logging.info('Status Node Poll for {} - {}'.format(self.EVid))        
         #self.TEV.teslaEV_GetInfo(self.EVid)
         self.online = self.TEV.teslaEV_EV_online_status(self.EVid) == 'online'
         if self.statusNodeReady:            
