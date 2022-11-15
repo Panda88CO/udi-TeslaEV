@@ -319,7 +319,6 @@ class teslaCloudEVapi(object):
 
     def teslaEV_retrieve_EV_online_status(self, EVid):
         logging.debug('teslaEV_retrieve_EV_online_status: {}'.format(EVid))
-        logging.debug('car {} Online = {}'.format(self.teslaEV_retrieve_EV_online_status(EVid)))
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
