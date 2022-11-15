@@ -286,17 +286,14 @@ class TeslaEVController(udi_interface.Node):
         self.heartbeat()
         for vehicle in range(0,len(self.vehicleList)):
             try:
+                nodes = self.poly.getNodes()
                 self.online[vehicle] = self.TEV.teslaEV_retrieve_EV_online_status(vehicle) == 'online'
                 if self.online:
                     logging.info('shortPoll updated info for {} as it is online'.format(vehicle))
-                    self.TEV.teslaEV_getLatestCloudInfo(self.vehicleList[vehicle])
-                    nodes = self.poly.getNodes()
-
+                    self.TEV.teslaEV_getLatestCloudInfo(self.vehicleList[vehicle])                  
                 else:
                     logging.info('shortPoll did not update info for {} as it is not online'.format(vehicle))
-                    # Should use teslaEV_getLatestCloudInfo but it does not seems to work yet
-                
-
+                    # Should use teslaEV_getLatestCloudInfo but it does not seems to work yet                
             except Exception as E:
                     logging.info('Not all nodes ready: {}'.format(E))
 
@@ -313,16 +310,13 @@ class TeslaEVController(udi_interface.Node):
         logging.info('Tesla EV  Controller longPoll')
         for vehicle in range(0,len(self.vehicleList)):      
             try:
+                nodes = self.poly.getNodes()
                 self.online[vehicle] = self.TEV.teslaEV_retrieve_EV_online_status(vehicle) == 'online'
                 if self.online[vehicle]:
                     logging.info('longPoll will try a forced update of data for {}'.format(vehicle))
-                    self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])                  
-                    nodes = self.poly.getNodes()
-
-
+                    self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])                                      
                 else:
-                    logging.info ('Vehicel {} appears to be off line'.format(vehicle))
-                    
+                    logging.info ('Vehicel {} appears to be off line'.format(vehicle))                    
 
             except Exception as E:
                 logging.info('Not all nodes ready: {}'.format(E))
@@ -379,7 +373,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.43')
+        polyglot.start('0.2.44')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
