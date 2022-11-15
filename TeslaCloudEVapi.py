@@ -319,6 +319,10 @@ class teslaCloudEVapi(object):
 
     def teslaEV_retrieve_EV_online_status(self, EVid):
         logging.debug('teslaEV_retrieve_EV_online_status: {}'.format(EVid))
+        self.teslaEV_EV_basic_data(EVid)
+        return(self.carState[EVid])
+        
+        '''
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
@@ -340,7 +344,7 @@ class teslaCloudEVapi(object):
 
             except Exception as e:
                 logging.error('Exception teslaEV_retrieve_EV_online_status :'.format(e))
-
+        '''
 
     def teslaEV_EV_online_status(self, EVid):
         logging.debug('teslaEV_retrieve_EV_online_status: {}'.format(EVid))

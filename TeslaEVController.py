@@ -55,6 +55,8 @@ class TeslaEVController(udi_interface.Node):
         self.connected = False
         self.nodeDefineDone = False
         self.statusNodeReady = False
+        self.online = {}
+
 
         self.poly.updateProfile()
         self.poly.ready()
@@ -179,7 +181,9 @@ class TeslaEVController(udi_interface.Node):
                     self.poly.addNode(statusNode )             
                     self.wait_for_node_done()     
                     self.statusNodeReady = True
-                    self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
+                    if self.TEV.teslaEV_EV_online_status != 'offline':
+                        logging.info('Car is not offline - trying to retrieve data')
+                        self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
                     
             self.longPoll()
         except Exception as e:
@@ -288,7 +292,7 @@ class TeslaEVController(udi_interface.Node):
             try:
                 nodes = self.poly.getNodes()
                 self.online[vehicle] = self.TEV.teslaEV_retrieve_EV_online_status(vehicle) == 'online'
-                if self.online:
+                if self.online[vehicle]:
                     logging.info('shortPoll updated info for {} as it is online'.format(vehicle))
                     self.TEV.teslaEV_getLatestCloudInfo(self.vehicleList[vehicle])                  
                 else:
@@ -311,7 +315,7 @@ class TeslaEVController(udi_interface.Node):
         for vehicle in range(0,len(self.vehicleList)):      
             try:
                 nodes = self.poly.getNodes()
-                self.online[vehicle] = self.TEV.teslaEV_retrieve_EV_online_status(vehicle) == 'online'
+                self.online[vehicle] = (self.TEV.teslaEV_retrieve_EV_online_status(vehicle) != 'offline')
                 if self.online[vehicle]:
                     logging.info('longPoll will try a forced update of data for {}'.format(vehicle))
                     self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])                                      
@@ -373,7 +377,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.45')
+        polyglot.start('0.2.46')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
