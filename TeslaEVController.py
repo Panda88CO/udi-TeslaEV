@@ -288,7 +288,7 @@ class TeslaEVController(udi_interface.Node):
 
     def shortPoll(self):
         logging.info('Tesla EV Controller shortPoll')
-        logging.debug('self.vehicleList {}'.format(self.vehicleList()))
+        logging.debug('self.vehicleList {}'.format(self.vehicleList))
         self.heartbeat()
         for vehicle in range(0,len(self.vehicleList)):
             logging.debug ('shortPoll Loop {}'.format(vehicle))
@@ -382,7 +382,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.51')
+        polyglot.start('0.2.53')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
