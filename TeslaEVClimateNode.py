@@ -22,7 +22,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         self.address = address 
         self.name = name
         self.nodeReady = False
-        self.online = False
+
         #self.node = self.poly.getNode(address)
         self.poly.subscribe(polyglot.START, self.start, address)
         #self.tempUnit = 0
@@ -44,8 +44,8 @@ class teslaEV_ClimateNode(udi_interface.Node):
 
 
     def poll(self):        
-        logging.debug('Climate node {} - {}'.format(self.EVid, online) )
-        self.online = self.TEV.teslaEV_EV_online_status(self.EVid) == 'online'
+        logging.debug('Climate node {}'.format(self.EVid) )
+        #self.online = self.TEV.teslaEV_EV_online_status(self.EVid) == 'online'
         if self.nodeReady:            
             self.updateISYdrivers()
 
@@ -94,7 +94,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         try:
-            if self.online:
+            if self.TEV.teslaEV_EV_online_status(self.EVid) == 'online':
                 logging.info('Climate updateISYdrivers {}'.format(self.EVid))
                 logging.debug('Climate updateISYdrivers {}'.format(self.TEV.teslaEV_GetClimateInfo(self.EVid)))
 
@@ -124,9 +124,9 @@ class teslaEV_ClimateNode(udi_interface.Node):
                 
                 self.updateDriver('GV14', self.cond2ISY(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)), True, True) #need to be implemented        
 
-            value = round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2)
+            value = round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2)
             logging.debug('GV19: {}'.format(value))
-            if self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60 <0 :
+            if self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60 <0 :
                 self.setDriver('GV19', 99, True, True, 25)                                                    
             else:
                 self.setDriver('GV19', value, True, True, 20)                                                    

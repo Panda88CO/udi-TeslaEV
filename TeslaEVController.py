@@ -181,11 +181,12 @@ class TeslaEVController(udi_interface.Node):
                     self.poly.addNode(statusNode )             
                     self.wait_for_node_done()     
                     self.statusNodeReady = True
-                    if self.TEV.teslaEV_EV_online_status != 'offline':
+                    logging.debug('teslaEV_EV_online_status {}'.format(self.TEV.teslaEV_EV_online_status(vehicleId) ))
+                    if self.TEV.teslaEV_EV_online_status(vehicleId) != 'offline':
                         logging.info('Car is not offline - trying to retrieve data')
-                        self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
-                    
-            self.longPoll()
+                        self.TEV.teslaEV_UpdateCloudInfo(vehicleId)                    
+                        self.longPoll()
+
         except Exception as e:
             logging.error('Exception createNodes: '+ str(e))
             logging.info('Did not obtain data from EV ')
@@ -291,7 +292,7 @@ class TeslaEVController(udi_interface.Node):
         for vehicle in range(0,len(self.vehicleList)):
             try:
                 nodes = self.poly.getNodes()
-                self.online[vehicle] = self.TEV.teslaEV_retrieve_EV_online_status(vehicle) == 'online'
+                self.online[vehicle] = self.TEV.teslaEV_retrieve_EV_online_status(vehicle) != 'offline'
                 if self.online[vehicle]:
                     logging.info('shortPoll updated info for {} as it is online'.format(vehicle))
                     self.TEV.teslaEV_getLatestCloudInfo(self.vehicleList[vehicle])                  

@@ -30,7 +30,7 @@ class teslaCloudEVapi(object):
         self.carInfo = {}
         self.carBasicInfo = {}
 
-        self.carStateList = ['online', 'offline', 'unknown' ]
+        self.carStateList = ['online', 'offline', 'sleeping', 'unknown']
         #self.carState = 'unknown'
         self.carState = {}
         self.canActuateTrunks = False
@@ -103,7 +103,7 @@ class teslaCloudEVapi(object):
         cloudInfo = False
         temp = None
         if self.carInfo != None:
-            prevTimeStamp = self.teslaEV_GetTimeLastCarUpdate(EVid)        
+            prevTimeStamp = self.teslaEV_GetTimeStampLastCarUpdate(EVid)        
         S = self.teslaApi.teslaConnect()
 
         with requests.Session() as s:
@@ -157,7 +157,7 @@ class teslaCloudEVapi(object):
                 if temp != None:
                     self.carInfo[EVid] = {}
                     self.carInfo[EVid] = temp 
-                    if self.teslaEV_GetTimeLastCarUpdate(EVid) == prevTimeStamp:
+                    if self.teslaEV_GetTimeStampLastCarUpdate(EVid) == prevTimeStamp:
                         if prevTimeStamp == -1:
                             self.carState[EVid] == 'offline'
                         elif self.carState[EVid] == 'online':
@@ -189,7 +189,7 @@ class teslaCloudEVapi(object):
         logging.debug('car {} status = {}'.format(EVid, EV_online_state))
         temp = None
         if self.carInfo != None:
-            prevTimeStamp = self.teslaEV_GetTimeLastCarUpdate(EVid)
+            prevTimeStamp = self.teslaEV_GetTimeStampLastCarUpdate(EVid)
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
@@ -266,7 +266,7 @@ class teslaCloudEVapi(object):
                     #self.carInfo[EVid].update(temp)
                     self.carInfo[EVid] = {}
                     self.carInfo[EVid] = temp
-                    if self.teslaEV_GetTimeLastCarUpdate(EVid) == prevTimeStamp:
+                    if self.teslaEV_GetTimeStampLastCarUpdate(EVid) == prevTimeStamp:
                         if prevTimeStamp == -1:
                             self.carState[EVid] == 'offline'
                         elif self.carState[EVid] == 'online':
@@ -312,7 +312,8 @@ class teslaCloudEVapi(object):
                     else:
                         self.carState[EVid] = 'offline'
                     logging.debug('teslaEV_EV_basic_data {} data:{}'.format(EVid, self.carBasicInfo[EVid]  ))
-
+                else:
+                    self.carState[EVid] = 'unknown'
             except Exception as e:
                 logging.error('Exception teslaEV_EV_basic_data:'.format(e))
 
@@ -347,7 +348,7 @@ class teslaCloudEVapi(object):
         '''
 
     def teslaEV_EV_online_status(self, EVid):
-        logging.debug('teslaEV_retrieve_EV_online_status: {}'.format(EVid))
+        logging.debug('teslaEV_EV_online_status: {}'.format(EVid))
         try:
             return(self.carState[EVid])
         except:
@@ -440,20 +441,20 @@ class teslaCloudEVapi(object):
         logging.debug('teslaEV_GetDistUnit: {}'.format(self.distUnit))
         return(self.distUnit)
 
-    def teslaEV_GetTimeLastCarUpdate(self, EVid):
-        logging.debug('teslaEV_GetTimeLastCarUpdate')
-        timeNow = int(time.time())
-        timeMinimum = min( self.teslaEV_GetTimeStampClimateUpdate(EVid),self.teslaEV_GetTimeSinceLastChargeUpdate(EVid), self.teslaEV_GetTimeSinceLastStatusUpdate(EVid) )
-        logging.debug('Time Now {} Last Update {}'.format(timeNow, timeMinimum ))
-        return(float(timeMinimum))
 
+    def teslaEV_GetTimeStampLastCarUpdate(self, EVid):
+        logging.debug('teslaEV_GetTimeStampLastCarUpdate')
+        timeMaximum = max( self.teslaEV_GetTimeStampClimateUpdate(EVid),self.teslaEV_GetTimeSinceLastChargeUpdate(EVid), self.teslaEV_GetTimeSinceLastStatusUpdate(EVid) )
+        logging.debug('Time Now {} Last Update {}'.format(int(time.time()), timeMaximum ))
+        return(float(timeMaximum))
+    
 
     def teslaEV_GetTimeSinceLastCarUpdate(self, EVid):
         logging.debug('teslaEV_GetTimeSinceLastCarUpdate')
         timeNow = int(time.time())
-        timeMax = max( self.teslaEV_GetTimeSinceLastClimateUpdate(EVid),self.teslaEV_GetTimeStampChargeUpdate(EVid), self.teslaEV_GetTimeStampStatusUpdate(EVid) )
+        timeMax = max( self.teslaEV_GetTimeStampClimateUpdate(EVid),self.teslaEV_GetTimeStampChargeUpdate(EVid), self.teslaEV_GetTimeStampStatusUpdate(EVid) )
         logging.debug('Time Now {} Last Update {}'.format(timeNow, timeMax ))
-        return(float(timeMax))
+        return(float(timeNow - timeMax))
 
 ####################
 # Charge Data

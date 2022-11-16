@@ -112,19 +112,12 @@ class teslaEV_StatusNode(udi_interface.Node):
         else:
             return(99)
 
-    def openClose2ISY(self, state):
-        if state == None:
-            return(99)
-        elif state == 'closed':
-            return(0)
-        else:
-            return(1)
 
     def ready(self):
         return(self.chargeNodeReady and self.climateNodeReady)
 
     def poll(self):       
-        logging.info('Status Node Poll for {} - {}'.format(self.EVid))        
+        logging.info('Status Node Poll for {}'.format(self.EVid))        
         #self.TEV.teslaEV_GetInfo(self.EVid)
         self.online = self.TEV.teslaEV_EV_online_status(self.EVid) == 'online'
         if self.statusNodeReady:            
@@ -148,7 +141,7 @@ class teslaEV_StatusNode(udi_interface.Node):
     def updateISYdrivers(self):
         try:
             
-            logging.info('updateISYdrivers - Status for {} - {}'.format(self.EVid. self.online))
+            logging.info('updateISYdrivers - Status for {} - {}'.format(self.EVid, self.online))
             if self.online:
 
                 #if self.TEV.isConnectedToEV():
@@ -195,8 +188,8 @@ class teslaEV_StatusNode(udi_interface.Node):
                 self.updateDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
 
 
-            self.updateDriver('GV13', self.online2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)))
-            self.updateDriver('GV5', self.state2ISY(self.online), True, True)
+            self.updateDriver('GV13', self.state2ISY(self.TEV.teslaEV_GetOnlineState(self.EVid)))
+            self.updateDriver('GV5', self.bool2ISY(self.online), True, True)
 
             value = round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2)
             logging.debug('GV19: {}'.format(value))
