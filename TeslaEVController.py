@@ -167,14 +167,14 @@ class TeslaEVController(udi_interface.Node):
             self.GV1 =len(self.vehicleList)
             self.setDriver('GV1', self.GV1, True, True)
             self.setDriver('GV0', 1, True, True)
-            for vehicle in range(0,len(self.vehicleList)):
-                vehicleId = self.vehicleList[vehicle]
+            for vehicleNbr in range(0,len(self.vehicleList)):
+                vehicleId = self.vehicleList[vehicleNbr]
                 self.TEV.teslaEV_EV_basic_data(vehicleId)
                 vehicleInfo = self.TEV.teslaEV_GetBasicInfo(vehicleId)
                 logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
                 nodeName = vehicleInfo['display_name']
                 
-                nodeAdr = 'vehicle'+str(vehicle+1)
+                nodeAdr = 'vehicleNbr'+str(vehicleNbr+1)
                 if not self.poly.getNode(nodeAdr):
                     logging.info('Creating Status node for {}'.format(nodeAdr))
                     statusNode = teslaEV_StatusNode(self.poly, nodeAdr, nodeAdr, nodeName, vehicleId, self.TEV)
@@ -290,18 +290,19 @@ class TeslaEVController(udi_interface.Node):
         logging.info('Tesla EV Controller shortPoll')
         logging.debug('self.vehicleList {}'.format(self.vehicleList))
         self.heartbeat()
-        for vehicle in range(0,len(self.vehicleList)):
-            logging.debug ('shortPoll Loop {}'.format(vehicle))
+        for vehicleNbr in range(0,len(self.vehicleList)):
+            vehicleId = self.vehicleList[vehicleNbr]
+            logging.debug ('shortPoll Loop {}-{}'.format(vehicleNbr, vehicleId ))
             try:
                 nodes = self.poly.getNodes()
                 logging.debug('nodes:{}'.format(nodes))
-                self.online[vehicle] = self.TEV.teslaEV_retrieve_EV_online_status(self.vehicleList[vehicle]) != 'offline'
-                logging.debug('online : {}, {}'.format(self.online[vehicle], self.TEV.teslaEV_retrieve_EV_online_status(self.vehicleList[vehicle])))
-                if self.online[self.vehicleList[vehicle]]:
-                    logging.info('shortPoll updated info for {} as it is online'.format(self.vehicleList[vehicle]))
-                    self.TEV.teslaEV_getLatestCloudInfo(self.vehicleList[vehicle])                  
+                self.online[vehicleNbr] = self.TEV.teslaEV_retrieve_EV_online_status(vehicleId) != 'offline'
+                logging.debug('online : {}, {}'.format(self.online[vehicleId], self.TEV.teslaEV_retrieve_EV_online_status(vehicleId)))
+                if self.online[vehicleId]:
+                    logging.info('shortPoll updated info for {} as it is online'.format(vehicleId))
+                    self.TEV.teslaEV_getLatestCloudInfo(vehicleId)                  
                 else:
-                    logging.info('shortPoll did not update info for {} as it is not online'.format(vehicle))
+                    logging.info('shortPoll did not update info for {} as it is not online'.format(vehicleId))
                     # Should use teslaEV_getLatestCloudInfo but it does not seems to work yet                
             except Exception as E:
                     logging.info('Not all nodes ready: {}'.format(E))
@@ -317,15 +318,16 @@ class TeslaEVController(udi_interface.Node):
     
     def longPoll(self):
         logging.info('Tesla EV  Controller longPoll')
-        for vehicle in range(0,len(self.vehicleList)):      
+        for vehicleNbr in range(0,len(self.vehicleList)):      
             try:
+                vehicleId = self.vehicleList[vehicleNbr]
                 nodes = self.poly.getNodes()
-                self.online[vehicle] = (self.TEV.teslaEV_retrieve_EV_online_status(self.vehicleList[vehicle]) != 'offline')
-                if self.online[self.vehicleList[vehicle]]:
-                    logging.info('longPoll will try a forced update of data for {}'.format(self.vehicleList[vehicle]))
-                    self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])                                      
+                self.online[vehicleNbr] = (self.TEV.teslaEV_retrieve_EV_online_status(vehicleId) != 'offline')
+                if self.online[vehicleId]:
+                    logging.info('longPoll will try a forced update of data for {}'.format(vehicleId))
+                    self.TEV.teslaEV_UpdateCloudInfo(vehicleId)                                      
                 else:
-                    logging.info ('Vehicel {} appears to be off line'.format(self.vehicleList[vehicle]))                    
+                    logging.info ('Vehicel {} appears to be off line'.format(vehicleId))                    
 
             except Exception as E:
                 logging.info('Not all nodes ready: {}'.format(E))
