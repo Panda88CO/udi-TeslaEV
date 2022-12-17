@@ -853,8 +853,8 @@ class teslaCloudEVapi(object):
 
     def teslaEV_SetSeatHeating (self, EVid, seat, levelHeat):
         logging.debug('teslaEV_SetSeatHeating {} for {}'.format(levelHeat, EVid))
-        seats = {'frontLeft':0,'frontRight':1,'rearLeft':2,'rearCenter':4,'rearRight':5 } 
-        rearSeats =  {'rearLeft':2,'rearCenter':4,'rearRight':5 } 
+        seats = {0:'frontLeft', 1:'frontRight',2:'rearLeft',4:'rearCenter', 5:'rearRight' } 
+        rearSeats =  {2:'rearLeft',4:'rearCenter',5:'rearRight'} 
         if int(levelHeat) > 3 or int(levelHeat) < 0:
             logging.error('Invalid seat heat level passed (0-3) : {}'.format(levelHeat))
             return(False)
