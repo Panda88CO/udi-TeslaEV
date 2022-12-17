@@ -826,7 +826,7 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_DefrostMax(self, EVid, ctrl):
-        logging.debug('teslaEV_DefrostMax {}  for {}'.format(ctrl, EVid))
+        logging.debug('teslaEV_DefrostMax {} for {}'.format(ctrl, EVid))
  
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
@@ -852,14 +852,14 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_SetSeatHeating (self, EVid, seat, levelHeat):
-        logging.debug('teslaEV_SetSeatHeating {} for {}'.format(levelHeat, EVid))
-        seats = {0:'frontLeft', 1:'frontRight',2:'rearLeft',4:'rearCenter', 5:'rearRight' } 
-        rearSeats =  {2:'rearLeft',4:'rearCenter',5:'rearRight'} 
+        logging.debug('teslaEV_SetSeatHeating {}, {} for {}'.format(levelHeat, seat, EVid))
+        seats = [0,1, 2, 4, 5 ] 
+        rearSeats =  [2, 4, 5 ] 
         if int(levelHeat) > 3 or int(levelHeat) < 0:
             logging.error('Invalid seat heat level passed (0-3) : {}'.format(levelHeat))
             return(False)
         if seat not in seats: 
-            logging.error('Invalid seatpassed (frontLeft, frontRight ,rearLeft, rearCenter, rearRight) : {}'.format(seat))
+            logging.error('Invalid seatpassed 0,1, 2, 4, 5 : {}'.format(seat))
             return(False)  
         elif not self.rearSeatHeat and seat in rearSeats:
             logging.error('Rear seat heat not supported on this car')
@@ -868,7 +868,7 @@ class teslaCloudEVapi(object):
         S = self.teslaApi.teslaConnect()
         with requests.Session() as s:
             try:
-                payload = { 'heater':seats[seat], 'level':int(levelHeat)}    
+                payload = { 'heater': seat, 'level':int(levelHeat)}    
                 s.auth = OAuth2BearerToken(S['access_token'])
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/command/remote_seat_heater_request', headers=self.Header, json=payload ) 
                 temp = r.json()
