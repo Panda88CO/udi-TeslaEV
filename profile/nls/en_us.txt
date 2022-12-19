@@ -15,10 +15,11 @@ T_UNIT-0 = Celcius
 T_UNIT-1 = Farenheit
 T_UNIT-2 = Kelvin
 
+NODATA-99 = No start time 
 
 ND-evstatus-NAME = EV Status
 ND-evstatus-ICON = EnergyMonitor
-ST-evstatus-ST-NAME = Controller Connected
+ST-nlsevstatus-ST-NAME = Node Connected
 ST-nlsevstatus-GV1-NAME = Console Display State
 CONSOLE-0 = Off
 CONSOLE-1 = TBD
