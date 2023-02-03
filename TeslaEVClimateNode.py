@@ -208,7 +208,7 @@ class teslaEV_ClimateNode(udi_interface.Node):
         logging.info('evSetCabinTemp called') 
         cabinTemp = float(command.get('value'))  
         self.TEV.teslaEV_Wake(self.EVid)
-        if self.TEV.teslaEV_SetTempUnit() == 1:
+        if self.TEV.teslaEV_GetTempUnit() == 1:
             cabinTemp = round((cabinTemp-32)/1.8,2) # Must be set in C
         self.TEV.teslaEV_SetCabinTemps(self.EVid, cabinTemp)
         temp = self.TEV.tesleEV_GetCabinTemp(self.EVid)
