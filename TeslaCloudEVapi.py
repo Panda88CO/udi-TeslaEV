@@ -38,7 +38,10 @@ class teslaCloudEVapi(object):
         self.distUnit = 1
 
     def isConnectedToEV(self):
-       return(self.teslaApi.isConnectedToTesla())
+        return(self.teslaApi.isConnectedToTesla())
+
+    def disconnect(self):
+        self.teslaApi.disconnectTEV()
 
     def getRtoken(self):
         return(self.teslaApi.getRtoken())
@@ -1081,21 +1084,6 @@ class teslaCloudEVapi(object):
 ###############
 # Controls
 ################
-    def teslaEV_FlashLights(self, EVid):
-        logging.debug('teslaEV_GetVehicleInfo: for {}'.format(EVid))       
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])            
-                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)          
-                temp = r.json()
-                self.carInfo[EVid] = temp['response']
-                return(self.carInfo[EVid])
-            except Exception as e:
-                logging.error('Exception teslaEV_FlashLight for vehicle id {}: {}'.format(EVid, e))
-                logging.error('Trying to reconnect')
-                self.teslaApi.tesla_refresh_token( )
-                return(None)
 
 
     def teslaEV_Wake(self, EVid):
@@ -1159,7 +1147,6 @@ class teslaCloudEVapi(object):
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
                 return(False)
-
 
     def teslaEV_Doors(self, EVid, ctrl):
         logging.debug('teslaEV_Doors {} for {}'.format(ctrl, EVid))

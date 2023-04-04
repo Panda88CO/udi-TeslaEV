@@ -62,9 +62,12 @@ class teslaCloudApi(object):
     def teslaConnect(self):
         return(self.__teslaGetToken())
 
+    def disconnectTEV(self):
+        logging.info('disconnectTEV')
+
 
     def teslaGetProduct(self):
-        S = self.__teslaConnect()
+        S = self.teslaConnect()
         with requests.Session() as s:
             try:
                 s.auth = OAuth2BearerToken(S['access_token'])

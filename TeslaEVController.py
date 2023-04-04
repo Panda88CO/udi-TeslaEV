@@ -51,7 +51,7 @@ class TeslaEVController(udi_interface.Node):
         #logging.debug('self.address : ' + str(self.address))
         #logging.debug('self.name :' + str(self.name))
         self.hb = 0
-
+        self.TEV = None
         self.connected = False
         self.nodeDefineDone = False
         self.statusNodeReady = False
@@ -106,7 +106,7 @@ class TeslaEVController(udi_interface.Node):
     def stop(self):
         self.Notices.clear()
         if self.TEV:
-            self.TEV.disconnectTEV()
+            self.TEV.disconnect()
         self.setDriver('ST', 0 , True, True)
         logging.debug('stop - Cleaning up')
         self.poly.stop()
@@ -375,7 +375,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.19')
+        polyglot.start('0.2.55')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
