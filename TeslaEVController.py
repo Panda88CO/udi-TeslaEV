@@ -273,27 +273,38 @@ class TeslaEVController(udi_interface.Node):
     def systemPoll(self, pollList):
         logging.debug('systemPoll')
         if self.TEV:
-            if self.TEV.isConnectedToEV(): 
+            if not self.connected:
+                self.Rtoken  = self.TEV.getRtoken()
+            if len( self.TEV.teslaEV_GetIdList()) != 0:
+                self.connected = True
                 if 'longPoll' in pollList:
                     self.longPoll()
                 elif 'shortPoll' in pollList:
                     self.shortPoll()
-            else:
-                logging.info('Waiting for system/nodes to initialize')
+            else:           
+
+                self.setDriver('GV0', 0, True, True)                            
+                self.setDriver('GV1', 0, True, True)
+                self.connected = False
+
+        else:
+            logging.info('Waiting for system/nodes to initialize')
 
 
     def shortPoll(self):
         logging.info('Tesla EV Controller shortPoll(HeartBeat)')
         self.heartbeat()    
         if self.TEV.isConnectedToEV():
-            for vehicle in range(0,len(self.vehicleList)):
-                 self.TEV.teslaEV_getLatestCloudInfo(self.vehicleList[vehicle])
             try:
+                for vehicle in range(0,len(self.vehicleList)):
+                    self.TEV.teslaEV_getLatestCloudInfo(self.vehicleList[vehicle])
+
                 nodes = self.poly.getNodes()
                 for node in nodes:
                     #if node != 'controller'    
                     logging.debug('Controller poll  node {}'.format(node) )
                     nodes[node].poll()
+
             except Exception as E:
                 logging.info('Not all nodes ready: {}'.format(E))
 
@@ -305,9 +316,9 @@ class TeslaEVController(udi_interface.Node):
         logging.info('Tesla EV  Controller longPoll - connected = {}'.format(self.TEV.isConnectedToEV()))
         
         if self.TEV.isConnectedToEV():
-            for vehicle in range(0,len(self.vehicleList)):
-                 self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
             try:
+                for vehicle in range(0,len(self.vehicleList)):
+                    self.TEV.teslaEV_UpdateCloudInfo(self.vehicleList[vehicle])
                 nodes = self.poly.getNodes()
                 for node in nodes:
                     #if node != 'controller'    

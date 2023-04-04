@@ -148,7 +148,7 @@ class teslaCloudEVapi(object):
                 else:
                     self.carState = 'Sleeping'
                 logging.debug('carinfo - state: {} : {}'.format(self.carState, self.carInfo[EVid]))
-
+                return(self.carState)
             except Exception as e:
                 logging.debug('Exception teslaEV_getLatestCloudInfo: {}'.format(e))
                 logging.error('Error getting data from vehicle id: {}'.format(EVid))
@@ -197,7 +197,7 @@ class teslaCloudEVapi(object):
                             else:
                                 self.carState = 'Sleeping'
                         elif self.carInfo[EVid] == None:
-                            self.carState = 'Sleeping'        
+                            self.carState = 'Sleeping'
                         else:
                             self.carState = 'Offline'
                     else:
@@ -262,7 +262,7 @@ class teslaCloudEVapi(object):
                         cloudInfo = False
  
                 logging.debug('teslaEV_UpdateCloudInfo END - carinfo[{}]:{}'.format(EVid, self.carInfo[EVid] ))
-
+                return(self.carState)
             except Exception as e:
                 logging.debug('Exception teslaEV_UpdateCloudInfo: {}'.format(e))
                 logging.error('Error getting data from vehicle id: {}'.format(EVid))
