@@ -2,7 +2,7 @@
 
 import sys
 import time 
-
+import numbers
 
 try:
     import udi_interface
@@ -330,6 +330,14 @@ class TeslaEVController(udi_interface.Node):
             self.Rtoken  = self.TEV.getRtoken()
             if self.Rtoken  != self.Parameters['REFRESH_TOKEN']:
                 self.Parameters['REFRESH_TOKEN'] = self.Rtoken 
+
+    def validatedSetDriver(self, ISYvar,  value):
+        if isinstance(value, numbers.Number):
+            logging.debug('{} is being set to {}'.format(ISYvar, value) )
+            self.setDriver(ISYvar, value, True, True)
+        else:
+            logging.error('Non-numeric value returned for {} : {}'.format(ISYvar, value))
+            self.setDriver(ISYvar, 99, True, True, 25)
 
 
     def poll(self): # dummey poll function 

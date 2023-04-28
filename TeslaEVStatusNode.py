@@ -2,6 +2,7 @@
 
 import time
 import re
+import numbers
 from TeslaEVChargeNode import teslaEV_ChargeNode
 from TeslaEVClimateNode import teslaEV_ClimateNode 
 
@@ -118,6 +119,14 @@ class teslaEV_StatusNode(udi_interface.Node):
             return(0)
         else:
             return(1)
+        
+    def validatedSetDriver(self, ISYvar,  value):
+        if isinstance(value, numbers.Number):
+            logging.debug('{} is being set to {}'.format(ISYvar, value) )
+            self.setDriver(ISYvar, value, True, True)
+        else:
+            logging.error('Non-numeric value returned for {} : {}'.format(ISYvar, value))
+            self.setDriver(ISYvar, 99, True, True, 25)        
 
     def ready(self):
         return(self.chargeNodeReady and self.climateNodeReady)
@@ -137,7 +146,6 @@ class teslaEV_StatusNode(udi_interface.Node):
 
     def updateISYdrivers(self):
         try:
-            
             logging.info('updateISYdrivers - Status for {}'.format(self.EVid))
             #if self.TEV.isConnectedToEV():
             #self.TEV.teslaEV_GetInfo(self.EVid)

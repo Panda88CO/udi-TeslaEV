@@ -8,7 +8,7 @@ except ImportError:
     import logging
     logging.basicConfig(level=logging.DEBUG)
 import time
-        
+import numbers         
                
 class teslaEV_ClimateNode(udi_interface.Node):
 
@@ -57,8 +57,11 @@ class teslaEV_ClimateNode(udi_interface.Node):
             return(0)
 
     def cond2ISY(self, condition):
-        if condition == None:
+        if condition == None or not isinstance(condition, numbers.Number):
+            if  not isinstance(condition, numbers.Number):
+                logging.error ('Non-numeric value returned {}'.format(bool))
             return(99)
+
         else:
             return(condition)
 
@@ -68,16 +71,28 @@ class teslaEV_ClimateNode(udi_interface.Node):
         else:
             return(round(tempC*1.8+32, 2)) #F
 
-    def setDriverTemp(self, Id, value):
-        logging.debug('setDriverTemp : TempUnit: {}, value: {}'.format(self.TEV.teslaEV_GetTempUnit(), value))
-        if value == None:
-            self.setDriver(Id, 99, True, True, 25)  
+    def setDriverTemp(self, ISYvar, value):
+        logging.debug('setDriverTemp for {} : TempUnit: {}, value: {}'.format(ISYvar, self.TEV.teslaEV_GetTempUnit(), value))
+        
+        if value == None or not isinstance(value, numbers.Number):
+            self.setDriver(ISYvar, 99, True, True, 25)
+            if not isinstance(value, numbers.Number):
+                logging.error('Non-numeric value returned for {} : {}'.format(ISYvar, value))
         elif self.TEV.teslaEV_GetTempUnit()  == 0:
-            self.setDriver(Id, round(round(2*value,0)/2,1), True, True, 4)
+            self.setDriver(ISYvar, round(round(2*value,0)/2,1), True, True, 4)
         elif self.TEV.teslaEV_GetTempUnit()  == 1:
-            self.setDriver(Id, round(32+ 1.8*value, 0), True, True, 17)
+            self.setDriver(ISYvar, round(32+ 1.8*value, 0), True, True, 17)
         else:
-            self.setDriver(Id, round(round(2*(value+273.15),0)/2,1), True, True, 26)
+            self.setDriver(ISYvar, round(round(2*(value+273.15),0)/2,1), True, True, 26)
+
+    def validatedSetDriver(self, ISYvar,  value):
+        if isinstance(value, numbers.Number):
+            logging.debug('{} is being set to {}'.format(ISYvar, value) )
+            self.setDriver(ISYvar, value, True, True)
+        else:
+            logging.error('Non-numeric value returned for {} : {}'.format(ISYvar, value))
+            self.setDriver(ISYvar, 99, True, True, 25)
+
 
     def forceUpdateISYdrivers(self):
         logging.debug('forceUpdateISYdrivers: {}'.format(self.EVid))
@@ -90,15 +105,15 @@ class teslaEV_ClimateNode(udi_interface.Node):
         try:
             logging.info('Climate updateISYdrivers {}'.format(self.EVid))
             logging.debug('Climate updateISYdrivers {}'.format(self.TEV.teslaEV_GetClimateInfo(self.EVid)))
+            self.validatedSetDriver('GV1', self.TEV.teslaEV_GetCabinTemp(self.EVid))
 
-            logging.debug('GV1: {} '.format(self.TEV.teslaEV_GetCabinTemp(self.EVid)))
-            self.setDriverTemp('GV1', self.TEV.teslaEV_GetCabinTemp(self.EVid))
+            self.validatedSetDriver('GV2', self.TEV.teslaEV_GetOutdoorTemp(self.EVid))
 
-            logging.debug('GV2: {} '.format(self.TEV.teslaEV_GetOutdoorTemp(self.EVid)))
-            self.setDriverTemp('GV2', self.TEV.teslaEV_GetOutdoorTemp(self.EVid))
+            #self.setDriverTemp('GV2', self.TEV.teslaEV_GetOutdoorTemp(self.EVid))
 
-            logging.debug('GV3: {}'.format(self.TEV.teslaEV_GetLeftTemp(self.EVid)))
-            self.setDriverTemp('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid))
+            self.validatedSetDriver('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid))
+
+            #self.setDriverTemp('GV3', self.TEV.teslaEV_GetLeftTemp(self.EVid))
         
             logging.debug('GV4: {}'.format(self.TEV.teslaEV_GetRightTemp(self.EVid)))
             self.setDriverTemp('GV4', self.TEV.teslaEV_GetRightTemp(self.EVid))
@@ -106,38 +121,48 @@ class teslaEV_ClimateNode(udi_interface.Node):
             logging.debug('GV5-9: {}'.format(self.TEV.teslaEV_GetSeatHeating(self.EVid)))
             temp = self.TEV.teslaEV_GetSeatHeating(self.EVid)
             if 'FrontLeft' in temp:
-                self.setDriver('GV5', self.cond2ISY(temp['FrontLeft']), True, True)
+                self.validatedSetDriver('GV5', self.cond2ISY(temp['FrontLeft']))
             if 'FrontRight' in temp: 
-                self.setDriver('GV6', self.cond2ISY(temp['FrontRight']), True, True)
+                self.validatedSetDriver('GV6', self.cond2ISY(temp['FrontRight']))
             if 'RearLeft' in temp:    
-                self.setDriver('GV7', self.cond2ISY(temp['RearLeft']), True, True)
+                self.validatedSetDriver('GV7', self.cond2ISY(temp['RearLeft']))
             if 'RearMiddle' in temp:     
-                self.setDriver('GV8', self.cond2ISY(temp['RearMiddle']), True, True)
+                self.validatedSetDriver('GV8', self.cond2ISY(temp['RearMiddle']))
             if 'RearRight' in temp:   
-                self.setDriver('GV9', self.cond2ISY(temp['RearRight']), True, True)
-            logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
-            self.setDriver('GV10', self.bool2ISY(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)), True, True)
+                self.validatedSetDriver('GV9', self.cond2ISY(temp['RearRight']))
+            #logging.debug('GV10: {}'.format(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
+            self.validatedSetDriver('GV10', self.bool2ISY(self.TEV.teslaEV_AutoConditioningRunning(self.EVid)))
 
-            logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
-            self.setDriver('GV11', self.bool2ISY(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)), True, True)
+            #logging.debug('GV11: {}'.format(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
+            self.validatedSetDriver('GV11', self.bool2ISY(self.TEV.teslaEV_PreConditioningEnabled(self.EVid)))
             
-            logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
-            self.setDriverTemp('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid))
+            #logging.debug('GV12: {}'.format(self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid)))
+            self.validatedSetDriverTemp('GV12', self.TEV.teslaEV_MaxCabinTempCtrl(self.EVid))
 
-            logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
-            self.setDriverTemp('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid))
+            #logging.debug('GV13: {}'.format(self.TEV.teslaEV_MinCabinTempCtrl(self.EVid)))
+            self.validatedSetDriverTemp('GV13', self.TEV.teslaEV_MinCabinTempCtrl(self.EVid))
             
-            logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
-            self.setDriver('GV14', self.cond2ISY(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)), True, True) #need to be implemented        
+            #logging.debug('GV14: {}'.format(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid)))
+            self.validatedSetDriver('GV14', self.cond2ISY(self.TEV.teslaEV_SteeringWheelHeatOn(self.EVid))) #need to be implemented        
 
-            logging.debug('GV19: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2)))
-            self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2), True, True, 20)                                                    
+            #logging.debug('GV19: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2)))
+            updateTime = self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)
+            if isinstance(updateTime, numbers.Number):
+                self.validatedSetDriver('GV19', round(float(updateTime/60/60), 2))
+            else:
+                logging.error('Non-numeric valus passed for {}: {}'.format('GV19', updateTime))
+            #self.setDriver('GV19', round(float(self.TEV.teslaEV_GetTimeSinceLastCarUpdate(self.EVid)/60/60), 2), True, True, 20)                                                    
 
-            logging.debug('GV20: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2)))
-            self.setDriver('GV20', round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2), True, True, 20)
+            #logging.debug('GV20: {}'.format(round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2)))
+            updateTime2 = self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)
+            if isinstance(updateTime2, numbers.Number):
+                self.validatedSetDriver('GV20', round(float(updateTime2/60/60), 2))
+            else:
+                logging.error('Non-numeric valus passed for {}: {}'.format('GV20', updateTime2))
+            #self.setDriver('GV20', round(float(self.TEV.teslaEV_GetTimeSinceLastClimateUpdate(self.EVid)/60/60), 2), True, True, 20)
    
         except Exception as e:
-            logging.error('updateISYdrivupdateISYdriversrsclimate node  failed: {}'.format(e))
+            logging.error('updateISYdrivers climate node  failed: {}'.format(e))
 
 
     def ISYupdate (self, command):

@@ -9,6 +9,7 @@ except ImportError:
     logging.basicConfig(level=logging.DEBUG)
 
 import time
+import numbers
 
 class teslaEV_ChargeNode(udi_interface.Node):
 
@@ -79,6 +80,15 @@ class teslaEV_ChargeNode(udi_interface.Node):
             return(5)
         else:
             return(99)  
+
+    def validatedSetDriver(self, ISYvar,  value):
+        if isinstance(value, numbers.Number):
+            logging.debug('{} is being set to {}'.format(ISYvar, value) )
+            self.setDriver(ISYvar, value, True, True)
+        else:
+            logging.error('Non-numeric value returned for {} : {}'.format(ISYvar, value))
+            self.setDriver(ISYvar, 99, True, True, 25)
+
 
     def forceUpdateISYdrivers(self):
         logging.debug('forceUpdateISYdrivers: {}'.format(self.EVid))
