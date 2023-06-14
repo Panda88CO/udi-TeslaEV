@@ -172,17 +172,14 @@ class TeslaEVController(udi_interface.Node):
                 #logging.debug('self.TEV.teslaEV_UpdateCloudInfo')
                 vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
                 logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
+                nodeName = nodeName = 'EV'+str(vehicle+1) 
+                nodeName = 'EV'+str(vehicle+1) 
                 if 'display_name' in vehicleInfo:
-                    if vehicleInfo['display_name'] is not '':
-                        nodeName = vehicleInfo['display_name']
-                    else:
-                        nodeName = 'EV'+str(vehicle+1) 
+                    nodeName = vehicleInfo['display_name']                                          
                 elif 'vehicle_config' in vehicleInfo:
                     if  'vehicle_name' in vehicleInfo['vehicle_config']:
                         nodeName = vehicleInfo['vehicle_config']['vehicle_name']
-                    else:
-                        nodeName = 'EV'+str(vehicle+1) 
-                else:
+                if nodeName == '' or nodeName == None:
                     nodeName = 'EV'+str(vehicle+1) 
                 nodeAdr = 'vehicle'+str(vehicle+1)
                 if not self.poly.getNode(nodeAdr):
