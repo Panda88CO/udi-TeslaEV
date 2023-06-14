@@ -172,8 +172,15 @@ class TeslaEVController(udi_interface.Node):
                 #logging.debug('self.TEV.teslaEV_UpdateCloudInfo')
                 vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
                 logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
-                nodeName = vehicleInfo['display_name']
-                
+                if 'display_name' in vehicleInfo:
+                    nodeName = vehicleInfo['display_name']
+                elif 'vehicle_config' in vehicleInfo:
+                    if  'vehicle_name' in vehicleInfo['vehicle_config']:
+                        nodeName = vehicleInfo['vehicle_config']['vehicle_name']
+                    else:
+                        nodeName = 'EV'+str(vehicle+1) 
+                else:
+                    nodeName = 'EV'+str(vehicle+1) 
                 nodeAdr = 'vehicle'+str(vehicle+1)
                 if not self.poly.getNode(nodeAdr):
                     logging.info('Creating Status node for {}'.format(nodeAdr))
@@ -364,7 +371,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.19')
+        polyglot.start('0.2.20')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
