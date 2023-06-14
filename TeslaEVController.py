@@ -173,7 +173,10 @@ class TeslaEVController(udi_interface.Node):
                 vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
                 logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
                 if 'display_name' in vehicleInfo:
-                    nodeName = vehicleInfo['display_name']
+                    if vehicleInfo['display_name'] is not '':
+                        nodeName = vehicleInfo['display_name']
+                    else:
+                        nodeName = 'EV'+str(vehicle+1) 
                 elif 'vehicle_config' in vehicleInfo:
                     if  'vehicle_name' in vehicleInfo['vehicle_config']:
                         nodeName = vehicleInfo['vehicle_config']['vehicle_name']
