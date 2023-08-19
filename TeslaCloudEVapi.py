@@ -298,9 +298,19 @@ class teslaCloudEVapi(object):
     def teslaEV_GetLocation(self, EVid):
         logging.debug('teslaEV_GetLocation: for {}'.format(EVid))
         temp = {}
-        temp['longitude'] = self.carInfo[EVid]['drive_state']['longitude']
-        temp['latitide'] = self.carInfo[EVid]['drive_state']['latitide']
+        temp['latitude'] = None
+        temp['longitude'] = None
+        if 'drive_state' in self.carInfo[EVid]:
+            if 'longitude' in self.carInfo[EVid]['drive_state']:
+                temp['longitude'] = self.carInfo[EVid]['drive_state']['longitude']
+            else:
+                temp['longitude'] = None
+            if 'latitude' in self.carInfo[EVid]['drive_state']:
+                temp['latitude'] = self.carInfo[EVid]['drive_state']['latitude']
+            else:
+                temp['latitude'] = None
         return(temp)
+
 
 
     def teslaEV_SetDistUnit(self, dUnit):
