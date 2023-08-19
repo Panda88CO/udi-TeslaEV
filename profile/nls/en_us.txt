@@ -65,6 +65,8 @@ CARSTATE-0 = Offline
 CARSTATE-1 = Online
 CARSTATE-2 = Sleeping
 CARSTATE-99 = Unknown 
+ST-nlsevstatus-GV17-NAME = Longitude
+ST-nlsevstatus-GV18-NAME = Latitude
 
 ST-nlsevstatus-GV19-NAME =  Hours since last car update
 ST-nlsevstatus-GV20-NAME =  Hours since last status update
