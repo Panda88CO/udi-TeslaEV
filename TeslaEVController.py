@@ -105,8 +105,8 @@ class TeslaEVController(udi_interface.Node):
 
     def stop(self):
         self.Notices.clear()
-        if self.TEV:
-            self.TEV.disconnectTEV()
+        #if self.TEV:
+        #    self.TEV.disconnectTEV()
         self.setDriver('ST', 0 , True, True)
         logging.debug('stop - Cleaning up')
         self.poly.stop()
@@ -364,7 +364,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.19')
+        polyglot.start('0.2.20')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 

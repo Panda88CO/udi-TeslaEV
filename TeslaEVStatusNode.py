@@ -177,9 +177,6 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
             logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofPercent(self.EVid)))
             self.setDriver('GV10', self.TEV.teslaEV_GetSunRoofPercent(self.EVid), True, True, 51)
-            #elif self.TEV.teslaEV_GetSunRoofState(self.EVid) != None:
-            #    logging.debug('GV10: {}'.format(self.TEV.teslaEV_GetSunRoofState(self.EVid)))
-            #    self.setDriver('GV10', self.openClose2ISY(self.TEV.teslaEV_GetSunRoofState(self.EVid)), True, True, 25)
 
             logging.debug('GV11: {}'.format(self.TEV.teslaEV_GetTrunkState(self.EVid)))
             self.setDriver('GV11', self.TEV.teslaEV_GetTrunkState(self.EVid), True, True)

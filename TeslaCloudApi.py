@@ -62,7 +62,7 @@ class teslaCloudApi(object):
     def teslaConnect(self):
         return(self.__teslaGetToken())
 
-
+    '''
     def teslaGetProduct(self):
         S = self.__teslaConnect()
         with requests.Session() as s:
@@ -77,7 +77,7 @@ class teslaCloudApi(object):
                 logging.debug('Exception teslaGetProduct: '+ str(e))
                 logging.error('Error getting product info')
                 return(None)
-
+    '''
 
     def getRtoken(self):
         return(self.Rtoken)
