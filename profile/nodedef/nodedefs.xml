@@ -38,6 +38,9 @@
          <st id="GV11" editor="OPENCLOSE" />
          <st id="GV12" editor="OPENCLOSE" />
          <st id="GV13" editor="CARSTATE" />
+         <st id="GV17" editor="LONGITUDE" />         
+         <st id="GV18" editor="LATITUDE" />  
+
          <st id="GV19" editor="DURATION_H" />         
          <st id="GV20" editor="DURATION_H" />     
       </sts>

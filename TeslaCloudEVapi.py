@@ -298,10 +298,16 @@ class teslaCloudEVapi(object):
     def teslaEV_GetLocation(self, EVid):
         logging.debug('teslaEV_GetLocation: for {}'.format(EVid))
         temp = {}
-        temp['longitude'] = self.carInfo[EVid]['drive_state']['longitude']
-        temp['latitide'] = self.carInfo[EVid]['drive_state']['latitide']
-        return(temp)
-
+        temp['longitude'] = None
+        temp['latitude'] = None
+        try:
+            temp = {}
+            temp['longitude'] = self.carInfo[EVid]['drive_state']['longitude']
+            temp['latitude'] = self.carInfo[EVid]['drive_state']['latitude']
+            return(temp)
+        except Exception as e:
+            logging.debug('teslaEV_GetLocation - location error')
+            return(temp)
 
     def teslaEV_SetDistUnit(self, dUnit):
         logging.debug('teslaEV_SetDistUnit: {}'.format(dUnit))
@@ -1143,23 +1149,7 @@ class teslaCloudEVapi(object):
                 return(False)
 
 
-    def teslaEV_FlashLights(self, EVid):
-        logging.debug('teslaEV_FlashLights for {}'.format(EVid))
-        S = self.teslaApi.teslaConnect()
-        with requests.Session() as s:
-            try:
-                s.auth = OAuth2BearerToken(S['access_token'])    
-                payload = {}        
-                r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/command/flash_lights', headers=self.Header, json=payload ) 
-                temp = r.json()
-                logging.debug(temp['response']['result'])
-                return(temp['response']['result'])
-            except Exception as e:
-                logging.error('Exception teslaEV_FlashLights for vehicle id {}: {}'.format(EVid, e))
-                logging.error('Trying to reconnect')
-                self.teslaApi.tesla_refresh_token( )
-                return(False)
-
+  
 
     def teslaEV_Doors(self, EVid, ctrl):
         logging.debug('teslaEV_Doors {} for {}'.format(ctrl, EVid))

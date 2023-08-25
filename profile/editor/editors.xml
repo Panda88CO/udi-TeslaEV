@@ -166,7 +166,17 @@
   </editor>
   
    <editor id = "CARSTATE" > 
+     
      <range  uom="25" subset="0-2,99" nls="CARSTATE"  />  
   </editor>
 
+   <editor id = "LONGITUDE" > 
+      <range  uom="56" min="-180" max="180" prec="3" />
+      <range  uom="25" subset="99" nls="UNKNOWN"  />  
+  </editor>
+
+   <editor id = "LATITUDE" > 
+     <range  uom="56" min="-90" max="90" prec="3" />
+     <range  uom="25" subset="0-2,99" nls="UNKNOWN"  />  
+  </editor>
 </editors> 
