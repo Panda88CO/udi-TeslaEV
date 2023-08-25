@@ -105,8 +105,8 @@ class TeslaEVController(udi_interface.Node):
 
     def stop(self):
         self.Notices.clear()
-        if self.TEV:
-            self.TEV.disconnectTEV()
+        #if self.TEV:
+        #    self.TEV.disconnectTEV()
         self.setDriver('ST', 0 , True, True)
         logging.debug('stop - Cleaning up')
         self.poly.stop()
@@ -166,17 +166,20 @@ class TeslaEVController(udi_interface.Node):
             self.setDriver('GV1', self.GV1, True, True)
             self.setDriver('GV0', 1, True, True)
             for vehicle in range(0,len(self.vehicleList)):
+                nodeName = None
                 vehicleId = self.vehicleList[vehicle]
                 #logging.debug('vehicleId {}'.format(vehicleId))
                 self.TEV.teslaEV_UpdateCloudInfo(vehicleId)
                 #logging.debug('self.TEV.teslaEV_UpdateCloudInfo')
                 vehicleInfo = self.TEV.teslaEV_GetInfo(vehicleId)
                 logging.info('EV info: {} = {}'.format(vehicleId, vehicleInfo))
-                nodeName = nodeName = 'EV'+str(vehicle+1) 
-                nodeName = 'EV'+str(vehicle+1) 
+
                 if 'display_name' in vehicleInfo:
                     nodeName = vehicleInfo['display_name']                                          
                 elif 'vehicle_config' in vehicleInfo:
+                    if  'vehicle_name' in vehicleInfo['vehicle_config']:
+                        nodeName = vehicleInfo['vehicle_config']['vehicle_name']
+                elif 'vehicle_state' in vehicleInfo:
                     if  'vehicle_name' in vehicleInfo['vehicle_config']:
                         nodeName = vehicleInfo['vehicle_config']['vehicle_name']
                 if nodeName == '' or nodeName == None:
@@ -371,7 +374,7 @@ if __name__ == "__main__":
     try:
         logging.info('Starting TeslaEV Controller')
         polyglot = udi_interface.Interface([])
-        polyglot.start('0.2.20')
+        polyglot.start('0.2.23')
         TeslaEVController(polyglot, 'controller', 'controller', 'Tesla EVs')
 
 
