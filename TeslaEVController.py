@@ -176,11 +176,11 @@ class TeslaEVController(udi_interface.Node):
 
                 if 'display_name' in vehicleInfo:
                     nodeName = vehicleInfo['display_name']                                          
-                elif 'vehicle_config' in vehicleInfo:
+                if 'vehicle_config' in vehicleInfo:
                     logging.debug( 'display_name = {}'.format(nodeName))
                     if  'vehicle_name' in vehicleInfo['vehicle_config']:
                         nodeName = vehicleInfo['vehicle_config']['vehicle_name']
-                elif 'vehicle_state' in vehicleInfo:
+                if 'vehicle_state' in vehicleInfo:
                     if  'vehicle_name' in vehicleInfo['vehicle_state']:
                         nodeName = vehicleInfo['vehicle_state']['vehicle_name']
                 if nodeName == '' or nodeName == None:
