@@ -126,7 +126,10 @@ class teslaEV_StatusNode(udi_interface.Node):
         logging.info('Status Node Poll for {}'.format(self.EVid))        
         self.TEV.teslaEV_GetInfo(self.EVid)
         if self.statusNodeReady:
-            self.updateISYdrivers()
+            if self.TEV.carState != 'Offline':
+                self.updateISYdrivers()
+            else:
+                logging.info('Car appears off-line/sleeping - not updating data')
 
     def forceUpdateISYdrivers(self):
         logging.debug('forceUpdateISYdrivers: {}'.format(self.EVid))

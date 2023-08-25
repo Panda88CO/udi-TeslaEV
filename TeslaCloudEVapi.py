@@ -81,7 +81,7 @@ class teslaCloudEVapi(object):
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
 
-    
+    '''
     def teslaEV_getLatestCloudInfo(self, EVid):
         logging.debug('teslaEV_getLatestCloudInfo: {}'.format(EVid))
         cloudInfo = False
@@ -155,6 +155,53 @@ class teslaCloudEVapi(object):
                 logging.error('Trying to reconnect')
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
+    '''
+
+    def teslaEV_getLatestCloudInfo(self, EVid):
+            #if self.connectionEstablished:
+        logging.debug('teslaEV_getLatestCloudInfo: {}'.format(EVid))
+        self.carInfo[EVid] = None
+        S = self.teslaApi.teslaConnect()
+        with requests.Session() as s:
+            try:
+                s.auth = OAuth2BearerToken(S['access_token'])            
+                r = s.get(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/vehicle_data', headers=self.Header)          
+                #logging.debug('OAuth2BearerToken 1: {} '.format(r))
+                attempts = 0
+                #self.carInfo[EVid] = r.json()
+                #logging.debug('OAuth2BearerToken 2: {} - {} '.format(r, self.carInfo[EVid]))
+                if not r.ok:
+                        self.carState = 'Offline'
+                if r.ok:
+                    carRaw = r.json()
+                    self.carInfo[EVid] = self.process_EV_data(carRaw) # handle different formats and remove 'response'
+                    #logging.debug('self.carInfo[EVid]1 {}'.format(self.carInfo[EVid]))
+                    if 'state' in self.carInfo[EVid]: 
+                        #logging.debug('if state in self.carInfo[EVid]: ')
+                        if self.carInfo[EVid]['state'] == 'online':
+                            self.carState = 'Online'
+                            #logging.debug('self.carState = Online')
+
+                        else:
+                            self.carState = 'Sleeping'                            
+                    elif self.carInfo[EVid] == None:
+                        self.carState = 'Offline'
+                    else:
+                        self.carState = 'Offline'
+                        #logging.debug( 'carState4 : {}'.format(self.carState))
+                        cloudInfo = False
+ 
+                logging.debug('teslaEV_UpdateCloudInfo END - carinfo[{}]:{}'.format(EVid, self.carInfo[EVid] ))
+
+            except Exception as e:
+                logging.debug('Exception teslaEV_getLatestCloudInfo: {}'.format(e))
+                logging.error('Error getting data from vehicle id: {}'.format(EVid))
+                logging.error('Trying to reconnect')
+                self.teslaApi.tesla_refresh_token( )
+                self.carState = 'Offline'
+                return(None)
+
+
 
 
     def teslaEV_UpdateCloudInfo(self, EVid):
