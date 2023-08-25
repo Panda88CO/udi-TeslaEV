@@ -119,7 +119,8 @@ ST-nlsevclimate-GV14-NAME = Steering Wheel Heat
 ONOFF-0 = Off
 ONOFF-1 = On
 ONOFF-99 = Unknown
-
+ST-nlsevclimate-GV17-NAME = Longitude
+ST-nlsevclimate-GV18-NAME = Latitude
 ST-nlsevclimate-GV19-NAME = Hours since car last update
 ST-nlsevclimate-GV20-NAME = Hours since climate last update
 

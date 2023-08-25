@@ -159,7 +159,6 @@ class teslaCloudEVapi(object):
                 self.teslaApi.tesla_refresh_token( )
                 return(None)
 
-
     def teslaEV_UpdateCloudInfo(self, EVid):
             #if self.connectionEstablished:
         logging.debug('teslaEV_UpdateCloudInfo: {}'.format(EVid))
