@@ -389,7 +389,7 @@ class teslaCloudEVapi(object):
 
     def teslaEV_GetIdelBatteryRange(self, EVid):
         if 'ideal_battery_range' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['ideal_battery_range'],2)) 
+            return(round(self.carInfo[EVid]['charge_state']['ideal_battery_range'],2))
         else:
             return(None)
 

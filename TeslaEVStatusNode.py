@@ -188,14 +188,14 @@ class teslaEV_StatusNode(udi_interface.Node):
             self.setDriver('GV12', self.TEV.teslaEV_GetFrunkState(self.EVid), True, True)
             logging.debug('GV13: {}'.format(self.TEV.teslaEV_GetCarState(self.EVid)))
             self.setDriver('GV13', self.state2ISY(self.TEV.teslaEV_GetCarState(self.EVid)), True, True)
-
+            '''
             if self.TEV.teslaEV_GetIdelBatteryRange(self.EVid):
                 logging.debug('GV16: {}'.format(self.TEV.teslaEV_GetIdelBatteryRange(self.EVid)))
                 self.setDriver('GV16', round(float(self.TEV.teslaEV_GetIdelBatteryRange(self.EVid), 2)), True, True, 56)   
             else:
                 logging.debug('GV16: {}'.format('NONE'))
                 self.setDriver('GV16', 99, True, True, 25)
-
+            '''
             location = self.TEV.teslaEV_GetLocation(self.EVid)
             if location['longitude']:
                 logging.debug('GV17: {}'.format(round(location['longitude'], 3)))
