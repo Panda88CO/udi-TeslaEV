@@ -375,6 +375,8 @@ class teslaCloudEVapi(object):
             temp['charge_miles_added_rated'] = self.carInfo[EVid]['charge_state']['charge_miles_added_rated']      
         if 'charger_voltage' in  self.carInfo[EVid]['charge_state']: 
             temp['charger_voltage'] = self.carInfo[EVid]['charge_state']['charger_voltage']                
+        if 'ideal_battery_range' in  self.carInfo[EVid]['charge_state']: 
+            temp['ideal_battery_range'] = self.carInfo[EVid]['charge_state']['ideal_battery_range']   
         if 'timestamp' in  self.carInfo[EVid]['charge_state']: 
             temp['timestamp'] = int(self.carInfo[EVid]['charge_state']['timestamp'] /1000) # Tesla reports in miliseconds                
         return(temp)
@@ -382,6 +384,12 @@ class teslaCloudEVapi(object):
     def teslaEV_GetChargeTimestamp(self, EVid):
         if 'timestamp' in self.carInfo[EVid]['charge_state']:
             return(self.carInfo['charge_state']['timestamp'])
+        else:
+            return(None)
+
+    def teslaEV_GetIdelBatteryRange(self, EVid):
+        if 'ideal_battery_range' in self.carInfo[EVid]['charge_state']:
+            return(round(self.carInfo[EVid]['charge_state']['ideal_battery_range'],2)) 
         else:
             return(None)
 

@@ -189,8 +189,14 @@ class teslaEV_StatusNode(udi_interface.Node):
             logging.debug('GV13: {}'.format(self.TEV.teslaEV_GetCarState(self.EVid)))
             self.setDriver('GV13', self.state2ISY(self.TEV.teslaEV_GetCarState(self.EVid)), True, True)
 
-            location = self.TEV.teslaEV_GetLocation(self.EVid)
+            if self.TEV.teslaEV_GetIdelBatteryRange(self.EVid):
+                logging.debug('GV16: {}'.format(round(float(self.TEV.teslaEV_GetIdelBatteryRange(self.EVid), 2))))
+                self.setDriver('GV16', round(float(self.TEV.teslaEV_GetIdelBatteryRange(self.EVid), 2)), True, True, 56)   
+            else:
+                logging.debug('GV16: {}'.format('NONE'))
+                self.setDriver('GV16', 99, True, True, 25)
 
+            location = self.TEV.teslaEV_GetLocation(self.EVid)
             if location['longitude']:
                 logging.debug('GV17: {}'.format(round(location['longitude'], 3)))
                 self.setDriver('GV17', round(location['longitude'], 3), True, True, 56)
@@ -337,6 +343,9 @@ class teslaEV_StatusNode(udi_interface.Node):
             {'driver': 'GV11', 'value': 0, 'uom': 25}, #trunk
             {'driver': 'GV12', 'value': 0, 'uom': 25}, #frunk
             {'driver': 'GV13', 'value': 99, 'uom': 25}, #car State
+            {'driver': 'GV16', 'value': 99, 'uom': 25}, #longitude
+            {'driver': 'GV17', 'value': 99, 'uom': 25}, #longitude
+            {'driver': 'GV18', 'value': 99, 'uom': 25}, #latitude   
             {'driver': 'GV19', 'value': 0, 'uom': 20},  #Last combined update Hours           
             {'driver': 'GV20', 'value': 0, 'uom': 20},  #Last update hours                        
             ]

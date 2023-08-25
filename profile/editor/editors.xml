@@ -177,6 +177,12 @@
 
    <editor id = "LATITUDE" > 
      <range  uom="56" min="-90" max="90" prec="3" />
+     <range  uom="25" subset="99" nls="UNKNOWN"  />  
+  </editor>
+
+  <editor id = "IDEA_DIST" > 
+     <range  uom="56" min="0" max="500" prec="2" />
      <range  uom="25" subset="0-2,99" nls="UNKNOWN"  />  
   </editor>
+  
 </editors> 

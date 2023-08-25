@@ -65,6 +65,7 @@ CARSTATE-0 = Offline
 CARSTATE-1 = Online
 CARSTATE-2 = Sleeping
 CARSTATE-99 = Unknown 
+ST-nlsevstatus-GV16-NAME =  Ideal Battery Distance
 ST-nlsevstatus-GV17-NAME =  EV Longitude
 ST-nlsevstatus-GV18-NAME =  EV Latitude
 
