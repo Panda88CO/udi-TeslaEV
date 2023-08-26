@@ -374,11 +374,15 @@ class teslaCloudEVapi(object):
 
 
     def teslaEV_GetTimeSinceLastCarUpdate(self, EVid):
-        logging.debug('teslaEV_GetTimeSinceLastCarUpdate')
-        timeNow = int(time.time())
-        timeMinimum = min( self.teslaEV_GetTimeSinceLastClimateUpdate(EVid),self.teslaEV_GetTimeSinceLastChargeUpdate(EVid), self.teslaEV_GetTimeSinceLastStatusUpdate(EVid) )
-        logging.debug('Time Now {} Last UPdate {}'.format(timeNow, timeMinimum ))
-        return(float(timeMinimum))
+        try:
+            logging.debug('teslaEV_GetTimeSinceLastCarUpdate')
+            timeNow = int(time.time())
+            timeMinimum = min( self.teslaEV_GetTimeSinceLastClimateUpdate(EVid),self.teslaEV_GetTimeSinceLastChargeUpdate(EVid), self.teslaEV_GetTimeSinceLastStatusUpdate(EVid) )
+            logging.debug('Time Now {} Last UPdate {}'.format(timeNow, timeMinimum ))
+            return(float(timeMinimum))
+        except Exception as e:
+            logging.debug('Exception teslaEV_GetTimeSinceLastCarUpdate - {}'.format(e))
+            return(None)
 
 ####################
 # Charge Data
@@ -435,68 +439,115 @@ class teslaCloudEVapi(object):
             return(None)
 
     def teslaEV_GetIdelBatteryRange(self, EVid):
-        if 'ideal_battery_range' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['ideal_battery_range'],2))
-        else:
+        try:
+            if 'ideal_battery_range' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['ideal_battery_range'],2))
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug('Exception teslaEV_GetIdelBatteryRange - {}'.format(e))
             return(None)
+
+
 
     def teslaEV_charge_current_request_max(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'charge_current_request_max' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charge_current_request_max'],1)) 
-        else:
-            return(None)
-    def teslaEV_charge_current_request(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'charge_current_request' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charge_current_request'],1)) 
-        else:
-            return(None)
-    def teslaEV_charger_actual_current(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'charger_actual_current' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charger_actual_current'],1)) 
-        else:
-            return(None)
-    def teslaEV_charge_amps(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'charge_amps' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charge_amps'],1)) 
-        else:
-            return(None)            
-    def teslaEV_time_to_full_charge(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'time_to_full_charge' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['time_to_full_charge']*60,0)) 
-        else:
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'charge_current_request_max' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charge_current_request_max'],1)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug('Exception teslaEV_charge_current_request_max - {}'.format(e))
             return(None)            
 
-    def teslaEV_charge_energy_added(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'charge_energy_added' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charge_energy_added'],1)) 
-        else:
+    def teslaEV_charge_current_request(self, EVid):
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'charge_current_request' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charge_current_request'],1)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug('Exception teslaEV_charge_current_request - {}'.format(e))
             return(None)            
+            
+
+    def teslaEV_charger_actual_current(self, EVid):
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'charger_actual_current' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charger_actual_current'],1)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug('Exception teslaEV_charger_actual_current - {}'.format(e))
+            return(None)              
+
+    def teslaEV_charge_amps(self, EVid):
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'charge_amps' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charge_amps'],1)) 
+            else:
+                return(None)      
+        except Exception as e:
+            logging.debug('Exception teslaEV_charge_amps - {}'.format(e))
+            return(None)         
+
+    def teslaEV_time_to_full_charge(self, EVid):
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'time_to_full_charge' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['time_to_full_charge']*60,0)) 
+            else:
+                return(None)            
+        except Exception as e:
+            logging.debug('Exception teslaEV_time_to_full_charge - {}'.format(e))
+            return(None)         
+        
+    def teslaEV_charge_energy_added(self, EVid):
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'charge_energy_added' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charge_energy_added'],1)) 
+            else:
+                return(None)  
+        except Exception as e:
+            logging.debug('Exception teslaEV_charge_energy_added - {}'.format(e))
+            return(None)                        
 
     def teslaEV_charge_miles_added_rated(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'time_to_full_charge' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charge_miles_added_rated'],1)) 
-        else:
-            return(None)            
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'time_to_full_charge' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charge_miles_added_rated'],1)) 
+            else:
+                return(None)            
+        except Exception as e:
+            logging.debug('Exception teslaEV_charge_miles_added_rated - {}'.format(e))
+            return(None)                        
 
     def teslaEV_charger_voltage(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'charger_voltage' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charger_voltage'],0)) 
-        else:
-            return(None)            
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'charger_voltage' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charger_voltage'],0)) 
+            else:
+                return(None)       
+        except Exception as e:
+            logging.debug('Exception teslaEV_charger_voltage - {}'.format(e))
+            return(None)                  
 
     def teslaEV_GetTimeSinceLastChargeUpdate(self, EVid):
-        timeNow = int(time.time())
-        logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[EVid]['charge_state']['timestamp']/1000 ))
-        return(int(timeNow - float(self.carInfo[EVid]['charge_state']['timestamp']/1000)))
-
+        try:
+            timeNow = int(time.time())
+            logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[EVid]['charge_state']['timestamp']/1000 ))
+            return(int(timeNow - float(self.carInfo[EVid]['charge_state']['timestamp']/1000)))
+        except Exception as e:
+            logging.debug('Exception teslaEV_GetTimeSinceLastChargeUpdate - {}'.format(e))
+            return(None)  
+        
     def teslaEV_FastChargerPresent(self, EVid):
         #logging.debug('teslaEV_FastchargerPresent for {}'.format(EVid))
         if 'fast_charger_present' in self.carInfo[EVid]['charge_state']:
@@ -520,19 +571,27 @@ class teslaCloudEVapi(object):
             return(None)         
 
     def teslaEV_GetBatteryRange(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'battery_range' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['battery_range'],0)) 
-        else:
-            return(None)
-
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'battery_range' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['battery_range'],0)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug('Exception teslaEV_GetBatteryRange - {}'.format(e))
+            return(None)  
+        
     def teslaEV_GetBatteryLevel(self, EVid):
-        #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
-        if 'battery_level' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['battery_level'],1)) 
-        else:
-            return(None)
-
+        try:
+            #logging.debug('teslaEV_GetBatteryLevel for {}'.format(EVid))
+            if 'battery_level' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['battery_level'],1)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug('Exception teslaEV_GetBatteryLevel - {}'.format(e))
+            return(None)  
+        
     def teslaEV_MaxChargeCurrent(self, EVid):
         #logging.debug('teslaEV_MaxChargeCurrent for {}'.format(EVid))
         if 'charge_current_request_max' in self.carInfo[EVid]['charge_state']:
@@ -555,18 +614,27 @@ class teslaCloudEVapi(object):
             return(None)
 
     def teslaEV_GetChargingPower(self, EVid):
-        #logging.debug('teslaEV_GetChargingPower for {}'.format(EVid))
-        if 'charger_power' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charger_power'],1)) 
-        else:
-            return(None)
+        try:
+            #logging.debug('teslaEV_GetChargingPower for {}'.format(EVid))
+            if 'charger_power' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charger_power'],1)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug('Exception teslaEV_GetChargingPower - {}'.format(e))
+            return(None)              
 
     def teslaEV_GetBatteryMaxCharge(self, EVid):
-        #logging.debug('teslaEV_GetBatteryMaxCharge for {}'.format(EVid))
-        if 'charge_limit_soc' in self.carInfo[EVid]['charge_state']:
-            return(round(self.carInfo[EVid]['charge_state']['charge_limit_soc'],1)) 
-        else:
-            return(None)
+        try:
+            #logging.debug('teslaEV_GetBatteryMaxCharge for {}'.format(EVid))
+            if 'charge_limit_soc' in self.carInfo[EVid]['charge_state']:
+                return(round(self.carInfo[EVid]['charge_state']['charge_limit_soc'],1)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug('Exception teslaEV_GetBatteryMaxCharge - {}'.format(e))
+            return(None)              
+           
 
 
     def teslaEV_ChargePort(self, EVid, ctrl):
@@ -714,39 +782,58 @@ class teslaCloudEVapi(object):
             return(None)
 
     def teslaEV_GetTimeSinceLastClimateUpdate(self, EVid):
-        timeNow = int(time.time())
-        logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[EVid]['climate_state']['timestamp']/1000 ))
+        try:
+            timeNow = int(time.time())
+            logging.debug('Time Now {} Last UPdate {}'.format(timeNow,self.carInfo[EVid]['climate_state']['timestamp']/1000 ))
 
-        return(int(timeNow - float(self.carInfo[EVid]['climate_state']['timestamp']/1000)))
-
+            return(int(timeNow - float(self.carInfo[EVid]['climate_state']['timestamp']/1000)))
+        except Exception as e:
+            logging.debug(' Exception teslaEV_GetTimeSinceLastClimateUpdate - {}'.format(e))
+            return(None)
 
     def teslaEV_GetCabinTemp(self, EVid):
-        logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(EVid, self.carInfo[EVid]['climate_state']['inside_temp'] ))
-        if 'inside_temp' in self.carInfo[EVid]['climate_state']:
-            return(round(self.carInfo[EVid]['climate_state']['inside_temp'],1)) 
-        else:
+        try:
+            logging.debug('teslaEV_GetCabinTemp for {} - {}'.format(EVid, self.carInfo[EVid]['climate_state']['inside_temp'] ))
+            if 'inside_temp' in self.carInfo[EVid]['climate_state']:
+                return(round(self.carInfo[EVid]['climate_state']['inside_temp'],1)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug(' Exception teslaEV_GetCabinTemp - {}'.format(e))
             return(None)
-
+        
     def teslaEV_GetOutdoorTemp(self, EVid):
-        logging.debug('teslaEV_GetOutdoorTemp for {} = {}'.format(EVid, self.carInfo[EVid]['climate_state']['outside_temp']))
-        if 'outside_temp' in self.carInfo[EVid]['climate_state']:
-            return(round(self.carInfo[EVid]['climate_state']['outside_temp'],1)) 
-        else:
+        try:
+            logging.debug('teslaEV_GetOutdoorTemp for {} = {}'.format(EVid, self.carInfo[EVid]['climate_state']['outside_temp']))
+            if 'outside_temp' in self.carInfo[EVid]['climate_state']:
+                return(round(self.carInfo[EVid]['climate_state']['outside_temp'],1)) 
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug(' Exception teslaEV_GetOutdoorTemp - {}'.format(e))
             return(None)
-
+        
     def teslaEV_GetLeftTemp(self, EVid):
-        #logging.debug('teslaEV_GetLeftTemp for {}'.format(EVid))
-        if 'driver_temp_setting' in self.carInfo[EVid]['climate_state']:
-            return(round(self.carInfo[EVid]['climate_state']['driver_temp_setting'],1))   
-        else:
-            return(None)     
+        try:
+            #logging.debug('teslaEV_GetLeftTemp for {}'.format(EVid))
+            if 'driver_temp_setting' in self.carInfo[EVid]['climate_state']:
+                return(round(self.carInfo[EVid]['climate_state']['driver_temp_setting'],1))   
+            else:
+                return(None) 
+        except Exception as e:
+            logging.debug(' Exception teslaEV_GetLeftTemp - {}'.format(e))
+            return(None)            
 
     def teslaEV_GetRightTemp(self, EVid):
-        #logging.debug('teslaEV_GetRightTemp for {}'.format(EVid))
-        if 'passenger_temp_setting' in self.carInfo[EVid]['climate_state']:
-            return(round(self.carInfo[EVid]['climate_state']['passenger_temp_setting'],1))   
-        else:
-            return(None)
+        try:
+            #logging.debug('teslaEV_GetRightTemp for {}'.format(EVid))
+            if 'passenger_temp_setting' in self.carInfo[EVid]['climate_state']:
+                return(round(self.carInfo[EVid]['climate_state']['passenger_temp_setting'],1))   
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug(' Exception teslaEV_GetRightTemp - {}'.format(e))
+            return(None)            
 
     def teslaEV_GetSeatHeating(self, EVid):
         #logging.debug('teslaEV_GetSeatHeating for {}'.format(EVid))
@@ -779,18 +866,27 @@ class teslaCloudEVapi(object):
 
     def teslaEV_MaxCabinTempCtrl(self, EVid):
         #logging.debug('teslaEV_MaxCabinTempCtrl for {}'.format(EVid))
-        if 'max_avail_temp' in self.carInfo[EVid]['climate_state']:
-            return(round(self.carInfo[EVid]['climate_state']['max_avail_temp'],1))   
-        else:
+        try:
+            if 'max_avail_temp' in self.carInfo[EVid]['climate_state']:
+                return(round(self.carInfo[EVid]['climate_state']['max_avail_temp'],1))   
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug(' Exception teslaEV_MaxCabinTempCtrl - {}'.format(e))
             return(None)
-
+        
+        
     def teslaEV_MinCabinTempCtrl(self, EVid):
         #logging.debug('teslaEV_MinCabinTempCtrl for {}'.format(EVid))
-        if 'min_avail_temp' in self.carInfo[EVid]['climate_state']:
-            return(round(self.carInfo[EVid]['climate_state']['min_avail_temp'],1))   
-        else:
+        try:
+            if 'min_avail_temp' in self.carInfo[EVid]['climate_state']:
+                return(round(self.carInfo[EVid]['climate_state']['min_avail_temp'],1))   
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug(' Exception teslaEV_MinCabinTempCtrl - {}'.format(e))
             return(None)
-
+        
     def teslaEV_SteeringWheelHeatOn(self, EVid):
         #logging.debug('teslaEV_SteeringWheelHeatOn for {}'.format(EVid))
 
@@ -1045,10 +1141,13 @@ class teslaCloudEVapi(object):
             return(None)
 
     def teslaEV_GetTimeSinceLastStatusUpdate(self, EVid):
-        timeNow = int(time.time())
-        logging.debug('Time Now {} Last Update {}'.format(timeNow,self.carInfo[EVid]['vehicle_state']['timestamp']/1000 ))
-        return(int(timeNow - float(self.carInfo[EVid]['vehicle_state']['timestamp']/1000)))
-
+        try:
+            timeNow = int(time.time())
+            logging.debug('Time Now {} Last Update {}'.format(timeNow,self.carInfo[EVid]['vehicle_state']['timestamp']/1000 ))
+            return(int(timeNow - float(self.carInfo[EVid]['vehicle_state']['timestamp']/1000)))
+        except Exception as e:
+            logging.debug(' Exception teslaEV_GetTimeSinceLastStatusUpdate - {}'.format(e))
+            return(None)
 
     def teslaEV_HomeLinkNearby(self, EVid):
         #logging.debug('teslaEV_HomeLinkNearby: for {}'.format(EVid))
@@ -1098,19 +1197,28 @@ class teslaCloudEVapi(object):
         return(self.carInfo[EVid]['state'])
 
     def teslaEV_GetOdometer(self, EVid):
-        #logging.debug('teslaEV_GetOdometer: for {}'.format(EVid))
-        if 'odometer' in self.carInfo[EVid]['vehicle_state']:
-            return(round(self.carInfo[EVid]['vehicle_state']['odometer'], 2))
-        else:
-            return(0.0)
+        try:
+            #logging.debug('teslaEV_GetOdometer: for {}'.format(EVid))
+            if 'odometer' in self.carInfo[EVid]['vehicle_state']:
+                return(round(self.carInfo[EVid]['vehicle_state']['odometer'], 2))
+            else:
+                return(0.0)
+        except Exception as e:
+            logging.debug(' Exception teslaEV_GetOdometer - {}'.format(e))
+            return(None)
+        
 
     def teslaEV_GetSunRoofPercent(self, EVid):
-        #logging.debug('teslaEV_GetSunRoofState: for {}'.format(EVid))
-        if 'sun_roof_percent_open' in self.carInfo[EVid]['vehicle_state']:
-            return(round(self.carInfo[EVid]['vehicle_state']['sun_roof_percent_open']))
-        else:
+        try:
+            #logging.debug('teslaEV_GetSunRoofState: for {}'.format(EVid))
+            if 'sun_roof_percent_open' in self.carInfo[EVid]['vehicle_state']:
+                return(round(self.carInfo[EVid]['vehicle_state']['sun_roof_percent_open']))
+            else:
+                return(None)
+        except Exception as e:
+            logging.debug(' Exception teslaEV_GetSunRoofPercent - {}'.format(e))
             return(None)
-
+        
     #def teslaEV_GetSunRoofState(self, EVid):
     #    #logging.debug('teslaEV_GetSunRoofState: for {}'.format(EVid))
     #    if 'sun_roof_state' in self.carInfo[EVid]['vehicle_state'] and self.sunroofInstalled:
