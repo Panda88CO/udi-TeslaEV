@@ -40,8 +40,10 @@ class teslaEV_ChargeNode(udi_interface.Node):
         
         logging.debug('Charge node {}'.format(self.EVid) )
         if self.nodeReady:
-            self.updateISYdrivers()
-    
+            if self.TEV.carState != 'Offline':
+                self.updateISYdrivers()
+            else:
+                logging.info('Car appears off-line/sleeping - not updating data')    
     def chargeNodeReady (self):
         return(self.nodeReady )
    
