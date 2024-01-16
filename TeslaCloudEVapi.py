@@ -349,8 +349,12 @@ class teslaCloudEVapi(object):
         temp['latitude'] = None
         try:
             temp = {}
-            temp['longitude'] = self.carInfo[EVid]['drive_state']['longitude']
-            temp['latitude'] = self.carInfo[EVid]['drive_state']['latitude']
+            if 'longitude' in self.carInfo[EVid]['drive_state']:
+                temp['longitude'] = self.carInfo[EVid]['drive_state']['longitude']
+                temp['latitude'] = self.carInfo[EVid]['drive_state']['latitude']
+            elif 'active_route_longitude'in self.carInfo[EVid]['drive_state']:
+                temp['longitude'] = self.carInfo[EVid]['drive_state']['active_route_longitude']
+                temp['latitude'] = self.carInfo[EVid]['drive_state']['active_route_latitude']                
             return(temp)
         except Exception as e:
             logging.debug('teslaEV_GetLocation - location error')
@@ -1303,8 +1307,15 @@ class teslaCloudEVapi(object):
                 payload = {}        
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/command/honk_horn',headers=self.Header, json=payload ) 
                 temp = r.json()
-                logging.debug(temp['response']['result'])
-                return(temp['response']['result'])
+                if temp['response']:
+                    if temp['response']['result']:
+                        logging.debug(temp['response']['result'])
+                        return(temp['response']['result'])
+                    else:
+                        return(False)
+                else:
+                    return(False)
+      
             except Exception as e:
                 logging.error('Exception teslaEV_HonkHorn for vehicle id {}: {}'.format(EVid, e))
                 logging.error('Trying to reconnect')
