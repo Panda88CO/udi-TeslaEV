@@ -1306,7 +1306,9 @@ class teslaCloudEVapi(object):
                 s.auth = OAuth2BearerToken(S['access_token'])    
                 payload = {}        
                 r = s.post(self.TESLA_URL + self.API+ '/vehicles/'+str(EVid) +'/command/honk_horn',headers=self.Header, json=payload ) 
+                logging.debug('teslaEV_HonkHorn {}'.format(r))
                 temp = r.json()
+                logging.debug('teslaEV_HonkHorn {}'.format(temp))
                 if temp['response']:
                     if temp['response']['result']:
                         logging.debug(temp['response']['result'])
